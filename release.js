@@ -1,6 +1,6 @@
 /**
-*	Build Register Squarebox
+*	Release Squarebox
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 require('babel-register')();
-require('./src/commands/build/build');
+require('./src/build/build');

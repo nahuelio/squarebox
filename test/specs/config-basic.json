@@ -1,0 +1,14 @@
+{
+	"source": {
+		"scan": "./src/**",
+		"extensions": [".js", ".es6"],
+		"alias": {
+			"common": "shared/common",
+			"libraries": "libs"
+		}
+	},
+	"target": {
+		"destination": "./dist",
+		"format": "ifie"
+	}
+}
