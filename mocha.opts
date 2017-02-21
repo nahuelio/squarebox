@@ -1,4 +1,5 @@
 --require ./test/global
+--watch-extensions js,es6
 --recursive
 --ui bdd
 --timeout 500

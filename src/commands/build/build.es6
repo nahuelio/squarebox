@@ -3,7 +3,7 @@
 *	@module Build
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
-import Package from '../package.json';
+import Package from '../../../package.json';
 import yargs from 'yargs';
 import { EventEmitter } from 'events';
 
@@ -21,6 +21,7 @@ class Build extends EventEmitter {
 	*	@return Build
 	**/
 	constructor(...args) {
+		super();
 		return this;
 	}
 
