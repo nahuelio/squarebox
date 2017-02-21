@@ -1,0 +1,12 @@
+{
+  "name": "project-a",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SquareBox & Babel",
+  "keywords": [
+    "squarebox",
+    "babel"
+  ],
+  "author": "Patricio Ferreira <3dimentionar@gmail.com>",
+  "license": "UNLICENSED"
+}

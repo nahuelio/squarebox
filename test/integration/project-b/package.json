@@ -1,0 +1,12 @@
+{
+  "name": "project-b",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SquareBox & Typescript",
+  "keywords": [
+    "squarebox",
+    "typescript"
+  ],
+  "author": "Patricio Ferreira <3dimentionar@gmail.com>",
+  "license": "UNLICENSED"
+}

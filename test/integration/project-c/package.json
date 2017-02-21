@@ -1,0 +1,12 @@
+{
+  "name": "project-c",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SquareBox & Legacy ES5",
+  "keywords": [
+    "squarebox",
+    "legacy"
+  ],
+  "author": "Patricio Ferreira <3dimentionar@gmail.com>",
+  "license": "UNLICENSED"
+}
