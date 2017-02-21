@@ -6,4 +6,4 @@ global.fs = require('fs-extra');
 global.path = require('path');
 global.sinon = require('sinon');
 global.assert = require('chai').assert;
-global.basepath = path.resolve(__dirname, '..');
+global.basepath = path.join(path.resolve(__dirname, '..'), 'src');

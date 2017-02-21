@@ -4,37 +4,65 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import Package from '../../../package.json';
+import _ from 'underscore';
+import extend from 'extend';
 import yargs from 'yargs';
 import { EventEmitter } from 'events';
 
 /**
 *	Class Build
-*	@class Build
 *	@extends events.EventEmiter
 **/
 class Build extends EventEmitter {
 
 	/**
 	*	Constructor
-	*	@constructor
-	*	@param [...args] {Any} arguments
+	*	@public
+	*	@param [args = {}] {Object} Constructor arguments
 	*	@return Build
 	**/
-	constructor(...args) {
+	constructor(args) {
 		super();
+		console.log(args);
+		return extend(true, this);
+	}
+
+	/**
+	*	Build Run
+	*	@public
+	*	@return Build
+	**/
+	run() {
 		return this;
 	}
 
 	/**
-	*	Static Build Run
+	*	Default Argument Options
 	*	@static
-	*	@param [...args] {Any} arguments
+	*	@type {Object}
+	**/
+	static defaults = {
+		env: 'development'
+	};
+
+	/**
+	*	Filter Arguments to options
+	*	@static
+	*	@type {Array}
+	**/
+	static options = [
+		'env'
+	];
+
+	/**
+	*	Static Constructor
+	*	@static
 	*	@return Build
 	**/
-	static run(...args) {
-		return new this(...args);
+	static new() {
+		return new this(yargs.argv).run();
 	}
 
 }
 
-export default Build.run();
+export default Build.new();
