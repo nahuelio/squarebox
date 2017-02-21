@@ -1,0 +1,57 @@
+{
+  "name": "squarebox",
+  "version": "1.0.0",
+  "description": "Module Bundler for Javascript ES6",
+  "private": true,
+  "bin": {
+    "sqbox": "bin/sqbox"
+  },
+  "scripts": {
+    "test": "_mocha --opts mocha.opts --watch",
+    "coverage": "babel-node node_modules/isparta/bin/isparta cover node_modules/mocha/bin/_mocha -- --opts mocha.opts",
+    "build": "node register"
+  },
+  "files": [
+    "bin",
+    "src",
+    "LICENSE",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "keywords": [
+    "module",
+    "bundler",
+    "es6"
+  ],
+  "author": "Patricio Ferreira <3dimentionar@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "6.23.0",
+    "babel-core": "6.23.1",
+    "babel-preset-es2015": "6.22.0",
+    "babel-preset-stage-2": "6.22.0",
+    "babel-register": "6.23.0",
+    "esdoc": "0.5.2",
+    "esdoc-es7-plugin": "0.0.3",
+    "isparta": "4.0.0",
+    "istanbul": "0.4.5",
+    "jscoverage": "0.6.0",
+    "mocha": "3.2.0",
+    "sinon": "1.17.7"
+  },
+  "dependencies": {
+    "chalk": "1.1.3",
+    "esprima": "3.1.3",
+    "extend": "3.0.0",
+    "fs-extra": "2.0.0",
+    "glob": "7.1.1",
+    "jsonpath": "0.2.11",
+    "minimatch": "3.0.3",
+    "node-watch": "0.4.1",
+    "yargs": "6.6.0"
+  },
+  "engines": {
+    "node": ">=6.0.0",
+    "npm": ">=3.0.0"
+  }
+}

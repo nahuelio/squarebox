@@ -1,0 +1,7 @@
+# Project
+bin
+node_modules
+
+# Logs & System
+*.log
+*.pid
