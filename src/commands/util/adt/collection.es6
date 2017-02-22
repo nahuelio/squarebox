@@ -89,6 +89,7 @@ export default class Collection extends EventEmitter {
 	/**
 	*	Resets and Sets a new collection of elements
 	*	@public
+	*	@fires {Collection.events.set}
 	*	@param [col = []] {Array} collection of new elements
 	*	@param [opts = {}] {Object} additional options
 	*	@return {commands.util.adt.Collection}
@@ -103,6 +104,7 @@ export default class Collection extends EventEmitter {
 	/**
 	*	Adds a new element
 	*	@public
+	*	@fires {Collection.events.add}
 	*	@param element {Object|Any} new element to add
 	*	@param [opts = {}] {Object} additional options
 	*	@return {commands.util.adt.Collection}
@@ -115,6 +117,7 @@ export default class Collection extends EventEmitter {
 	/**
 	*	Add a collection of elements at the tail of this collection
 	*	@public
+	*	@fires {Collection.events.addall}
 	*	@param [col = []] {Array} collection of new elements to add
 	*	@param [opts = {}] {Object} additional options
 	*	@return {commands.util.adt.Collection}
@@ -171,6 +174,7 @@ export default class Collection extends EventEmitter {
 	*	Removes an element at the given index. If no index is passed, this method will remove the last element in
 	*	this collection.
 	*	@public
+	*	@fires {Collection.events.remove}
 	*	@param [ix = (this._collection.size() - 1)] {Number} index used to remove
 	*	@param [opts = {}] {Object} additional options
 	*	@return {commands.util.adt.Collection}
@@ -184,12 +188,13 @@ export default class Collection extends EventEmitter {
 	/**
 	*	Removes all the elements in this collection
 	*	@public
+	*	@fires {Collection.events.removeall}
 	*	@param [col = []] {Array} collection of elements to remove
 	*	@param [opts = {}] {Object} additional options
 	*	@return {commands.util.adt.Collection}
 	**/
 	removeAll(col = [], opts = {}) {
-		// TODO: Kepep working here...
+		// TODO
 		return this._fire(Collection.events.removeall, opts);
 	}
 
@@ -199,17 +204,22 @@ export default class Collection extends EventEmitter {
 	*	@param predicate {Function} predicate used to evaluate
 	*	@return {commands.util.adt.Collection}
 	**/
-	removeBy() {}
+	removeBy() {
+		// TODO
+		return this;
+	}
 
 	/**
 	*	Sorts this collection by a given comparator.
 	*	If comparator is omitted, not sort will ocurr.
 	*	@public
+	*	@fires {Collection.events.sort}
 	*	@param [opts = {}] {Object} additional options
 	*	@param comparator {Function} comparator reference
 	*	@return {commands.util.adt.Collection}
 	**/
 	sort(comparator, opts = {}) {
+		// TODO
 		return this._fire(Collection.events.sort, opts);
 	}
 
@@ -218,15 +228,19 @@ export default class Collection extends EventEmitter {
 	*	@public
 	*	@return {commands.util.adt.Iterator}
 	**/
-	iterator() {}
+	iterator() {
+		return Iterator.new(this._collection);
+	}
 
 	/**
 	*	Resets the collection
 	*	@public
+	*	@fires {Collection.events.reset}
 	*	@param [opts = {}] {Object} additional options
 	*	@return {commands.util.adt.Collection}
 	**/
 	reset(opts = {}) {
+		// TODO
 		return this._fire(Collection.events.reset, opts);
 	}
 
