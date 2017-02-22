@@ -58,6 +58,18 @@ _.mixin({
 	},
 
 	/**
+	*	Returns true if parameter source is an instance of parameter constructor, false otherwise.
+	*	@public
+	*	@param source {Object} source to be evaluated
+	*	@param constructor {Function} constructor function to compare to
+	*	@return {Boolean}
+	**/
+	instanceOf: function(source, constructor) {
+		if(!_.defined(source) || !_.defined(constructor)) return false;
+		return (source instanceof constructor);
+	},
+
+	/**
 	*	Returns true if a given object is neither, null or undefined. Otherwise returns false.
 	*	@public
 	*	@param [o] {Object} object to be evaluated

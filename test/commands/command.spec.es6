@@ -11,11 +11,12 @@ describe('commands.Command', function() {
 	});
 
 	beforeEach(() => {
-
+		this.mockCommand = this.sandbox.mock(Command);
 	});
 
 	afterEach(() => {
 		this.sandbox.restore();
+		delete this.mockCommand;
 	});
 
 	after(() => {

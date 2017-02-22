@@ -7,9 +7,9 @@
     "sqbox": "bin/sqbox"
   },
   "scripts": {
-    "test": "_mocha --opts mocha.opts --watch test/**/*.spec.es6",
-    "it": "_mocha --opts mocha.opts test/integration/**/*.it.es6",
-    "coverage": "babel-node ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --opts mocha.opts test/**/*.spec.es6",
+    "test": "_mocha --opts mocha.opts --watch test/commands",
+    "it": "_mocha --opts mocha.opts test/integration",
+    "coverage": "babel-node ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --opts mocha.opts test/commands",
     "docs": "esdoc",
     "build": "node register"
   },

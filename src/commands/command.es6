@@ -3,17 +3,16 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import { EventEmitter } from 'events';
-import 'util/mixins';
+import './util/mixins';
 import _ from 'underscore';
 import extend from 'extend';
 import yargs from 'yargs';
-import asyncLib from 'async';
-import Collection from 'util/adt/collection';
-import CommandException from 'util/exception/command';
+import Collection from './util/adt/collection';
+import CommandException from './util/exception/command';
 
 /**
 *	Class Command
-*	@extends events.EventEmitter
+*	@extends {events.EventEmitter}
 **/
 export default class Command extends EventEmitter {
 
@@ -22,7 +21,7 @@ export default class Command extends EventEmitter {
 	*	@private
 	*	@type {commands.util.adt.Collection}
 	**/
-	_commands: new Collection([], { interface: Command }),
+	_commands = new Collection([], { interface: Command })
 
 	/**
 	*	Constructor
@@ -43,8 +42,9 @@ export default class Command extends EventEmitter {
 	*	@return {commands.Command}
 	**/
 	chain(command) {
-		if(!_.defined(command)) throw new CommandException({ type: 'chain', level: CommandException.fatal });
-		// TODO Collection.add
+		if(!_.defined(command) || !_.instanceOf(command, Command))
+			throw CommandException.new({ type: 'chain', level: CommandException.fatal });
+		this._commands.add(command);
 		return this;
 	}
 
@@ -127,6 +127,15 @@ export default class Command extends EventEmitter {
 	**/
 	args() {
 		return yargs.argv;
+	}
+
+	/**
+	*	Returns a json representation of the instance of this class
+	*	@public
+	*	@return {Object}
+	**/
+	toJSON() {
+		return this;
 	}
 
 	/**
