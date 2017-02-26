@@ -1,5 +1,7 @@
 ## Squarebox
 
+[![Coverage Status](https://coveralls.io/repos/github/nahuelio/squarebox/badge.svg)](https://coveralls.io/github/nahuelio/squarebox)
+
 ```
 Badges
 ```

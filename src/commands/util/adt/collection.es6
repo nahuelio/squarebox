@@ -18,14 +18,14 @@ export default class Collection extends EventEmitter {
 	*	@private
 	*	@type {Array}
 	**/
-	_collection = []
+	_collection = [];
 
 	/**
 	*	Interface for objects
 	*	@private
 	*	@type {Function}
 	**/
-	_interface = null
+	_interface = null;
 
 	/**
 	*	Constructor
@@ -197,7 +197,7 @@ export default class Collection extends EventEmitter {
 	*	@return {commands.util.adt.Collection}
 	**/
 	removeAll(col = [], opts = {}) {
-		// TODO
+
 		return this._fire(Collection.events.removeall, opts);
 	}
 
@@ -323,7 +323,7 @@ export default class Collection extends EventEmitter {
 		*	@event sort
 		**/
 		sort: 'commands:util:adt:collection:sort'
-	}
+	};
 
 	/**
 	*	Underscore interface methods for aggregation
@@ -364,7 +364,7 @@ export default class Collection extends EventEmitter {
 		'partition',
 		'countBy',
 		'indexBy'
-	]
+	];
 
 	/**
 	*	Underscore aggregation
