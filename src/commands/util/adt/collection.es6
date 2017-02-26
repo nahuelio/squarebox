@@ -37,7 +37,7 @@ export default class Collection extends EventEmitter {
 	constructor(initial = [], opts = {}) {
 		super();
 		Collection._aggregate(extend(true, this, { _interface: opts.interface }))
-		return this.set(initial);
+		return (initial.length > 0) ? this.set(initial) : this;
 	}
 
 	/**
@@ -55,23 +55,25 @@ export default class Collection extends EventEmitter {
 	*	Fires event to this collection
 	*	@private
 	*	@param name {String} event name
-	*	@param opts {Object} additional options
+	*	@param [opts = {}] {Object} additional options
+	*	@param [...args] {Any} additional arguments to pass to the emit
 	*	@return {commands.util.adt.Collection}
 	**/
-	_fire(name, opts) {
-		return !opts.silent ? this.emit(name, this) : this;
+	_fire(name, opts = {}, ...args) {
+		return !opts.silent ? this.emit(name, this, ...args) : this;
 	}
 
 	/**
 	*	Resolves and executes either `withInterface` handler or `withoutInterface`, if this collection
 	*	defines or not an interface for the type of objects this collection can contain.
 	*	@private
+	*	@param element {Any} element to evaluate
 	*	@param w {Function} withInterface handler
 	*	@param wo {Function} withoutInterface Handler
 	*	@return {Any}
 	**/
-	_when(w, wo) {
-		return this.hasInterface() ? w() : wo();
+	_when(e, w, wo) {
+		return (this.hasInterface() && !_.instanceOf(e, this._interface)) ? w() : wo();
 	}
 
 	/**
@@ -83,35 +85,36 @@ export default class Collection extends EventEmitter {
 	**/
 	_new(e, opts = {}) {
 		if(!this._valid(e)) return null;
-		return this._when(() => _.defined(opts.new) ? opts.new(e) : new this._interface(e), () => e);
+		return this._when(e, () => _.defined(opts.new) ? opts.new(e) : new this._interface(e), () => e);
 	}
 
 	/**
 	*	Resets and Sets a new collection of elements
 	*	@public
 	*	@fires {Collection.events.set}
-	*	@param [col = []] {Array} collection of new elements
+	*	@param col {Array} collection of new elements
 	*	@param [opts = {}] {Object} additional options
 	*	@return {commands.util.adt.Collection}
 	**/
-	set(col = [], opts = {}) {
+	set(col, opts = {}) {
 		if(!this._valid(col) || !_.isArray(col)) return this;
 		this.reset({ silent: true });
-		_.each(col, (e) => this.add(e, extend(true, opts, { silent: true })));
-		return this._fire(Collection.events.set, opts);
+		let set = _.map(col, (e) => this.add(e, extend(true, {}, opts, { silent: true })));
+		return this._fire(Collection.events.set, opts, set);
 	}
 
 	/**
 	*	Adds a new element
 	*	@public
 	*	@fires {Collection.events.add}
-	*	@param element {Object|Any} new element to add
+	*	@param element {Any} element to add
 	*	@param [opts = {}] {Object} additional options
-	*	@return {commands.util.adt.Collection}
+	*	@return {Any}
 	**/
 	add(element, opts = {}) {
 		this._collection.push(this._new(element, opts));
-		return this._fire(Collection.events.add, opts);
+		this._fire(Collection.events.add, opts, element);
+		return element;
 	}
 
 	/**

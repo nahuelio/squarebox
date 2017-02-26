@@ -53,8 +53,20 @@ _.mixin({
 	*	@return {Boolean}
 	**/
 	isRealObject: function(o) {
-		if(!_.defined(o)) return false;
+		if(!_.defined(o) || !_.defined(o.constructor)) return false;
 		return ((o).constructor.toString().indexOf('Object') !== -1);
+	},
+
+	/**
+	*	Returns true if a given element is a instance of a complex primitive abstract data type
+	*	Like Object or Array
+	*	@public
+	*	@param [o] {Object}
+	*	@return {Boolean}
+	**/
+	isAdt: function(o) {
+		if(!_.defined(o)) return false;
+		return (_.isRealObject(o) || _.isArray(o));
 	},
 
 	/**

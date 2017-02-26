@@ -31,4 +31,12 @@ describe('commands.Command', function() {
 
 	});
 
+	describe('#toJSON()', () => {
+
+		it('Should return a json representation', () => {
+			const exp = Command.new({ env: 'production' });
+		});
+
+	});
+
 });

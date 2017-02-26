@@ -1,7 +1,6 @@
 --require ./test/global
---watch-extensions es6
 --recursive
 --ui bdd
 --timeout 500
 --reporter spec
---compilers es6:babel-core/register
+--compilers es6:babel-register

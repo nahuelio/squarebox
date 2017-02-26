@@ -1,16 +1,16 @@
 /**
-*	@module commands.util.exception
+*	@module commands.util.exception.proxy
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'underscore';
 import extend from 'extend';
-import Exception from './exception';
+import Exception from '../exception';
 
 /**
-*	Class CommandException
+*	Class InterfaceException
 *	@extends {commands.util.exception.Exception}
 **/
-export default class CommandException extends Exception {
+export default class InterfaceException extends Exception {
 
 	/**
 	*	Command Exception types
@@ -18,7 +18,7 @@ export default class CommandException extends Exception {
 	*	@type {Object}
 	**/
 	static type = extend(true, Exception.type, {
-		chain: _.template('Required parameter `command` to be an instance of `commands.Command`')
+		proxy: _.template(`Proxies require a 'target' in which their interface operates on`)
 	});
 
 }

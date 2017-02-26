@@ -7,12 +7,15 @@ import './util/mixins';
 import _ from 'underscore';
 import extend from 'extend';
 import yargs from 'yargs';
+import JSON from './util/proxy/json';
 import Collection from './util/adt/collection';
-import CommandException from './util/exception/command';
+import CommandException from './util/exception/command/command';
 
 /**
 *	Class Command
 *	@extends {events.EventEmitter}
+*
+*	@uses {commands.util.proxy.JSON}
 **/
 export default class Command extends EventEmitter {
 
@@ -31,7 +34,7 @@ export default class Command extends EventEmitter {
 	**/
 	constructor(args) {
 		super();
-		return extend(true, this, this.defaults, _.pick(args, this.constructor.options));
+		return JSON.proxy(extend(true, this, this.defaults, _.pick(args, this.constructor.options)));
 	}
 
 	/**
@@ -130,15 +133,6 @@ export default class Command extends EventEmitter {
 	}
 
 	/**
-	*	Returns a json representation of the instance of this class
-	*	@public
-	*	@return {Object}
-	**/
-	toJSON() {
-		return this;
-	}
-
-	/**
 	*	Command Defaults
 	*	@static
 	*	@type {Object}
@@ -178,10 +172,11 @@ export default class Command extends EventEmitter {
 	/**
 	*	Static Constructor
 	*	@static
+	*	@param [...agrs] {Any} constructor arguments
 	*	@return {commands.Command}
 	**/
-	static new() {
-		return new this();
+	static new(...args) {
+		return new this(...args);
 	}
 
 }
