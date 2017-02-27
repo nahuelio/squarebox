@@ -3,10 +3,7 @@
 
 [![Build Status](https://travis-ci.org/nahuelio/squarebox.svg?branch=master)](https://travis-ci.org/nahuelio/squarebox)
 [![Coverage Status](https://coveralls.io/repos/github/nahuelio/squarebox/badge.svg)](https://coveralls.io/github/nahuelio/squarebox)
-
-```
-Badges
-```
+[![GitHub stars](https://img.shields.io/github/stars/nahuelio/squarebox.svg?label=Stars)]()
 
 #### Introduction
 
