@@ -1,6 +1,6 @@
 # Squarebox Jekyll Configuration
-source: "./src/docs"
-destination: "./docs"
+source: "."
+destination: "../../docs"
 title: Squarebox - Nahuel IO
 email: 3dimentionar@gmail.com
 description: "Squarebox Module Bundler for ES6 - Official Documentation"
