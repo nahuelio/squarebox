@@ -1,0 +1,24 @@
+{
+  "name": "squarebox-docs",
+  "version": "1.0.0",
+  "description": "SquareBox Documentation",
+  "scripts": {
+    "build": "jekyll build",
+	"serve": "jekyll serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nahuelio/squarebox.git"
+  },
+  "keywords": [
+    "squarebox",
+    "documentation",
+    "guides"
+  ],
+  "author": "Patricio Ferreira <3dimentionar@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nahuelio/squarebox/issues"
+  },
+  "homepage": "https://github.com/nahuelio/squarebox#readme"
+}
