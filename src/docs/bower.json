@@ -1,0 +1,37 @@
+{
+  "name": "squarebox-docs",
+  "description": "SquareBox Documentation",
+  "authors": [
+    "Patricio Ferreira <3dimentionar@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "squarebox",
+    "documentation",
+    "guides"
+  ],
+  "homepage": "https://github.com/nahuelio/squarebox",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "3.3.7",
+    "font-awesome": "4.7.0",
+    "immutable": "3.8.1",
+    "react": "15.4.2",
+    "react-redux": "https://cdnjs.cloudflare.com/ajax/libs/react-redux/5.0.3/react-redux.min.js",
+    "redux": "3.6.0",
+    "redux-saga": "https://cdnjs.cloudflare.com/ajax/libs/redux-saga/0.14.3/redux-saga.min.js",
+    "redux-logger": "*",
+    "requirejs": "2.3.3",
+    "text": "requirejs-text#^2.0.15",
+    "require-css": "0.1.10",
+    "lodash": "4.17.4",
+    "babel-polyfill": "^0.0.1"
+  }
+}

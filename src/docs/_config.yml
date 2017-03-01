@@ -16,8 +16,11 @@ include:
 exclude:
   - package.json
   - README.md
+  - .bowerrc
+  - js
+  - build.config.js
+  - bower.json
   - .babelrc
-  - gulpfile.js
   - node_modules
   - Gemfile
   - Gemfile.lock
