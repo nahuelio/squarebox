@@ -11,7 +11,9 @@
     "it": "_mocha --opts mocha.opts test/integration",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --opts mocha.opts test/commands",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
-    "docs": "esdoc",
+    "build:docs": "cd ./src/docs && npm run build",
+    "dev:docs": "cd ./src/docs && npm run serve",
+    "apidocs": "esdoc",
     "build": "node register"
   },
   "files": [

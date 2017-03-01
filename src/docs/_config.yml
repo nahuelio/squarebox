@@ -1,0 +1,26 @@
+# Squarebox Jekyll Configuration
+source: "."
+destination: "../../docs"
+title: Squarebox - Nahuel IO
+email: 3dimentionar@gmail.com
+description: "Squarebox Module Bundler for ES6 - Official Documentation"
+baseurl: ""
+url: "http://squarebox.nahuel.io/"
+twitter_username: squarebox
+github_username: nahuelio/squarebox
+
+# Build settings
+markdown: kramdown
+include:
+  - .nojekyll
+exclude:
+  - package.json
+  - README.md
+  - .bowerrc
+  - js
+  - build.config.js
+  - bower.json
+  - .babelrc
+  - node_modules
+  - Gemfile
+  - Gemfile.lock

@@ -1,8 +1,15 @@
 # Project
 /bin
-lib
+libs
 coverage
 node_modules
+
+# Documentation Jekyll
+_site
+.sass-cache
+.jekyll-metadata
+Gemfile
+Gemfile.lock
 
 # Logs & System
 *.log
