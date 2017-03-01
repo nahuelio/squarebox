@@ -7,8 +7,17 @@
 			"libraries": "libs"
 		}
 	},
-	"target": {
-		"destination": "./dist",
+	"target": [{
+		"destination": "./dist/global",
 		"format": "ifie"
-	}
+	}, {
+		"destination": "./dist/cjs",
+		"format": "cjs"
+	}, {
+		"destination": "./dist/umd",
+		"format": "umd"
+	}, {
+		"destination": "./dist/amd",
+		"format": "amd"
+	}]
 }

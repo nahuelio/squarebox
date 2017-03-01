@@ -1,4 +1,5 @@
 --require ./test/global
+--require babel-register
 --recursive
 --ui bdd
 --timeout 500

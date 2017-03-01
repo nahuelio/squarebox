@@ -117,6 +117,12 @@ describe('commands.util.adt.Stack', function() {
 			assert.equal(1, expPos);
 		});
 
+		it('Should NOT search (invalid element)', () => {
+			const exp = Stack.new(['a','b','c']);
+			const expPos = exp.search();
+			assert.equal(-1, expPos);
+		});
+
 		it('Should search and retrieve -1 position (element not found)', () => {
 			const newCommand = Command.new({ env: 'production' });
 			const exp = Stack.new([{ env: 'staging' }, newCommand], { interface: Command });

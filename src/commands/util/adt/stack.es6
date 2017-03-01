@@ -2,6 +2,8 @@
 *	@module commands.util.adt.Stack
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
+'use strict';
+
 import _ from 'underscore';
 import extend from 'extend';
 import Collection from 'commands/util/adt/collection';
@@ -21,7 +23,7 @@ import Collection from 'commands/util/adt/collection';
 *			mystack.pop(); // Outputs { name: 'one' } of MyClass, removing the element
 *	@extends commands.util.adt.Collection
 **/
-export default class Stack extends Collection {
+class Stack extends Collection {
 
 	/**
 	*	Constructor
@@ -31,7 +33,8 @@ export default class Stack extends Collection {
 	*	@return {commands.util.adt.Stack}
 	**/
 	constructor(initial = [], opts = {}) {
-		return super(initial, opts);
+		super(initial, opts);
+		return this;
 	}
 
 	/**
@@ -107,3 +110,5 @@ export default class Stack extends Collection {
 	}
 
 }
+
+export default Stack;
