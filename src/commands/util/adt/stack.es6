@@ -66,7 +66,7 @@ class Stack extends Collection {
 	**/
 	pop() {
 		if(this.size() <= 0) return null;
-		let removed = this.remove(0, { silent: true });
+		let removed = this.removeAt(0, { silent: true });
 		this._fire(Stack.events.pop, {}, removed);
 		return removed;
 	}
@@ -79,7 +79,7 @@ class Stack extends Collection {
 	**/
 	search(element) {
 		if(!this._valid(element)) return -1;
-		return this.findIndex((e) => _.isEqual(((this.hasInterface() && _.defined(e.toJSON)) ? e.toJSON() : e), element));
+		return this.findIndex((e) => _.isEqual(this._toJSON(e), this._toJSON(element)));
 	}
 
 	/**

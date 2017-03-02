@@ -11,7 +11,7 @@ import Iterator from './iterator';
 *	Class Collection
 *	@extends events.EventEmitter
 **/
-export default class Collection extends EventEmitter {
+class Collection extends EventEmitter {
 
 	/**
 	*	Internal Array
@@ -29,9 +29,6 @@ export default class Collection extends EventEmitter {
 
 	/**
 	*	Constructor
-	*	@FIXME: Reminder: Important fix the underscore aggregation:
-	*		Not do it per instance (it adds overhead),
-	*		instead apply it to the prototype of this class!
 	*	@public
 	*	@param [initial = []] {Array} Initial Array
 	*	@param [opts = {}] {Object} collection options
@@ -39,7 +36,7 @@ export default class Collection extends EventEmitter {
 	**/
 	constructor(initial = [], opts = {}) {
 		super();
-		Collection._aggregate(extend(true, this, { _interface: opts.interface }))
+		extend(true, this, { _interface: opts.interface });
 		return (initial.length > 0) ? this.set(initial) : this;
 	}
 
@@ -62,7 +59,7 @@ export default class Collection extends EventEmitter {
 	*	@param [...args] {Any} additional arguments to pass to the emit
 	*	@return {commands.util.adt.Collection}
 	**/
-	_fire(name, opts = {}, ...args) {
+	_fire(name, opts, ...args) {
 		return !opts.silent ? this.emit(name, this, ...args) : this;
 	}
 
@@ -80,14 +77,24 @@ export default class Collection extends EventEmitter {
 	}
 
 	/**
+	*	Returns a json representation of a given element only if this collection has defined an interface
+	*	and the given element implements {commands.util.proxy.Json} interface
+	*	@private
+	*	@param element {Any} element to get json representation
+	*	@return {Any}
+	**/
+	_toJSON(element) {
+		return (this.hasInterface() && element.toJSON) ? element.toJSON() : element;
+	}
+
+	/**
 	*	Default instanciation strategy for new elements added in this collection
 	*	@private
 	*	@param e {Any} element to instanciate
-	*	@param [opts = {}] {Object} additional options
+	*	@param opts {Object} additional options
 	*	@return {Any}
 	**/
-	_new(e, opts = {}) {
-		if(!this._valid(e)) return null;
+	_new(e, opts) {
 		return this._when(e, () => _.defined(opts.new) ? opts.new(e) : new this._interface(e), () => e);
 	}
 
@@ -116,9 +123,10 @@ export default class Collection extends EventEmitter {
 	**/
 	add(element, opts = {}) {
 		if(!this._valid(element)) return null;
-		this._collection.push(this._new(element, opts));
-		this._fire(Collection.events.add, opts, element);
-		return element;
+		let added = this._new(element, opts);
+		this._collection.push(added);
+		this._fire(Collection.events.add, opts, added);
+		return added;
 	}
 
 	/**
@@ -153,7 +161,7 @@ export default class Collection extends EventEmitter {
 	**/
 	contains(element) {
 		if(!this._valid(element)) return false;
-		return this.some((e) => _.isEqual((this.hasInterface() && e.toJSON) ? e.toJSON() : e, element));
+		return this.some((e) => _.isEqual(this._toJSON(e), element));
 	}
 
 	/**
@@ -163,7 +171,7 @@ export default class Collection extends EventEmitter {
 	*	@return {Boolean}
 	**/
 	containsAll(elements = []) {
-		if(!this._valid(elements)) return false;
+		if(!this._valid(elements) || elements.length === 0) return false;
 		return _.every(_.map(elements, this.contains, this));
 	}
 
@@ -179,18 +187,34 @@ export default class Collection extends EventEmitter {
 	}
 
 	/**
-	*	Removes an element at the given index. If no index is passed, this method will remove the last element in
+	*	Removes an element at the given index. If no index is passed, this method will remove the first element in
 	*	this collection.
 	*	@public
 	*	@fires {Collection.events.remove}
-	*	@param [ix = (this._collection.size() - 1)] {Number} index used to remove
+	*	@param [ix = 0] {Number} index used to remove
 	*	@param [opts = {}] {Object} additional options
-	*	@return {commands.util.adt.Collection}
+	*	@return {Number}
 	**/
-	remove(ix = (this._collection.size() - 1), opts = {}) {
-		if(!this._valid(ix) || !_.isNumber(ix) || ix > (this.size() - 1)) return this;
-		this._collection.splice(ix, 1);
-		return this._fire(Collection.events.remove, opts);
+	removeAt(ix = 0, opts = {}) {
+		if(!this._valid(ix) || !_.isNumber(ix) || ix > (this.size() - 1)) return null;
+		this._fire(Collection.events.remove, opts, this._collection.splice(ix, 1));
+		return ix;
+	}
+
+	/**
+	*	Remove a given element
+	*	@public
+	*	@fires {Collection.events.remove}
+	*	@param element {Any} element to remove
+	*	@param [opts = {}] {Object} additional options
+	*	@return {Number}
+	**/
+	remove(element, opts = {}) {
+		if(!this._valid(element)) return null;
+		let ix = this.findIndex((e) => _.isEqual(this._toJSON(e), this._toJSON(element)));
+		if(ix === -1) return null;
+		this._fire(Collection.events.remove, opts, this._collection.splice(ix, 1));
+		return element;
 	}
 
 	/**
@@ -202,18 +226,26 @@ export default class Collection extends EventEmitter {
 	*	@return {commands.util.adt.Collection}
 	**/
 	removeAll(col = [], opts = {}) {
-
-		return this._fire(Collection.events.removeall, opts);
+		if(!_.isArray(col) || col.length === 0) return this;
+		let removed = _.map(col, (e) => this.remove(e, extend(true, {}, opts, { silent: true })));
+		return this._fire(Collection.events.removeall, opts, _.compact(removed));
 	}
 
 	/**
 	*	Removes elements by a given predicate
 	*	@public
+	*	@fires {Collection.events.remove}
 	*	@param predicate {Function} predicate used to evaluate
+	*	@param [opts = {}] {Object} additional options
 	*	@return {commands.util.adt.Collection}
 	**/
-	removeBy() {
-		// TODO
+	removeBy(predicate, opts = {}) {
+		if(!this._valid(predicate) || !_.isFunction(predicate)) return this;
+		for(var i = 0, len = this.size(); i < len; i++) {
+			if(predicate(this._collection[i], i, this._collection)) {
+				this.removeAt(i, opts); i--; len--;
+			}
+		}
 		return this;
 	}
 
@@ -227,7 +259,9 @@ export default class Collection extends EventEmitter {
 	*	@return {commands.util.adt.Collection}
 	**/
 	sort(comparator, opts = {}) {
-		// TODO
+		(!_.defined(comparator) || !_.isFunction(comparator)) ?
+			this._collection.sort() :
+			this._collection.sort(comparator);
 		return this._fire(Collection.events.sort, opts);
 	}
 
@@ -333,9 +367,9 @@ export default class Collection extends EventEmitter {
 	/**
 	*	Underscore interface methods for aggregation
 	*	@static
-	*	@type Array
+	*	@return {Array}
 	**/
-	static UNDERSCORE = [
+	static UNDERSCORE = () => [
 		'each',
 		'map',
 		'findWhere',
@@ -377,14 +411,14 @@ export default class Collection extends EventEmitter {
 	*	@param instance {commands.util.adt.Collection}
 	*	@return {commands.util.adt.Collection}
 	**/
-	static _aggregate(instance) {
-		_.each(this.UNDERSCORE, function(method) {
-			if(_[method] && !_.defined(instance[method])) {
-				instance[method] = _.bind(function() {
-					return _[method].apply(this, [this._collection].concat(_.toArray(arguments)));
-				}, instance);
-			}
+	static _aggregate() {
+		_.each(this.UNDERSCORE(), function(method) {
+			if(!_[method] || _.defined(this.prototype[method])) return;
+			this.prototype[method] = function() {
+				return _[method].apply(this, [this._collection].concat(_.toArray(arguments)));
+			};
 		}, this);
+		return this;
 	}
 
 	/**
@@ -398,3 +432,5 @@ export default class Collection extends EventEmitter {
 	}
 
 }
+
+export default Collection._aggregate();

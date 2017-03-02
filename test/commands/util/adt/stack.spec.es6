@@ -16,6 +16,7 @@ describe('commands.util.adt.Stack', function() {
 	});
 
 	afterEach(() => {
+		this.mockStack.verify();
 		this.sandbox.restore();
 		delete this.mockStack;
 	});
@@ -47,25 +48,19 @@ describe('commands.util.adt.Stack', function() {
 			const exp = Stack.new([], { interface: Command });
 			const expEmit = this.mockStack.expects('emit')
 				.once()
-				.withArgs(Stack.events.push, exp, toPush)
+				.withArgs(Stack.events.push, exp, sinon.match.instanceOf(Command))
 				.returns(exp);
 
-			exp.push(toPush);
-
+			assert.isTrue(exp.push(toPush));
 			assert.isFalse(exp.isEmpty());
-
-			this.mockStack.verify();
 		});
 
 		it('Should NOT push a new element', () => {
 			const exp = Stack.new();
 			const expEmit = this.mockStack.expects('emit').never();
 
-			exp.push();
-
+			assert.isFalse(exp.push());
 			assert.isTrue(exp.isEmpty());
-
-			this.mockStack.verify();
 		});
 
 	});
@@ -94,11 +89,9 @@ describe('commands.util.adt.Stack', function() {
 				.withArgs(Stack.events.pop, exp)
 				.returns(exp);
 
-			assert.instanceOf(exp.pop(), Stack);
+			assert.equal(0, exp.pop());
 			assert.instanceOf(exp.peek(), Command);
 			assert.equal(1, exp.size());
-
-			this.mockStack.verify();
 		});
 
 		it('Should NOT remove and get the first element', () => {
