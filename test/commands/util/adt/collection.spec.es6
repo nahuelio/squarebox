@@ -16,6 +16,7 @@ describe('commands.util.adt.Collection', function() {
 	});
 
 	afterEach(() => {
+		this.mockCollection.verify();
 		this.sandbox.restore();
 		delete this.mockCollection;
 	});
@@ -62,8 +63,6 @@ describe('commands.util.adt.Collection', function() {
 
 			assert.equal(3, exp.size());
 			assert.equal(toSet[1], exp.get(1));
-
-			this.mockCollection.verify();
 		});
 
 		it('Should set new elements (without Event)', () => {
@@ -80,8 +79,6 @@ describe('commands.util.adt.Collection', function() {
 
 			assert.equal(3, exp.size());
 			assert.equal(toSet[1], exp.get(1));
-
-			this.mockCollection.verify();
 		});
 
 		it('Should NOT set new elements', () => {
@@ -90,8 +87,6 @@ describe('commands.util.adt.Collection', function() {
 
 			assert.instanceOf(exp.set(), Collection); // undefined
 			assert.instanceOf(exp.set({ option: 'notAnArray' }), Collection); // not an array
-
-			this.mockCollection.verify();
 		});
 
 	});
@@ -109,8 +104,6 @@ describe('commands.util.adt.Collection', function() {
 			exp.add(toAdd);
 			assert.isFalse(exp.isEmpty());
 			assert.instanceOf(exp.get(0), Command);
-
-			this.mockCollection.verify();
 		});
 
 		it('Should add a new element (without Event)', () => {
@@ -121,112 +114,194 @@ describe('commands.util.adt.Collection', function() {
 			exp.add(toAdd, { silent: true });
 			assert.isFalse(exp.isEmpty());
 			assert.instanceOf(exp.get(0), Command);
-
-			this.mockCollection.verify();
 		});
 
-		it('Should NOT add a new element', () => {});
+		it('Should NOT add a new element', () => {
+			const exp = Collection.new();
+			const expEmit = this.mockCollection.expects('emit').never();
+
+			assert.isNull(exp.add());
+		});
 
 	});
 
 	describe('addAll()', () => {
 
-		it('Should add new elements', () => {});
-		it('Should NOT add new elements', () => {});
+		it('Should add new elements', () => {
+			const toAdd = [4,5];
+			const exp = Collection.new([1,2,3]);
+			const expEmit = this.mockCollection.expects('emit')
+				.once()
+				.withArgs(Collection.events.addall, exp, toAdd)
+				.returns(exp);
+
+			assert.instanceOf(exp.addAll(toAdd), Collection);
+			assert.isFalse(exp.isEmpty());
+			assert.equal(5, exp.size());
+			assert.equal(4, exp.get(3));
+		});
+
+		it('Should NOT add new elements', () => {
+			const exp = Collection.new();
+			const expEmit = this.mockCollection.expects('emit').never();
+
+			assert.instanceOf(exp.addAll(), Collection);
+			assert.instanceOf(exp.addAll({ invalid: true }), Collection);
+		});
 
 	});
 
 	describe('get()', () => {
 
-		it('Should get an element', () => {});
-		it('Should NOT get an element', () => {});
+		it('Should get an element', () => {
+			const exp = Collection.new(['hello', 'world']);
+			assert.equal('world', exp.get(1));
+			assert.equal('hello', exp.get());
+		});
+
+		it('Should NOT get an element', () => {
+			const exp = Collection.new(['hello', 'world']);
+			assert.isUndefined(exp.get(3));
+		});
 
 	});
 
 	describe('contains()', () => {
 
-		it('Should contain an element', () => {});
-		it('Should NOT contain an element', () => {});
+		it('Should contain an element (without interface)', () => {
+			const exp = Collection.new([{ option: 1 }, { option: 2 }]);
+			assert.isTrue(exp.contains({ option: 2 }));
+		});
+
+		it('Should contain an element (with interface)', () => {
+			const exp = Collection.new([{ env: 'production' }, { env: 'staging' }], { interface: Command });
+			assert.isTrue(exp.contains(exp.get(1).toJSON()));
+		});
+
+		it('Should NOT contain an element', () => {
+			const exp = Collection.new([{ option: 1 }, { option: 2 }]);
+			assert.isFalse(exp.contains({ option: 3 }));
+			assert.isFalse(exp.contains());
+		});
 
 	});
 
 	describe('containsAl()', () => {
 
-		it('Should contain all elements', () => {});
-		it('Should NOT contain at least one element', () => {});
+		xit('Should contain all elements', () => {});
+		xit('Should NOT contain at least one element', () => {});
 
 	});
 
 	describe('containsWhere()', () => {
 
-		it('Should contain an element with condition', () => {});
-		it('Should NOT contain an element with condition', () => {});
+		xit('Should contain an element with condition', () => {});
+		xit('Should NOT contain an element with condition', () => {});
 
 	});
 
 	describe('remove()', () => {
 
-		it('Should remove an element', () => {});
-		it('Should NOT remove an element', () => {});
+		xit('Should remove an element', () => {});
+		xit('Should NOT remove an element', () => {});
 
 	});
 
 	describe('removeAll()', () => {
 
-		it('Should remove all the elements', () => {});
-		it('Should NOT remove all the elements', () => {});
+		xit('Should remove all the elements', () => {});
+		xit('Should NOT remove all the elements', () => {});
 
 	});
 
 	describe('removeBy()', () => {
 
-		it('Should remove elments by predicate', () => {});
-		it('Should NOT remove elements by predicate', () => {});
+		xit('Should remove elments by predicate', () => {});
+		xit('Should NOT remove elements by predicate', () => {});
 
 	});
 
 	describe('sort()', () => {
 
-		it('Should sort by comparator', () => {});
-		it('Should NOT sort', () => {});
+		xit('Should sort by comparator', () => {});
+		xit('Should NOT sort', () => {});
 
 	});
 
 	describe('iterator()', () => {
 
-		it('Should get an iterator from collection', () => {});
+		xit('Should get an iterator from collection', () => {});
 
 	});
 
 	describe('reset()', () => {
 
-		it('Should reset the collection', () => {});
+		it('Should reset the collection', () => {
+			const exp = Collection.new();
+			const expEmit = this.mockCollection.expects('emit')
+				.once()
+				.withArgs(Collection.events.reset, exp)
+				.returns(exp);
+
+			exp.addAll([1,2], { silent: true });
+			assert.equal(2, exp.size());
+
+			exp.reset();
+			assert.equal(0, exp.size());
+		});
 
 	});
 
 	describe('size()', () => {
 
-		it('Should get the size of the collection', () => {});
+		it('Should get the size of the collection', () => {
+			assert.equal(0, Collection.new().size());
+			assert.equal(2, Collection.new([1,2]).size());
+		});
 
 	});
 
 	describe('isEmpty()', () => {
 
-		it('Should be empty', () => {});
-		it('Should NOT be empty', () => {});
+		it('Should be empty', () => {
+			assert.isTrue(Collection.new().isEmpty());
+		});
+
+		it('Should NOT be empty', () => {
+			assert.isFalse(Collection.new([1]).isEmpty());
+		});
 
 	});
 
 	describe('hasInterface()', () => {
 
-		it('Should have interface defined', () => {});
-		it('Should NOT have interface defined', () => {});
+		it('Should have interface defined', () => {
+			const exp = Collection.new([{ env: 'staging' }, { env: 'production' }], { interface: Command });
+			assert.isTrue(exp.hasInterface());
+		});
+
+		it('Should NOT have interface defined', () => {
+			const exp = Collection.new([]);
+			assert.isFalse(exp.hasInterface());
+		});
 
 	});
 
 	describe('toJSON()', () => {
 
-		it('Should get a json representation', () => {});
+		it('Should get a json representation (without interface)', () => {
+			const exp = Collection.new([1,2,'value']).toJSON();
+			assert.isArray(exp);
+			assert.equal(3, exp.length);
+			assert.equal('value', exp[2]);
+		});
+
+		it('Should get a json representation (with interface)', () => {
+			const exp = Collection.new([{ env: 'staging' }, { env: 'production' }], { interface: Command }).toJSON();
+			assert.isArray(exp);
+			assert.equal(2, exp.length);
+			assert.equal('production', exp[1].env);
+		});
 
 	});
 

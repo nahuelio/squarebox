@@ -29,6 +29,9 @@ export default class Collection extends EventEmitter {
 
 	/**
 	*	Constructor
+	*	@FIXME: Reminder: Important fix the underscore aggregation:
+	*		Not do it per instance (it adds overhead),
+	*		instead apply it to the prototype of this class!
 	*	@public
 	*	@param [initial = []] {Array} Initial Array
 	*	@param [opts = {}] {Object} collection options
@@ -112,6 +115,7 @@ export default class Collection extends EventEmitter {
 	*	@return {Any}
 	**/
 	add(element, opts = {}) {
+		if(!this._valid(element)) return null;
 		this._collection.push(this._new(element, opts));
 		this._fire(Collection.events.add, opts, element);
 		return element;
@@ -126,8 +130,9 @@ export default class Collection extends EventEmitter {
 	*	@return {commands.util.adt.Collection}
 	**/
 	addAll(col = [], opts = {}) {
-		_.each(col, (e) => this.add(e, extend(true, opts, { silent: true })));
-		return this._fire(Collection.events.addall, opts);
+		if(!_.isArray(col) || col.length === 0) return this;
+		let added = _.map(col, (e) => this.add(e, extend(true, {}, opts, { silent: true })));
+		return this._fire(Collection.events.addall, opts, added);
 	}
 
 	/**
@@ -148,7 +153,7 @@ export default class Collection extends EventEmitter {
 	**/
 	contains(element) {
 		if(!this._valid(element)) return false;
-		return this.some((e) => _.isEqual(e, element));
+		return this.some((e) => _.isEqual((this.hasInterface() && e.toJSON) ? e.toJSON() : e, element));
 	}
 
 	/**
@@ -243,7 +248,7 @@ export default class Collection extends EventEmitter {
 	*	@return {commands.util.adt.Collection}
 	**/
 	reset(opts = {}) {
-		// TODO
+		this._collection = [];
 		return this._fire(Collection.events.reset, opts);
 	}
 
