@@ -14,20 +14,6 @@ import Iterator from './iterator';
 class Collection extends EventEmitter {
 
 	/**
-	*	Internal Array
-	*	@private
-	*	@type {Array}
-	**/
-	_collection = [];
-
-	/**
-	*	Interface for objects
-	*	@private
-	*	@type {Function}
-	**/
-	_interface = null;
-
-	/**
 	*	Constructor
 	*	@public
 	*	@param [initial = []] {Array} Initial Array
@@ -36,7 +22,7 @@ class Collection extends EventEmitter {
 	**/
 	constructor(initial = [], opts = {}) {
 		super();
-		extend(true, this, { _interface: opts.interface });
+		extend(true, this, _.omit(opts, 'silent', 'interface'), { _collection: [], _interface: opts.interface });
 		return (initial.length > 0) ? this.set(initial) : this;
 	}
 
@@ -60,7 +46,8 @@ class Collection extends EventEmitter {
 	*	@return {commands.util.adt.Collection}
 	**/
 	_fire(name, opts, ...args) {
-		return !opts.silent ? this.emit(name, this, ...args) : this;
+		if(!opts.silent) this.emit(name, this, ...args);
+		return this;
 	}
 
 	/**

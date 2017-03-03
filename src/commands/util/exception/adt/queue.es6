@@ -13,14 +13,19 @@ import Exception from '../exception';
 export default class QueueException extends Exception {
 
 	/**
+	*	Exception Name
+	*	@public
+	*	@type {String}
+	**/
+	name = 'QueueException';
+
+	/**
 	*	Command Exception types
 	*	@public
 	*	@type {Object}
 	**/
-	static type = extend(true, Exception.type, {
-		capacityUndefined: _.template(`Queue requires a 'capacity' property in order to be instanciate it`),
-		capacityViolation: _.template(`Queue element's collection passed overflows the current capacity
-			<%= capacity %>`)
+	static type = extend(true, {}, Exception.type, {
+		capacityViolation: _.template(`Queue element's collection passed overflows the current capacity <%= capacity %>`)
 	});
 
 }

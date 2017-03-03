@@ -13,11 +13,18 @@ import Exception from '../exception';
 export default class CommandException extends Exception {
 
 	/**
+	*	Exception Name
+	*	@public
+	*	@type {String}
+	**/
+	name = 'CommandException';
+
+	/**
 	*	Command Exception types
 	*	@public
 	*	@type {Object}
 	**/
-	static type = extend(true, Exception.type, {
+	static type = extend(true, {}, Exception.type, {
 		chain: _.template('Required parameter `command` to be an instance of `commands.Command`')
 	});
 

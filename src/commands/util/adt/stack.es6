@@ -87,7 +87,7 @@ class Stack extends Collection {
 	*	@static
 	*	@type {Object}
 	**/
-	static events = extend(false, Collection.events, {
+	static events = extend(false, {}, Collection.events, {
 		/**
 		*	@event push
 		**/

@@ -13,22 +13,24 @@ import Logger from '../logger/logger';
 export default class Exception extends Error {
 
 	/**
-	*	Constructor
-	*	@public
-	*	@param [args = { type: 'unknown' }] {Object} constructor attribute
-	**/
-	constructor(args = { type: 'unknown' }) {
-		super({ message: Command.type[args.type] });
-		return extend(true, this, _.pick(args, 'level'));
-	}
-
-	/**
-	*	Exception Message
+	*	Exception Name
 	*	@public
 	*	@type {String}
 	**/
-	get message() {
-		// TODO
+	name = 'Exception';
+
+	/**
+	*	Constructor
+	*	@public
+	*	@override
+	*	@param message {Function} message template function
+	*	@param [...args] {Any} constructor attribute
+	*	@return {commands.util.exception.Exception}
+	**/
+	constructor(message, ...args) {
+		super(message);
+		Error.captureStackTrace(this, this.constructor);
+		return this;
 	}
 
 	/**
@@ -38,14 +40,17 @@ export default class Exception extends Error {
 	**/
 	static type = {
 		unknown: _.template('Unknown Exception')
-	}
+	};
 
 	/**
+	*	Static Constructor
 	*	@static
-	*	@param [...args] {Any}
+	*	@param [type = 'unknown']
+	*	@param [...args] {Any} additional arguments
+	*	@return {commands.util.exception.Exception}
 	**/
-	static new(...args) {
-		return new this(...args);
+	static new(type, ...args) {
+		return new this(this.type[type](...args), ...args);
 	}
 
 }

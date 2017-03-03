@@ -20,13 +20,6 @@ import CommandException from './util/exception/command/command';
 export default class Command extends EventEmitter {
 
 	/**
-	*	Commands Collection
-	*	@private
-	*	@type {commands.util.adt.Collection}
-	**/
-	_commands = new Collection([], { interface: Command })
-
-	/**
 	*	Constructor
 	*	@public
 	*	@param [args = {}] {Object} Constructor arguments
@@ -34,7 +27,9 @@ export default class Command extends EventEmitter {
 	**/
 	constructor(args) {
 		super();
-		return JSON.proxy(extend(true, this, this.defaults, _.pick(args, this.constructor.options)));
+		return JSON.proxy(extend(true, this, this.defaults, _.pick(args, this.constructor.options), {
+			_commands: new Collection([], { interface: Command })
+		}));
 	}
 
 	/**
