@@ -3,6 +3,7 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'underscore';
+import InterfaceException from 'commands/util/exception/proxy/interface';
 
 /**
 *	Interface JSON
@@ -79,8 +80,7 @@ class Json {
 	*	@return {commands.util.proxy.Json}
 	**/
 	static proxy(target, ...args) {
-		if(!_.defined(target))
-			throw InterfaceException.new({ type: 'proxy', level: InterfaceException.fatal });
+		if(!_.defined(target)) throw InterfaceException.new('proxy');
 		return new Proxy(target, new this(...args));
 	}
 

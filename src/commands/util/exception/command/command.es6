@@ -13,11 +13,17 @@ import Exception from '../exception';
 export default class CommandException extends Exception {
 
 	/**
-	*	Exception Name
+	*	Constructor
 	*	@public
-	*	@type {String}
+	*	@override
+	*	@param [...args] {Any} constructor attribute
+	*	@return {commands.util.exception.command.CommandException}
 	**/
-	name = 'CommandException';
+	constructor(...args) {
+		super(...args);
+		this.name = 'CommandException';
+		return this;
+	}
 
 	/**
 	*	Command Exception types

@@ -1,5 +1,5 @@
 /**
-*	@module commands.util.adt.exception
+*	@module commands.util.exception.adt
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'underscore';
@@ -13,11 +13,17 @@ import Exception from '../exception';
 export default class QueueException extends Exception {
 
 	/**
-	*	Exception Name
+	*	Constructor
 	*	@public
-	*	@type {String}
+	*	@override
+	*	@param [...args] {Any} constructor attribute
+	*	@return {commands.util.exception.adt.QueueException}
 	**/
-	name = 'QueueException';
+	constructor(...args) {
+		super(...args);
+		this.name = 'QueueException';
+		return this;
+	}
 
 	/**
 	*	Command Exception types

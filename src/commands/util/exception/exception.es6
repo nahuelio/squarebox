@@ -13,13 +13,6 @@ import Logger from '../logger/logger';
 export default class Exception extends Error {
 
 	/**
-	*	Exception Name
-	*	@public
-	*	@type {String}
-	**/
-	name = 'Exception';
-
-	/**
 	*	Constructor
 	*	@public
 	*	@override
@@ -29,6 +22,7 @@ export default class Exception extends Error {
 	**/
 	constructor(message, ...args) {
 		super(message);
+		this.name = 'Exception';
 		Error.captureStackTrace(this, this.constructor);
 		return this;
 	}
