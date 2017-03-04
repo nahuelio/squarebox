@@ -16,6 +16,7 @@ import CommandException from './util/exception/command/command';
 *	@extends {events.EventEmitter}
 *
 *	@uses {commands.util.proxy.JSON}
+*	@uses {commands.util.proxy.Asynchronous}
 **/
 export default class Command extends EventEmitter {
 
@@ -27,23 +28,20 @@ export default class Command extends EventEmitter {
 	**/
 	constructor(args) {
 		super();
-		return JSON.proxy(extend(true, this, this.defaults, _.pick(args, this.constructor.options), {
-			_commands: new Collection([], { interface: Command })
-		}));
+		return JSON.proxy(extend(true, this, this.defaults, _.pick(args, this.constructor.options)));
 	}
 
 	/**
-	*	Command Chainning
+	*	Proxified asynchronous next strategy
 	*	@public
-	*	@throws {commands.util.exceptions.CommandException}
-	*	@param command {commands.Command} command used to chain
-	*	@return {commands.Command}
+	*	@param adt {commands.util.proxy.Asynchronous} adt used for asynchronous operations
+	*	@param resolve {Function} asynchronous promise's resolve
+	*	@param reject {Function} asynchronous promise's reject
+	*	@return {Promise}
 	**/
-	chain(command) {
-		if(!_.defined(command) || !_.instanceOf(command, Command))
-			throw CommandException.new({ type: 'chain', level: CommandException.fatal });
-		this._commands.add(command);
-		return this;
+	next(adt, resolve, reject) {
+		this.once(Command.events.done, resolve);
+		return this.run();
 	}
 
 	/**
@@ -52,7 +50,26 @@ export default class Command extends EventEmitter {
 	*	@return {commands.Command}
 	**/
 	run() {
-		return this;
+		this.pending();
+		return this.done();
+	}
+
+	/**
+	*	Command Pending exeuction state
+	*	@public
+	*	@return {command.Command}
+	**/
+	pending() {
+		return this.emit(Command.events.pending, this);
+	}
+
+	/**
+	*	Command Done exeuction state
+	*	@public
+	*	@return {command.Command}
+	**/
+	done() {
+		return this.emit(Command.events.done, this);
 	}
 
 	/**
@@ -151,8 +168,8 @@ export default class Command extends EventEmitter {
 	*	@type {Object}
 	**/
 	static events = {
-		start: 'commands:command:start',
-		end: 'commands:command:end'
+		pending: 'commands:command:pending',
+		done: 'commands:command:done'
 	};
 
 	/**

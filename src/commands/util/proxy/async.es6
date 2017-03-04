@@ -2,23 +2,15 @@
 *	@module commands.util.proxy
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
+import { EventEmitter } from 'events';
 import _ from 'underscore';
 import InterfaceException from 'commands/util/exception/proxy/interface';
 
 /**
-*	Interface JSON
+*	Interface Asynchronous
+*	@extends events.EventEmitter
 **/
-class Json {
-
-	/**
-	*	Proxy's `getPrototypeOf` trap strategy
-	*	@public
-	*	@param target {Any} proxy's target
-	*	@return {Object}
-	**/
-	getPrototypeOf(target) {
-		return target.constructor.prototype;
-	}
+class Asynchronous extends EventEmitter {
 
 	/**
 	*	Proxy's `get` trap strategy
@@ -28,7 +20,7 @@ class Json {
 	*	@param receiver {Any} proxy receiver
 	*	@return {Any}
 	**/
-	get(target, property, receiver) {
+	get(target, property) {
 		let value = _.defined(this[property]) ? this[property] : target[property];
 		return _.isFunction(value) ? this._context(target, property, value) : value;
 	}
@@ -46,41 +38,14 @@ class Json {
 	}
 
 	/**
-	*	Reducer Strategy to iterate over properties
+	*	Default strategy to perform an asynchronous operation
 	*	@public
-	*	@param m {Object} memoized object reference
-	*	@param v {Any} current object's value
-	*	@param k {String} current object's key
-	*	@return {Object}
+	*	@param [ctx] {commands.util.proxy.Asynchronous} context reference
+	*	@param adt {commands.util.proxy.Asynchronous} reference to adt using this proxy on their elements
+	*	@return {Promise}
 	**/
-	_reduce(m, v, k) {
-		if(_.isAdt(v)) this._clean(v, v);
-		if(!_.isFunction(v)) { m[k] = v; return m; }
-		if(_.isArray(m)) m.splice(k, 1)
-		if(_.isRealObject(m)) delete m[k];
-		return m;
-	}
-
-	/**
-	*	Clean Functions from JSON representation
-	*	@public
-	*	@param current {Any} current object
-	*	@param [memo = {}] {Object} memoized object
-	*	@return {Object}
-	**/
-	_clean(current, memo = {}) {
-		return _.reduce(current, this._reduce, memo, this);
-	}
-
-	/**
-	*	Returns a json representation of the instance of this class
-	*	This method uses recursion
-	*	@public
-	*	@param [ctx] {commands.util.proxy.Json} context reference
-	*	@return {Object}
-	**/
-	toJSON(ctx) {
-		return JSON.parse(JSON.stringify(ctx._clean(this)));
+	do(ctx, adt) {
+		return new Promise((resolve, reject) => this.next(adt, resolve, reject));
 	}
 
 	/**
@@ -89,7 +54,7 @@ class Json {
 	*	@throws {commands.util.exception.proxy.InterfaceException}
 	*	@param target {Any} instance to proxify
 	*	@param [...args] {Any} constructor arguments
-	*	@return {commands.util.proxy.Json}
+	*	@return {commands.util.proxy.Asynchronous}
 	**/
 	static proxy(target, ...args) {
 		if(!_.defined(target)) throw InterfaceException.new('proxy');
@@ -98,4 +63,4 @@ class Json {
 
 }
 
-export default Json;
+export default Asynchronous;

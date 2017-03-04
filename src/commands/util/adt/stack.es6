@@ -99,16 +99,6 @@ class Stack extends Collection {
 		pop: 'commands:util:adt:stack:pop'
 	});
 
-	/**
-	*	Static constructor
-	*	@static
-	*	@param [...args] {Any} Constructor arguments
-	*	@return {commands.util.adt.Stack}
-	**/
-	static new(...args) {
-		return new this(...args);
-	}
-
 }
 
 export default Stack;

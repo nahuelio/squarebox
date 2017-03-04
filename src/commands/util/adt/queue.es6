@@ -22,14 +22,15 @@ import QueueException from 'commands/util/exception/adt/queue';
 *			myqueue.poll();
 *	@extends commands.util.adt.Collection
 **/
-export default class Queue extends Collection {
+class Queue extends Collection {
 
 	/**
 	*	Constructor
 	*	@public
+	*	@override
 	*	@param [initial = []] {Array} Initial Array
 	*	@param [opts = {}] {Object} collection options
-	*	@return {commands.util.adt.Collection}
+	*	@return {commands.util.adt.Queue}
 	**/
 	constructor(initial = [], opts = {}) {
 		const { capacity } = opts;
@@ -130,3 +131,5 @@ export default class Queue extends Collection {
 	});
 
 }
+
+export default Queue;

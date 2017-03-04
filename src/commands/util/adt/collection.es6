@@ -82,7 +82,9 @@ class Collection extends EventEmitter {
 	*	@return {Any}
 	**/
 	_new(e, opts) {
-		return this._when(e, () => _.defined(opts.new) ? opts.new(e) : new this._interface(e), () => e);
+		return this._when(e,
+			() => _.defined(opts.new && !this.hasInterface()) ? opts.new(e) : new this._interface(e),
+			() => e);
 	}
 
 	/**
