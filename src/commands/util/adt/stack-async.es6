@@ -5,6 +5,7 @@
 import _ from 'underscore';
 import extend from 'extend';
 import Stack from 'commands/util/adt/stack';
+import InterfaceException from 'commands/util/exception/proxy/interface';
 import Asynchronous from 'commands/util/proxy/async';
 
 /**
@@ -66,7 +67,7 @@ class StackAsync extends Stack {
 	*	@param [opts = {}] {Object} additional options
 	*	@return {Promise}
 	**/
-	async pop(opts) {
+	async pop(opts = {}) {
 		const res = await this.next(opts);
 		return this.onNext(res, opts);
 	}
@@ -75,11 +76,13 @@ class StackAsync extends Stack {
 	*	Asynchronous Queue next
 	*	@public
 	*	@emits {StackAsync.events.next} - when opts.silent = false or undefined
-	*	@param [opts = {}] {Object} additional options
+	*	@param [opts] {Object} additional options
 	*	@return {Promise}
 	**/
-	next(opts = {}) {
+	next(opts) {
 		let element = super.pop(opts);
+		if(!_.defined(element.next))
+			throw InterfaceException.new('interface', { name: 'commands.util.proxy.Asynchronous' });
 		if(!opts.silent) this.emit(StackAsync.events.next, element);
 		return element.do(this);
 	}
@@ -88,7 +91,7 @@ class StackAsync extends Stack {
 	*	Retrieves and removes the head of this queue, or returns null if this queue is empty
 	*	@public
 	*	@param res {Promise} promise reference with resolution (resolved or rejected)
-	*	@param [opts = {}] {Object} additional options
+	*	@param [opts] {Object} additional options
 	*	@return {Promise}
 	**/
 	onNext(res, opts) {

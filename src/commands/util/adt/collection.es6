@@ -186,7 +186,8 @@ class Collection extends EventEmitter {
 	**/
 	removeAt(ix = 0, opts = {}) {
 		if(!this._valid(ix) || !_.isNumber(ix) || ix > (this.size() - 1)) return null;
-		this._fire(Collection.events.remove, opts, this._collection.splice(ix, 1));
+		this._collection.splice(ix, 1);
+		this._fire(Collection.events.remove, opts, ix);
 		return ix;
 	}
 

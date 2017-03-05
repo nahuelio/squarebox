@@ -20,7 +20,7 @@ import Collection from 'commands/util/adt/collection';
 *
 *		let mystack = new Stack([{ name: 'one' }, { name: 'two' }], { interface: MyClass });
 *			mystack.push({ name: 3 }); // Adds one more element into the stack
-*			mystack.pop(); // Outputs { name: 'one' } of MyClass, removing the element
+*			mystack.pop(); // Outputs { name: 3 } of MyClass, removing the element
 *	@extends commands.util.adt.Collection
 **/
 class Stack extends Collection {
@@ -62,13 +62,14 @@ class Stack extends Collection {
 	/**
 	*	Retrieves and removes the head of this stack, or returns null if this stack is empty
 	*	@public
-	*	@return {Object}
+	*	@param [opts = {}] {Object} additional options
+	*	@return {Any}
 	**/
-	pop() {
+	pop(opts = {}) {
 		if(this.size() <= 0) return null;
-		let removed = this.removeAt(0, { silent: true });
-		this._fire(Stack.events.pop, {}, removed);
-		return removed;
+		let popped = this.remove(this.get(this.size() - 1), { silent: true });
+		this._fire(Stack.events.pop, opts, popped);
+		return popped;
 	}
 
 	/**

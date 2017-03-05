@@ -105,12 +105,10 @@ class Queue extends Collection {
 	*	@return {Object}
 	**/
 	poll(opts = {}) {
-		if(this.size() > 0) {
-			let polled = this.remove(this.get(0), { silent: true });
-			this._fire(Queue.events.poll, opts, polled);
-			return polled;
-		}
-		return null;
+		if(this.size() === 0) return null;
+		let polled = this.remove(this.get(0), { silent: true });
+		this._fire(Queue.events.poll, opts, polled);
+		return polled;
 	}
 
 	/**

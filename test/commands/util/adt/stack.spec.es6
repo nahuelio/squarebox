@@ -83,13 +83,14 @@ describe('commands.util.adt.Stack', function() {
 	describe('#pop()', () => {
 
 		it('Should remove and get the first element', () => {
-			const exp = Stack.new([{ option: true }, { option: false }], { interface: Command });
+			const exp = Stack.new([{ env: 'dev' }, { env: 'stage' }], { interface: Command });
+			const expPop = exp.last();
 			const expEmit = this.mockStack.expects('emit')
 				.once()
-				.withArgs(Stack.events.pop, exp)
+				.withArgs(Stack.events.pop, exp, expPop)
 				.returns(exp);
 
-			assert.equal(0, exp.pop());
+			assert.equal(expPop, exp.pop());
 			assert.instanceOf(exp.peek(), Command);
 			assert.equal(1, exp.size());
 		});

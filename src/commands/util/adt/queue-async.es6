@@ -76,7 +76,7 @@ class QueueAsync extends Queue {
 	*	Asynchronous Queue next
 	*	@public
 	*	@emits {QueueAsync.events.next} - when opts.silent is false or undefined
-	*	@param [opts = {}] {Object} additional options
+	*	@param [opts] {Object} additional options
 	*	@return {Promise}
 	**/
 	next(opts) {
@@ -91,7 +91,7 @@ class QueueAsync extends Queue {
 	*	Retrieves and removes the head of this queue, or returns null if this queue is empty
 	*	@public
 	*	@param res {Promise} current promise (resolved or rejected)
-	*	@param [opts = {}] {Object} additional options
+	*	@param [opts] {Object} additional options
 	*	@return {Any}
 	**/
 	onNext(res, opts) {

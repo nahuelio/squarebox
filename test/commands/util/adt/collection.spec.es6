@@ -243,29 +243,28 @@ describe('commands.util.adt.Collection', function() {
 	describe('removeAt()', () => {
 
 		it('Should remove an element at index (without interface)', () => {
-			const toRemove = 2;
+			const toRemove = 1;
 			const exp = Collection.new([1,2,3]);
 			const expEmit = this.mockCollection.expects('emit')
 				.once()
-				.withArgs(Collection.events.remove, exp, [toRemove])
+				.withArgs(Collection.events.remove, exp, toRemove)
 				.returns(exp);
 
-			assert.equal(1, exp.removeAt(1));
+			assert.equal(1, exp.removeAt(toRemove));
 			assert.equal(2, exp.size());
 			assert.equal(3, exp.get(1));
 		});
 
 		it('Should remove an element at index (with interface)', () => {
 			const exp = Collection.new([{ env: 'staging' }, { env: 'production' }], { interface: Command });
-			const toRemove = exp.get(1);
+			const toRemove = 1;
 			const expEmit = this.mockCollection.expects('emit')
 				.once()
-				.withArgs(Collection.events.remove, exp, [toRemove])
+				.withArgs(Collection.events.remove, exp, toRemove)
 				.returns(exp);
 
-			assert.equal(1, exp.removeAt(1));
+			assert.equal(toRemove, exp.removeAt(1));
 			assert.equal(1, exp.size());
-			assert.notEqual(toRemove.toJSON(), exp.get(0).toJSON());
 		});
 
 		it('Should NOT remove an element at index (default index)', () => {
@@ -391,8 +390,8 @@ describe('commands.util.adt.Collection', function() {
 			const exp = Collection.new([{ env: 'stage' }, { env: 'dev' }, { env: 'prod' }], { interface: Command });
 			const expEmit = this.mockCollection.expects('emit')
 				.exactly(2)
-				.withArgs(Collection.events.remove, exp, [sinon.match.instanceOf(Command)])
-				.returns(sinon.match.instanceOf(Command));
+				.withArgs(Collection.events.remove, exp, sinon.match(0).or(sinon.match(1)))
+				.returns(sinon.match(0).or(sinon.match(1)));
 
 			assert.instanceOf(exp.removeBy(spyPredicate), Collection);
 			assert.equal(1, exp.size());
