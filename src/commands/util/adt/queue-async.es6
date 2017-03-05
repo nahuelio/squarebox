@@ -5,6 +5,7 @@
 import _ from 'underscore';
 import extend from 'extend';
 import Queue from 'commands/util/adt/queue';
+import InterfaceException from 'commands/util/exception/proxy/interface';
 import Asynchronous from 'commands/util/proxy/async';
 
 /**
@@ -80,6 +81,8 @@ class QueueAsync extends Queue {
 	**/
 	next(opts) {
 		let element = super.poll(opts);
+		if(!_.defined(element.next))
+			throw InterfaceException.new('interface', { name: 'commands.util.proxy.Asynchronous' });
 		if(!opts.silent) this.emit(QueueAsync.events.next, element);
 		return element.do(this);
 	}

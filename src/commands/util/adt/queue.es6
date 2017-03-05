@@ -48,7 +48,7 @@ class Queue extends Collection {
 	_valid(element) {
 		const { capacity } = this;
 		if(_.isArray(element) && (element.length > capacity))
-			throw QueueException.new('capacityViolation', { level: QueueException.fatal, capacity });
+			throw QueueException.new('capacityViolation', { capacity });
 		return super._valid(element);
 	}
 

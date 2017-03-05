@@ -31,7 +31,8 @@ export default class InterfaceException extends Exception {
 	*	@type {Object}
 	**/
 	static type = extend(true, {}, Exception.type, {
-		proxy: _.template(`Proxies require a 'target' in which their interface operates on`)
+		proxy: _.template(`Proxies require a 'target' in which their interface operates on`),
+		interface: _.template(`Instance is required to implement [<%= name %>]`)
 	});
 
 }
