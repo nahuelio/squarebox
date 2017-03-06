@@ -74,10 +74,9 @@ export class Logger extends EventEmitter {
 	**/
 	_validate(type) {
 		const { fatal, debug } = Logger.type;
-		const { silent, output, debug } = Logger.level;
-		if(this._level === silent && _.isEqual(type, fatal)) return true;
-		if(this._level === output && !_.isEqual(type, debug) return true;
-		if(this._level === debug) return true;
+		if(this._level === Logger.level.silent && _.isEqual(type, fatal)) return true;
+		if(this._level === Logger.level.output && !_.isEqual(type, debug)) return true;
+		if(this._level === Logger.level.debug) return true;
 		return false;
 	}
 
