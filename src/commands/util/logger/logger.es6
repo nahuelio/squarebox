@@ -10,6 +10,7 @@ import chalk from 'chalk';
 
 /**
 *	Class Logger
+*	TODO: Added support for debug | silent | output
 *	@extends events.EventEmitter
 **/
 export class Logger extends EventEmitter {
@@ -17,11 +18,11 @@ export class Logger extends EventEmitter {
 	/**
 	*	Constructor
 	*	@public
-	*	@param {Object} [opts = {}] - constructor options
 	*	@return {commands.util.logger.Logger}
 	**/
 	constructor() {
 		super();
+		this.level();
 		return extend(true, this, { _buffer: [] });
 	}
 
@@ -59,6 +60,25 @@ export class Logger extends EventEmitter {
 	apply(target, thisArg, args) {
 		this._add(...args);
 		return Logger.ref;
+	}
+
+	/**
+	*	Validates level of output provided
+	*	Validation Rules:
+	*		- If level equals `silent` -> will output only fatal logs
+	*		- If level equals `output` -> will output warn, fatal and output (except debug).
+	*		- If level equals `debug` -> will print all logs (warn, fatal, output  and debug).
+	*	@public
+	*	@param {Function} type - log's type
+	*	@return {Boolean}
+	**/
+	_validate(type) {
+		const { fatal, debug } = Logger.type;
+		const { silent, output, debug } = Logger.level;
+		if(this._level === silent && _.isEqual(type, fatal)) return true;
+		if(this._level === output && !_.isEqual(type, debug) return true;
+		if(this._level === debug) return true;
+		return false;
 	}
 
 	/**
@@ -103,10 +123,22 @@ export class Logger extends EventEmitter {
 	*	@param {String} [level = Logger.level.debug] - level
 	*	@return {commands.util.logger.Logger}
 	**/
-	_output(style, level = Logger.level.debug) {
+	_output(style, type = Logger.type.debug) {
+		if(!this._validate(type)) return this._flush();
 		level = _.defined(style) ? style : level;
 		console.log(level(this._buffer.join('\n')));
 		return this._flush();
+	}
+
+	/**
+	*	Output message
+	*	@public
+	*	@emits {Logger.events.debug}
+	*	@param {Object} [opts = {}] - additional options
+	*	@return {commands.util.logger.Logger}
+	**/
+	out(style, opts = {}) {
+		return this._output(style, Logger.type.output)._fire(Logger.events.output, opts);
 	}
 
 	/**
@@ -116,8 +148,8 @@ export class Logger extends EventEmitter {
 	*	@param {Object} [opts = {}] - additional options
 	*	@return {commands.util.logger.Logger}
 	**/
-	debug(style, opts = {}) {
-		return this._output(style)._fire(Logger.events.debug, opts);
+	debug(opts = {}) {
+		return this._output(null, Logger.type.debug)._fire(Logger.events.debug, opts);
 	}
 
 	/**
@@ -128,7 +160,7 @@ export class Logger extends EventEmitter {
 	*	@return {commands.util.logger.Logger}
 	**/
 	warn(opts = {}) {
-		return this._output(null, Logger.level.warning)._fire(Logger.events.warning, opts);
+		return this._output(null, Logger.type.warning)._fire(Logger.events.warning, opts);
 	}
 
 	/**
@@ -138,8 +170,31 @@ export class Logger extends EventEmitter {
 	*	@param {Object} [opts = {}] - additional options
 	**/
 	fatal(opts = {}) {
-		this._output(null, Logger.level.fatal)._fire(Logger.events.fatal, opts);
+		this._output(null, Logger.type.fatal)._fire(Logger.events.fatal, opts);
 		process.exit(1);
+	}
+
+	/**
+	*	Sets Logger Type
+	*	@public
+	*	@param {String} [level = Logger.type.output] - log's type
+	*	@return {Function}
+	**/
+	level(level = Logger.type.output) {
+		this._level = level;
+		return this;
+	}
+
+	/**
+	*	Logger Types
+	*	@static
+	*	@type {Object}
+	**/
+	static type = {
+		debug: chalk.white,
+		output: chalk.green,
+		warning: chalk.yellow,
+		fatal: chalk.red
 	}
 
 	/**
@@ -148,9 +203,9 @@ export class Logger extends EventEmitter {
 	*	@type {Object}
 	**/
 	static level = {
-		debug: chalk.green,
-		warning: chalk.yellow,
-		fatal: chalk.red
+		output: 'logger:output', // Default
+		debug: 'logger:debug',
+		silent: 'logger:silent'
 	}
 
 	/**
@@ -169,6 +224,11 @@ export class Logger extends EventEmitter {
 		*	@event debug
 		**/
 		debug: 'commands:util:logger:debug',
+
+		/**
+		*	@event output
+		**/
+		output: 'commands:util:logger:output',
 
 		/**
 		*	@event warning
