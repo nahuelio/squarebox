@@ -2,54 +2,66 @@
 *	@module commands.bin
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
-import Command from 'commands/command';
+import './util/mixins';
 import extend from 'extend';
-import yargs from 'yargs';
+import Command from 'commands/command';
+import Commander from 'util/commander/commander';
+
+let enforcer = new Symbol();
 
 /**
 *	Class SquareBox
-*	@extends commands.Command
+*	@extends {commands.Command}
+*
+*	@uses {util.commander.Commander}
 **/
 class SquareBox extends Command {
 
 	/**
-	*	Command Defaults
-	*	@static
-	*	@type {Object}
+	*	Constructor
+	*	@public
+	*	@param {Symbol} pte - constructor enforcer
+	*	@param [args = {}] {Object} Constructor arguments
+	*	@return {commands.bin.SquareBox}
 	**/
-	static defaults = extend(true, Command.defaults, {
-		'config': '.squarebox.json',
-		'source-scan': './src',
-		'source-extensions': ['.js', '.es6', '.es'],
-		'source-alias': ,
-		'target-destination': './dist',
-		'target-format': 'ifie'
-	});
+	constructor(pte, ...args) {
+		super();
+		return this.validate().register().settings(...args);
+	}
 
 	/**
-	*	Command options
+	*	Constructor Validation
+	*	@public
+	*	@throws {Error} Private violation
+	*	@param {Symbol} pte - constructor enforcer
+	*	@return {commands.bin.SquareBox}
+	**/
+	validate(pte) {
+		if(!_.isEqual(pte, enforcer)) throw new Error('Private Violation');
+		return this;
+	}
+
+	/**
+	*	Register Command Factories
+	*	@public
+	*	@return {commands.bin.SquareBox}
+	**/
+	register() {
+		// TODO: Factory
+		return this;
+	}
+
+	/**
+	*	Available Commands
 	*	@static
 	*	@type {Array}
 	**/
-	static options = Command.options.concat([
-		'config',
-		'source-scan',
-		'source-extensions'
-		'source-alias',
-		'target-destination',
-		'target-format'
-	]);
-
-	/**
-	*	Setup Yargs
-	*	@static
-	*	@override
-	*	@return
-	**/
-	static setup() {
-		Command.setup();
-		return this;
-	}
+	static commands = [
+		'help',
+		'clean',
+		'bundle',
+		'visualize'
+	];
 
 	/**
 	*	Static Run
@@ -57,7 +69,7 @@ class SquareBox extends Command {
 	*	@return commands.bin.SquareBox
 	**/
 	static run() {
-		return this.setup().new(this.args());
+		return new Proxy(this.new(enforcer, { cwd: process.cwd() }), Commander.new());
 	}
 
 }

@@ -10,7 +10,7 @@ import Exception from '../exception';
 *	Class InterfaceException
 *	@extends {commands.util.exception.Exception}
 **/
-export default class InterfaceException extends Exception {
+class InterfaceException extends Exception {
 
 	/**
 	*	Constructor
@@ -36,3 +36,5 @@ export default class InterfaceException extends Exception {
 	});
 
 }
+
+export default InterfaceException;

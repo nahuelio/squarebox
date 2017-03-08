@@ -9,7 +9,7 @@ import _ from 'underscore';
 *	Class Iterator
 *	@extends events.EventEmitter
 **/
-export default class Iterator extends EventEmitter {
+class Iterator extends EventEmitter {
 
 	/**
 	*	Internal collection
@@ -130,3 +130,5 @@ export default class Iterator extends EventEmitter {
 	}
 
 }
+
+export default Iterator;

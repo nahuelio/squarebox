@@ -10,7 +10,7 @@ import Exception from '../exception';
 *	Class QueueException
 *	@extends {commands.util.exception.Exception}
 **/
-export default class QueueException extends Exception {
+class QueueException extends Exception {
 
 	/**
 	*	Constructor
@@ -35,3 +35,5 @@ export default class QueueException extends Exception {
 	});
 
 }
+
+export default QueueException;

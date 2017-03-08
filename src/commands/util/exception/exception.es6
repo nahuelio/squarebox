@@ -10,7 +10,7 @@ import Logger from '../logger/logger';
 *	Class Exception
 *	@extends {Error}
 **/
-export default class Exception extends Error {
+class Exception extends Error {
 
 	/**
 	*	Constructor
@@ -48,3 +48,5 @@ export default class Exception extends Error {
 	}
 
 }
+
+export default Exception;

@@ -9,24 +9,52 @@
 
 #### Introduction
 
-```
-TODO
-```
+Experimental ES6/CommonJS/AMD Module Bundler
 
 #### Installation
 
+```npm install [-g] squarebox```
+
+#### Usage
+
+CLI Commands
+
+```
+global option: -c (sqbox.js|.sqboxrc|URL) | Default: ./.sqboxrc
+contextual help - sqbox [command] help
+
+* sqbox help - global help (list of commands and general usage)
+* sbox bundle --options
+* sbox clean
+* sbox visualize
+```
+
+Programmatic API
+
+```
+const sqbox = require('squarebox');
+sqbox.clean([opts])
+	.bundle([config])
+	.visualize([opts]);
+```
+
+#### Official Documentation
+
 ```
 TODO
 ```
 
-#### Usage
+#### Configuration
+
 ```
 TODO
 ```
 
 #### Contribute
+
 ```
 TODO
 ```
+
 [![forthebadge](http://forthebadge.com/images/badges/built-with-love.svg)](http://nahuel.io)
 by [Nahuel IO](http://nahuel.io)

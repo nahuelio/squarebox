@@ -3,10 +3,8 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import { EventEmitter } from 'events';
-import './util/mixins';
-import _ from 'underscore';
+import _ from './util/mixins';
 import extend from 'extend';
-import yargs from 'yargs';
 import JSON from './util/proxy/json';
 import Collection from './util/adt/collection';
 import CommandException from './util/exception/command/command';
@@ -16,19 +14,28 @@ import CommandException from './util/exception/command/command';
 *	@extends {events.EventEmitter}
 *
 *	@uses {commands.util.proxy.JSON}
-*	@uses {commands.util.proxy.Asynchronous}
 **/
-export default class Command extends EventEmitter {
+class Command extends EventEmitter {
 
 	/**
 	*	Constructor
 	*	@public
-	*	@param [args = {}] {Object} Constructor arguments
+	*	@param {Object} [args = {}] - constructor arguments
 	*	@return {commands.Command}
 	**/
-	constructor(args) {
+	constructor(args = {}) {
 		super();
-		return JSON.proxy(extend(true, this, this.defaults, _.pick(args, this.constructor.options)));
+		return JSON.proxy(this.settings(args));
+	}
+
+	/**
+	*	Set settings
+	*	@public
+	*	@param {Object} [options = {}] - command options
+	*	@return {commands.Command}
+	**/
+	settings(options) {
+		return extend(true, this, Command.defaults, _.pick(options, this.constructor.options));
 	}
 
 	/**
@@ -136,15 +143,6 @@ export default class Command extends EventEmitter {
 	}
 
 	/**
-	*	Retrieves Yargs Arguments
-	*	@public
-	*	@return {Object}
-	**/
-	args() {
-		return yargs.argv;
-	}
-
-	/**
 	*	Command Defaults
 	*	@static
 	*	@type {Object}
@@ -159,7 +157,8 @@ export default class Command extends EventEmitter {
 	*	@type {Array}
 	**/
 	static options = [
-		'env'
+		'env',
+		'cwd'
 	];
 
 	/**
@@ -173,15 +172,6 @@ export default class Command extends EventEmitter {
 	};
 
 	/**
-	*	Default Yargs setup
-	*	@static
-	*	@return {commands.Command}
-	**/
-	static setup() {
-		return this;
-	}
-
-	/**
 	*	Static Constructor
 	*	@static
 	*	@param [...agrs] {Any} constructor arguments
@@ -192,3 +182,5 @@ export default class Command extends EventEmitter {
 	}
 
 }
+
+export default Command;
