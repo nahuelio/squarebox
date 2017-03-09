@@ -2,10 +2,12 @@
 *	@module commands.bin
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
-import './util/mixins';
+import 'commands/util/mixins';
 import extend from 'extend';
+
+import Factory from 'commands/util/factory/factory';
 import Command from 'commands/command';
-import Commander from 'util/commander/commander';
+import Commander from 'commands/util/commander/commander';
 
 let enforcer = new Symbol();
 
@@ -47,7 +49,7 @@ class SquareBox extends Command {
 	*	@return {commands.bin.SquareBox}
 	**/
 	register() {
-		// TODO: Factory
+		Factory.registerAll(Squarebox.commands);
 		return this;
 	}
 
