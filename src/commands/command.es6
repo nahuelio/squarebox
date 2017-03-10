@@ -3,10 +3,8 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import { EventEmitter } from 'events';
-import './util/mixins';
-import _ from 'underscore';
+import _ from './util/mixins';
 import extend from 'extend';
-import yargs from 'yargs';
 import JSON from './util/proxy/json';
 import Collection from './util/adt/collection';
 import CommandException from './util/exception/command/command';
@@ -17,38 +15,40 @@ import CommandException from './util/exception/command/command';
 *
 *	@uses {commands.util.proxy.JSON}
 **/
-export default class Command extends EventEmitter {
-
-	/**
-	*	Commands Collection
-	*	@private
-	*	@type {commands.util.adt.Collection}
-	**/
-	_commands = new Collection([], { interface: Command })
+class Command extends EventEmitter {
 
 	/**
 	*	Constructor
 	*	@public
-	*	@param [args = {}] {Object} Constructor arguments
+	*	@param {Object} [args = {}] - constructor arguments
 	*	@return {commands.Command}
 	**/
-	constructor(args) {
+	constructor(args = {}) {
 		super();
-		return JSON.proxy(extend(true, this, this.defaults, _.pick(args, this.constructor.options)));
+		return JSON.proxy(this.settings(args));
 	}
 
 	/**
-	*	Command Chainning
+	*	Set settings
 	*	@public
-	*	@throws {commands.util.exceptions.CommandException}
-	*	@param command {commands.Command} command used to chain
+	*	@param {Object} [options = {}] - command options
 	*	@return {commands.Command}
 	**/
-	chain(command) {
-		if(!_.defined(command) || !_.instanceOf(command, Command))
-			throw CommandException.new({ type: 'chain', level: CommandException.fatal });
-		this._commands.add(command);
-		return this;
+	settings(options) {
+		return extend(true, this, Command.defaults, _.pick(options, this.constructor.options));
+	}
+
+	/**
+	*	Proxified asynchronous next strategy
+	*	@public
+	*	@param adt {commands.util.proxy.Asynchronous} adt used for asynchronous operations
+	*	@param resolve {Function} asynchronous promise's resolve
+	*	@param reject {Function} asynchronous promise's reject
+	*	@return {Promise}
+	**/
+	next(adt, resolve, reject) {
+		this.once(Command.events.done, resolve);
+		return this.run();
 	}
 
 	/**
@@ -57,7 +57,26 @@ export default class Command extends EventEmitter {
 	*	@return {commands.Command}
 	**/
 	run() {
-		return this;
+		this.pending();
+		return this.done();
+	}
+
+	/**
+	*	Command Pending exeuction state
+	*	@public
+	*	@return {command.Command}
+	**/
+	pending() {
+		return this.emit(Command.events.pending, this);
+	}
+
+	/**
+	*	Command Done exeuction state
+	*	@public
+	*	@return {command.Command}
+	**/
+	done() {
+		return this.emit(Command.events.done, this);
 	}
 
 	/**
@@ -124,15 +143,6 @@ export default class Command extends EventEmitter {
 	}
 
 	/**
-	*	Retrieves Yargs Arguments
-	*	@public
-	*	@return {Object}
-	**/
-	args() {
-		return yargs.argv;
-	}
-
-	/**
 	*	Command Defaults
 	*	@static
 	*	@type {Object}
@@ -147,7 +157,8 @@ export default class Command extends EventEmitter {
 	*	@type {Array}
 	**/
 	static options = [
-		'env'
+		'env',
+		'cwd'
 	];
 
 	/**
@@ -156,18 +167,9 @@ export default class Command extends EventEmitter {
 	*	@type {Object}
 	**/
 	static events = {
-		start: 'commands:command:start',
-		end: 'commands:command:end'
+		pending: 'commands:command:pending',
+		done: 'commands:command:done'
 	};
-
-	/**
-	*	Default Yargs setup
-	*	@static
-	*	@return {commands.Command}
-	**/
-	static setup() {
-		return this;
-	}
 
 	/**
 	*	Static Constructor
@@ -180,3 +182,5 @@ export default class Command extends EventEmitter {
 	}
 
 }
+
+export default Command;

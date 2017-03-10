@@ -16,6 +16,7 @@ describe('commands.util.adt.Stack', function() {
 	});
 
 	afterEach(() => {
+		this.mockStack.verify();
 		this.sandbox.restore();
 		delete this.mockStack;
 	});
@@ -47,25 +48,19 @@ describe('commands.util.adt.Stack', function() {
 			const exp = Stack.new([], { interface: Command });
 			const expEmit = this.mockStack.expects('emit')
 				.once()
-				.withArgs(Stack.events.push, exp, toPush)
+				.withArgs(Stack.events.push, exp, sinon.match.instanceOf(Command))
 				.returns(exp);
 
-			exp.push(toPush);
-
+			assert.isTrue(exp.push(toPush));
 			assert.isFalse(exp.isEmpty());
-
-			this.mockStack.verify();
 		});
 
 		it('Should NOT push a new element', () => {
 			const exp = Stack.new();
 			const expEmit = this.mockStack.expects('emit').never();
 
-			exp.push();
-
+			assert.isFalse(exp.push());
 			assert.isTrue(exp.isEmpty());
-
-			this.mockStack.verify();
 		});
 
 	});
@@ -88,17 +83,16 @@ describe('commands.util.adt.Stack', function() {
 	describe('#pop()', () => {
 
 		it('Should remove and get the first element', () => {
-			const exp = Stack.new([{ option: true }, { option: false }], { interface: Command });
+			const exp = Stack.new([{ env: 'dev' }, { env: 'stage' }], { interface: Command });
+			const expPop = exp.last();
 			const expEmit = this.mockStack.expects('emit')
 				.once()
-				.withArgs(Stack.events.pop, exp)
+				.withArgs(Stack.events.pop, exp, expPop)
 				.returns(exp);
 
-			assert.instanceOf(exp.pop(), Stack);
+			assert.equal(expPop, exp.pop());
 			assert.instanceOf(exp.peek(), Command);
 			assert.equal(1, exp.size());
-
-			this.mockStack.verify();
 		});
 
 		it('Should NOT remove and get the first element', () => {
@@ -115,6 +109,12 @@ describe('commands.util.adt.Stack', function() {
 			const exp = Stack.new(['a','b','c']);
 			const expPos = exp.search('b');
 			assert.equal(1, expPos);
+		});
+
+		it('Should NOT search (invalid element)', () => {
+			const exp = Stack.new(['a','b','c']);
+			const expPos = exp.search();
+			assert.equal(-1, expPos);
 		});
 
 		it('Should search and retrieve -1 position (element not found)', () => {

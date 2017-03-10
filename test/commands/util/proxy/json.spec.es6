@@ -5,6 +5,7 @@
 import _ from 'underscore';
 import Json from 'commands/util/proxy/json';
 import Command from 'commands/command';
+import InterfaceException from 'commands/util/exception/proxy/interface';
 
 describe('commands.util.proxy.Json', function() {
 
@@ -41,15 +42,19 @@ describe('commands.util.proxy.Json', function() {
 		delete this.sandbox;
 	});
 
-	describe('#constructor', () => {
+	describe('constructor()', () => {
 
 		it('Should get a new instance', () => {
 			assert.instanceOf(Json.proxy(this.target), Function);
 		});
 
+		it('Should Error: target is not defined', () => {
+			assert.throws(() => Json.proxy(), InterfaceException.type.proxy());
+		});
+
 	});
 
-	describe('#toJSON()', () => {
+	describe('toJSON()', () => {
 
 		it('Should return a json representation', () => {
 			const o = this.target();

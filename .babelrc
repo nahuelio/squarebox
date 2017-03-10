@@ -5,5 +5,10 @@
 			"root": ["./src"],
 			"alias": { "commands": "./commands" }
 		}]
-	]
+	],
+	"env": {
+	    "test": {
+			"plugins": ["istanbul"]
+		}
+	}
 }

@@ -43,7 +43,7 @@ _.mixin({
 				if(_.isRealObject(v)) return _.parametrize(v, pf, k);
 				if(_.isArray(v)) v = v.join(',');
 				return [`${pf}${_s.ltrim(_s(dk + ' ' + k).dasherize().value(), '-')}`, v];
-			}, this).flatten().compact().value();
+			}, this).flatten().filter((v, k) => _.defined(v)).value();
 	},
 
 	/**
@@ -92,3 +92,5 @@ _.mixin({
 	}
 
 });
+
+export default _;
