@@ -35,7 +35,7 @@ class Visitor extends EventEmitter {
 	**/
 	validate(vi) {
 		if(!_.defined(vi)) return false;
-		if(!_.instanceOf(vi, Visited))
+		if(!_.defined(vi.accept))
 			throw InterfaceException.new('interface', { name: 'commands.util.visitor.Visited' });
 		return true;
 	}

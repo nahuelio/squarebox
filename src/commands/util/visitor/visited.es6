@@ -6,22 +6,45 @@ import { EventEmitter } from 'events';
 import _ from 'underscore';
 import extend from 'extend';
 import Visitor from 'commands/util/visitor/visitor';
+import InterfaceException from 'commands/util/exception/proxy/interface';
 
 /**
 *	Class Visited
 *	@extends {events.EventEmitter}
 **/
-class Visited extends  EventEmitter {
+class Visited extends EventEmitter {
 
 	/**
 	*	Constructor
 	*	@public
+	*	@param {Any} target - instance to be visited
 	*	@param {Any} [...args] - constructor arguments
 	*	@return {commands.util.visitor.Visited}
 	**/
-	constructor(...args) {
+	constructor(target, ...args) {
 		super();
-		return new Proxy(extend(true, this, ...args), this);
+		return new Proxy(extend(true, this._valid(target), ...args), this);
+	}
+
+	/**
+	*	Validate Target to be visited
+	*	@public
+	*	@param {Any} target - instance to be visited
+	*	@return {Any}
+	**/
+	_valid(target) {
+		if(!_.defined(target)) throw InterfaceException.new('proxy');
+		return target;
+	}
+
+	/**
+	*	Proxy getPrototypeOf trap override
+	*	@public
+	*	@param {Any} target - target reference
+	*	@return {Object}
+	**/
+	getPrototypeOf(target) {
+		return target.constructor.prototype;
 	}
 
 	/**
