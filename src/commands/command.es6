@@ -12,8 +12,8 @@ import Visited from 'commands/util/visitor/visited';
 *	Class Command
 *	@extends {commands.util.visitor.Visited}
 *
-*	@uses {commands.util.proxy.JSON}
-*	@uses {commands.util.proxy.Asynchronous} - TODO: Convert Asynchronous into Visitor for QueueAsync/StackAysnc
+*	@uses {commands.visitors.formatter.Json}
+*	@uses {commands.visitors.async.Asynchronous}
 **/
 class Command extends Visited {
 
@@ -59,7 +59,9 @@ class Command extends Visited {
 
 	/**
 	*	Proxified asynchronous next strategy
+	*	FIXME: Implement when the command gets rejected.
 	*	@public
+	*	@override
 	*	@param adt {commands.util.proxy.Asynchronous} adt used for asynchronous operations
 	*	@param resolve {Function} asynchronous promise's resolve
 	*	@param reject {Function} asynchronous promise's reject
@@ -71,12 +73,29 @@ class Command extends Visited {
 	}
 
 	/**
-	*	Default Command Run
+	*	Default hook before run
+	*	@public
+	*	@return {commands.Command}
+	**/
+	before() {
+		return this.pending();
+	}
+
+	/**
+	*	Default Run
 	*	@public
 	*	@return {commands.Command}
 	**/
 	run() {
-		this.pending();
+		return this.before().after();
+	}
+
+	/**
+	*	Default hook after run
+	*	@public
+	*	@return {commands.Command}
+	**/
+	after() {
 		return this.done();
 	}
 
@@ -86,7 +105,8 @@ class Command extends Visited {
 	*	@return {command.Command}
 	**/
 	pending() {
-		return this.emit(Command.events.pending, this);
+		this.emit(Command.events.pending, this);
+		return this;
 	}
 
 	/**
@@ -95,7 +115,8 @@ class Command extends Visited {
 	*	@return {command.Command}
 	**/
 	done() {
-		return this.emit(Command.events.done, this);
+		this.emit(Command.events.done, this);
+		return this;
 	}
 
 	/**
@@ -167,7 +188,8 @@ class Command extends Visited {
 	*	@type {Array}
 	**/
 	static visitors = [
-		'util/proxy/json'
+		'visitors/formatter/json',
+		'visitors/async/async'
 	];
 
 	/**
@@ -201,16 +223,6 @@ class Command extends Visited {
 		pending: 'commands:command:pending',
 		done: 'commands:command:done'
 	};
-
-	/**
-	*	Static Constructor
-	*	@static
-	*	@param [...agrs] {Any} constructor arguments
-	*	@return {commands.Command}
-	**/
-	static new(...args) {
-		return new this(...args);
-	}
 
 }
 

@@ -5,8 +5,7 @@
 import _ from 'underscore';
 import extend from 'extend';
 import Stack from 'commands/util/adt/stack';
-import InterfaceException from 'commands/util/exception/proxy/interface';
-import Asynchronous from 'commands/util/proxy/async';
+import Asynchronous from 'commands/visitors/async/async';
 
 /**
 *	Class StackAsync
@@ -33,8 +32,7 @@ class StackAsync extends Stack {
 	*	@return {commands.util.adt.StackAsync}
 	**/
 	constructor(initial = [], opts = {}) {
-		super(initial, opts);
-		return extend(true, this, { _last: [] });
+		return super(initial, extend(true, opts, { _visitor: Asynchronous.new(), _last: [] }));
 	}
 
 	/**
@@ -46,7 +44,9 @@ class StackAsync extends Stack {
 	*	@return {Any}
 	**/
 	_new(e, opts) {
-		return Asynchronous.proxy(super._new(e, opts), this);
+		let element = super._new(e, opts);
+		this._visitor.validate(element);
+		return element.accept(this._visitor);
 	}
 
 	/**
@@ -81,10 +81,8 @@ class StackAsync extends Stack {
 	**/
 	next(opts) {
 		let element = super.pop(opts);
-		if(!_.defined(element.next))
-			throw InterfaceException.new('interface', { name: 'commands.util.proxy.Asynchronous' });
 		if(!opts.silent) this.emit(StackAsync.events.next, element);
-		return element.do(this);
+		return element.execute(this);
 	}
 
 	/**

@@ -5,14 +5,13 @@
 import _ from 'underscore';
 import extend from 'extend';
 import Queue from 'commands/util/adt/queue';
-import InterfaceException from 'commands/util/exception/proxy/interface';
-import Asynchronous from 'commands/util/proxy/async';
+import Asynchronous from 'commands/visitors/async/async';
 
 /**
 *	Class QueueAsync
 *		Defines the interface of an asynchronous FIFO Queue (FirstIn-FirstOut).
-*		Interface for objects on this queue, must implement method `next` of {@link commands.util.proxy.Asynchronous}
-*		for promise resolution.
+*		Interface for objects on this queue, **must** implement method `next` of
+*		{@link commands.visitors.async.Asynchronous} for promise resolution.
 *	@example
 *		<h5>Usage</h5>
 *
@@ -28,25 +27,26 @@ class QueueAsync extends Queue {
 	*	Constructor
 	*	@public
 	*	@override
-	*	@param [initial = []] {Array} Initial Array
-	*	@param [opts = {}] {Object} collection options
+	*	@param {Array} [initial = []] - initial elements
+	*	@param {Object} [opts = {}] - collection options
 	*	@return {commands.util.adt.QueueAsync}
 	**/
 	constructor(initial = [], opts = {}) {
-		super(initial, opts);
-		return extend(true, this, { _last: [] });
+		return super(initial, extend(true, opts, { _visitor: Asynchronous.new(), _last: [] }));
 	}
 
 	/**
 	*	Default instanciation strategy for new elements added in this collection
 	*	@private
 	*	@override
-	*	@param e {Any} element to instanciate
-	*	@param opts {Object} additional options
+	*	@param {Any} e - element to instanciate
+	*	@param {Object} opts - additional options
 	*	@return {Any}
 	**/
 	_new(e, opts) {
-		return Asynchronous.proxy(super._new(e, opts), this);
+		let element = super._new(e, opts);
+		this._visitor.validate(element);
+		return element.accept(this._visitor);
 	}
 
 	/**
@@ -64,7 +64,7 @@ class QueueAsync extends Queue {
 	*	@public
 	*	@async
 	*	@override
-	*	@param [opts = {}] {Object} additional options
+	*	@param {Object} [opts = {}] - additional options
 	*	@return {Promise}
 	**/
 	async poll(opts = {}) {
@@ -76,22 +76,20 @@ class QueueAsync extends Queue {
 	*	Asynchronous Queue next
 	*	@public
 	*	@emits {QueueAsync.events.next} - when opts.silent is false or undefined
-	*	@param [opts] {Object} additional options
+	*	@param {Object} [opts] - additional options
 	*	@return {Promise}
 	**/
 	next(opts) {
 		let element = super.poll(opts);
-		if(!_.defined(element.next))
-			throw InterfaceException.new('interface', { name: 'commands.util.proxy.Asynchronous' });
 		if(!opts.silent) this.emit(QueueAsync.events.next, element);
-		return element.do(this);
+		return element.execute(this);
 	}
 
 	/**
 	*	Retrieves and removes the head of this queue, or returns null if this queue is empty
 	*	@public
-	*	@param res {Promise} current promise (resolved or rejected)
-	*	@param [opts] {Object} additional options
+	*	@param {Promise} res - current promise (resolved or rejected)
+	*	@param {Object} [opts] - additional options
 	*	@return {Any}
 	**/
 	onNext(res, opts) {
@@ -103,7 +101,7 @@ class QueueAsync extends Queue {
 	*	Asynchronous Queue end
 	*	@public
 	*	@emits {QueueAsync.events.end} - when opts.silent is false or undefined
-	*	@param [opts = {}] {Object} additional options
+	*	@param {Object} [opts = {}] - additional options
 	*	@return {commands.util.adt.QueueAsync}
 	**/
 	end(opts) {

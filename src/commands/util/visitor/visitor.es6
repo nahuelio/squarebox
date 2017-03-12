@@ -64,7 +64,7 @@ class Visitor extends EventEmitter {
 	/**
 	*	Static Constructor
 	*	@static
-	*	@param [...args] {Any} constructor arguments
+	*	@param {Any} [...args] - constructor arguments
 	*	@return {commands.util.visitor.Visitor}
 	**/
 	static new(...args) {

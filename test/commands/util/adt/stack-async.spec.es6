@@ -4,6 +4,7 @@
 **/
 import StackAsync from 'commands/util/adt/stack-async';
 import Command from 'commands/command';
+import Asynchronous from 'commands/visitors/async/async';
 import InterfaceException from 'commands/util/exception/proxy/interface';
 
 describe('commands.util.adt.StackAsync', function() {
@@ -34,7 +35,9 @@ describe('commands.util.adt.StackAsync', function() {
 	describe('constructor()', () => {
 
 		it('Should get a new instance', () => {
-			assert.instanceOf(StackAsync.new([{ option: true }]), StackAsync);
+			const exp = StackAsync.new([]);
+			assert.instanceOf(exp, StackAsync);
+			assert.instanceOf(exp._visitor, Asynchronous);
 		});
 
 		it('Should get a new instance (no initial and no opts)', () => {
@@ -77,15 +80,9 @@ describe('commands.util.adt.StackAsync', function() {
 			}).catch((err) => console.log(err));
 		});
 
-		it('Should Error: Element doesn\'t implement commands.util.proxy.Asynchronous#next()', (done) => {
-			const message = InterfaceException.type.interface({ name: 'commands.util.proxy.Asynchronous' });
-			const exp = StackAsync.new([{ simple: true }]);
-
-			exp.pop().catch((err) => {
-				assert.instanceOf(err, Error);
-				assert.equal(err.message, message);
-				done();
-			});
+		it('Should Error: Element doesn\'t implement interface commands.util.visitor.Visited', () => {
+			const message = InterfaceException.type.interface({ name: 'commands.util.visitor.Visited' });
+			assert.throws(() => StackAsync.new([{ simple: true }]), message);
 		});
 
 	});

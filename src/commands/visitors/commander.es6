@@ -1,5 +1,5 @@
 /**
-*	@module commands.bin.visitor
+*	@module commands.visitors
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'underscore';
@@ -19,7 +19,7 @@ class Commander extends Visitor {
 	*	@public
 	*	@override
 	*	@param {Any} [...args] - constructor arguments
-	*	@return {commands.bin.visitor.Commander}
+	*	@return {commands.visitors.Commander}
 	**/
 	constructor(...args) {
 		super(...args);
@@ -29,8 +29,8 @@ class Commander extends Visitor {
 	/**
 	*	Parses Configuration options
 	*	@public
-	*	@param {commands.util.proxy.Json} ctx - context reference
-	*	@return {commands.bin.visitor.Commander}
+	*	@param {commands.util.visitor.Visited} ctx - context reference
+	*	@return {commands.visitors.Commander}
 	**/
 	parse(ctx) {
 		// TODO: [js,json,uri] QueueAsync for executing for configuration

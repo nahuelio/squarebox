@@ -93,7 +93,7 @@ class SquareBox extends Command {
 	*	@type {Array}
 	**/
 	static visitors = [
-		'bin/visitor/commander'
+		'visitors/commander'
 	].concat(Command.visitors);
 
 	/**

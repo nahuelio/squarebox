@@ -1,14 +1,14 @@
 /**
-*	@module commands.util.proxy
+*	@module commands.visitors.formatter
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'underscore';
-import Json from 'commands/util/proxy/json';
+import Json from 'commands/visitors/formatter/json';
 import Visited from 'commands/util/visitor/visited';
 import Command from 'commands/command';
 import InterfaceException from 'commands/util/exception/proxy/interface';
 
-describe('commands.util.proxy.Json', function() {
+describe('commands.visitors.formatter.Json', function() {
 
 	before(() => {
 		this.sandbox = sinon.sandbox.create();
@@ -47,20 +47,22 @@ describe('commands.util.proxy.Json', function() {
 	describe('constructor()', () => {
 
 		it('Should get a new instance', () => {
-			assert.instanceOf(Json.new(), Json);
+			const exp = Json.new();
+			assert.instanceOf(exp, Json);
+			assert.equal('JsonVisitor', exp.name);
 		});
 
 	});
 
 	describe('visit()', () => {
 
-		it('Should visit the target visited', () => {
+		it('Should visit the target', () => {
 			const input = Visited.new({ property: 'target' });
 			const exp = Json.new();
 			assert.instanceOf(exp.visit(input), Visited);
 		});
 
-		it('Should NOT visit the target visited', () => {
+		it('Should NOT visit the target', () => {
 			const input = { property: 'target' };
 			const exp = Json.new();
 			assert.throws(() => exp.visit(input), InterfaceException.type

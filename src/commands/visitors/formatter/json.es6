@@ -1,5 +1,5 @@
 /**
-*	@module commands.util.proxy
+*	@module commands.visitors.formatter
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'underscore';
@@ -15,9 +15,9 @@ class Json extends Visitor {
 	/**
 	*	Reducer Strategy to iterate over properties
 	*	@public
-	*	@param m {Object} memoized object reference
-	*	@param v {Any} current object's value
-	*	@param k {String} current object's key
+	*	@param {Object} m - memoized object reference
+	*	@param {Any} v - current object's value
+	*	@param {String} k - current object's key
 	*	@return {Object}
 	**/
 	_reduce(m, v, k) {
@@ -31,8 +31,8 @@ class Json extends Visitor {
 	/**
 	*	Clean Functions from JSON representation
 	*	@public
-	*	@param current {Any} current object
-	*	@param [memo = {}] {Object} memoized object
+	*	@param {Any} current - current object
+	*	@param {Object} [memo = {}] - memoized object
 	*	@return {Object}
 	**/
 	_clean(current, memo = {}) {
@@ -44,7 +44,7 @@ class Json extends Visitor {
 	*	Returns a json representation of the instance of this class
 	*	This method uses recursion
 	*	@public
-	*	@param [ctx] {commands.util.proxy.Json} context reference
+	*	@param {commands.visitors.formatter.Json} [ctx] - context reference
 	*	@return {Object}
 	**/
 	toJSON(ctx) {

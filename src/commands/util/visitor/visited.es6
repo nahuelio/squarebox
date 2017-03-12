@@ -28,9 +28,9 @@ class Visited extends EventEmitter {
 	/**
 	*	Resolves proxified function binding with context
 	*	@private
-	*	@param target {Any} proxy target
-	*	@param property {String} property name
-	*	@param func {Function} proxified function
+	*	@param {Any} target - proxy target
+	*	@param {String} property - property name
+	*	@param {Function} func - proxified function
 	*	@return {Function}
 	**/
 	_context(target, property, func) {
@@ -93,7 +93,7 @@ class Visited extends EventEmitter {
 	/**
 	*	Static Constructor
 	*	@static
-	*	@param [...args] {Any} constructor arguments
+	*	@param {Any} [...args] - constructor arguments
 	*	@return {commands.util.visitor.Visited}
 	**/
 	static new(...args) {
