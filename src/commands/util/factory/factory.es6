@@ -27,6 +27,16 @@ class Factory extends EventEmitter {
 	}
 
 	/**
+	*	Resets factories
+	*	@public
+	*	@return {commands.util.factoryFactory}
+	**/
+	reset() {
+		this._factories.clear();
+		return this;
+	}
+
+	/**
 	*	Sets a base path
 	*	@public
 	*	@param {String} [ph = Factory.basePath] - base path to resolve factories filepaths

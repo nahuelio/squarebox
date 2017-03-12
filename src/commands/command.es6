@@ -5,17 +5,17 @@
 import { EventEmitter } from 'events';
 import _ from './util/mixins';
 import extend from 'extend';
-import JSON from './util/proxy/json';
-import Collection from './util/adt/collection';
-import CommandException from './util/exception/command/command';
+import Factory from 'commands/util/factory/factory';
+import Visited from 'commands/util/visitor/visited';
 
 /**
 *	Class Command
-*	@extends {events.EventEmitter}
+*	@extends {commands.util.visitor.Visited}
 *
 *	@uses {commands.util.proxy.JSON}
+*	@uses {commands.util.proxy.Asynchronous} - TODO: Convert Asynchronous into Visitor for QueueAsync/StackAysnc
 **/
-class Command extends EventEmitter {
+class Command extends Visited {
 
 	/**
 	*	Constructor
@@ -25,7 +25,7 @@ class Command extends EventEmitter {
 	**/
 	constructor(args = {}) {
 		super();
-		return JSON.proxy(this.settings(args));
+		return this.settings(args).register().acceptAll();
 	}
 
 	/**
@@ -35,7 +35,26 @@ class Command extends EventEmitter {
 	*	@return {commands.Command}
 	**/
 	settings(options) {
-		return extend(true, this, Command.defaults, _.pick(options, this.constructor.options));
+		return extend(true, this, Command.defaults, _.pick(options, Command.options));
+	}
+
+	/**
+	*	Registers Visitors
+	*	@public
+	*	@return {commands.Command}
+	**/
+	register() {
+		Factory.basePath(this.dirname).registerAll(this.constructor.visitors);
+		return this;
+	}
+
+	/**
+	*	Accepts All Visitors
+	*	@public
+	*	@return {command.Command}
+	**/
+	acceptAll() {
+		return _.reduce(this.constructor.visitors, (memo, v) => memo.accept(Factory.get(v)), this);
 	}
 
 	/**
@@ -143,12 +162,23 @@ class Command extends EventEmitter {
 	}
 
 	/**
+	*	Command Visitors
+	*	@static
+	*	@type {Array}
+	**/
+	static visitors = [
+		'util/proxy/json'
+	];
+
+	/**
 	*	Command Defaults
 	*	@static
 	*	@type {Object}
 	**/
 	static defaults = {
-		env: 'development'
+		env: 'development',
+		dirname: __dirname,
+		cwd: process.cwd()
 	};
 
 	/**
@@ -158,6 +188,7 @@ class Command extends EventEmitter {
 	**/
 	static options = [
 		'env',
+		'dirname',
 		'cwd'
 	];
 

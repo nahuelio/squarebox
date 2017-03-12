@@ -3,47 +3,14 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'underscore';
+import Visitor from 'commands/util/visitor/visitor';
 import InterfaceException from 'commands/util/exception/proxy/interface';
 
 /**
-*	Interface JSON
+*	Class JSON
+*	@extends {commands.util.visitor.Visitor}
 **/
-class Json {
-
-	/**
-	*	Proxy's `getPrototypeOf` trap strategy
-	*	@public
-	*	@param target {Any} proxy's target
-	*	@return {Object}
-	**/
-	getPrototypeOf(target) {
-		return target.constructor.prototype;
-	}
-
-	/**
-	*	Proxy's `get` trap strategy
-	*	@public
-	*	@param target {Any} proxy target
-	*	@param property {String} property name
-	*	@param receiver {Any} proxy receiver
-	*	@return {Any}
-	**/
-	get(target, property, receiver) {
-		let value = _.defined(this[property]) ? this[property] : target[property];
-		return _.isFunction(value) ? this._context(target, property, value) : value;
-	}
-
-	/**
-	*	Resolves proxified function binding with context
-	*	@private
-	*	@param target {Any} proxy target
-	*	@param property {String} property name
-	*	@param func {Function} proxified function
-	*	@return {Function}
-	**/
-	_context(target, property, func) {
-		return _.defined(this[property]) ? _.bind(func, target, this) : _.bind(func, target);
-	}
+class Json extends Visitor {
 
 	/**
 	*	Reducer Strategy to iterate over properties
@@ -69,7 +36,8 @@ class Json {
 	*	@return {Object}
 	**/
 	_clean(current, memo = {}) {
-		return _.reduce(current, this._reduce, memo, this);
+		let keys = Object.getOwnPropertyNames(current);
+		return _.reduce(keys, (m, k) => this._reduce(m, current[k], k), memo, this);
 	}
 
 	/**
@@ -80,20 +48,16 @@ class Json {
 	*	@return {Object}
 	**/
 	toJSON(ctx) {
-		return JSON.parse(JSON.stringify(ctx._clean(this)));
+		return JSON.parse(JSON.stringify(this._clean(ctx)));
 	}
 
 	/**
-	*	Proxifies a given target with an instance of this class
-	*	@static
-	*	@throws {commands.util.exception.proxy.InterfaceException}
-	*	@param target {Any} instance to proxify
-	*	@param [...args] {Any} constructor arguments
-	*	@return {commands.util.proxy.Json}
+	*	Visitor Name
+	*	@public
+	*	@type {String}
 	**/
-	static proxy(target, ...args) {
-		if(!_.defined(target)) throw InterfaceException.new('proxy');
-		return new Proxy(target, new this(...args));
+	get name() {
+		return 'JsonVisitor';
 	}
 
 }

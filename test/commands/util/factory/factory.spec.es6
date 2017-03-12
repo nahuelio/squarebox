@@ -10,20 +10,24 @@ import Collection from 'commands/util/adt/collection';
 describe('commands.util.factory.Factory', function() {
 
 	before(() => {
+		factory.reset();
 		this.sandbox = sinon.sandbox.create();
 	});
 
 	beforeEach(() => {
+		this.mockCommand = this.sandbox.mock(Command);
 		this.mockLogger = this.sandbox.mock(logger);
 		this.mockProto = this.sandbox.mock(factory);
 	});
 
 	afterEach(() => {
+		this.mockCommand.verify();
 		this.mockLogger.verify();
 		this.mockProto.verify();
 
 		this.sandbox.restore();
 
+		delete this.mockCommand;
 		delete this.mockLogger;
 		delete this.mockProto;
 	});
@@ -101,7 +105,8 @@ describe('commands.util.factory.Factory', function() {
 		});
 
 		it('Should instanciate factory using static constructor', () => {
-			assert.instanceOf(factory._new(Command), Command);
+			const expNew = this.mockCommand.expects('new').returns('Command');
+			assert.equal(factory._new(Command), 'Command');
 		});
 
 		it('Should instanciate factory using operator `new`', () => {

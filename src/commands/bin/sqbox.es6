@@ -7,28 +7,47 @@ import extend from 'extend';
 
 import Factory from 'commands/util/factory/factory';
 import Command from 'commands/command';
-import Commander from 'commands/util/commander/commander';
 
-let enforcer = new Symbol();
+let enforcer = Symbol('SquareBox');
 
 /**
 *	Class SquareBox
 *	@extends {commands.Command}
 *
-*	@uses {util.commander.Commander}
+*	@uses {commands.bin.visitor.Commander}
 **/
 class SquareBox extends Command {
 
 	/**
 	*	Constructor
 	*	@public
-	*	@param {Symbol} pte - constructor enforcer
-	*	@param [args = {}] {Object} Constructor arguments
+	*	@param {Object} [args = {}] - Constructor arguments
 	*	@return {commands.bin.SquareBox}
 	**/
-	constructor(pte, ...args) {
-		super();
-		return this.validate().register().settings(...args);
+	constructor(...args) {
+		super(...args);
+		return SquareBox.isPrivate(this.attachEvents());
+	}
+
+	/**
+	*	Attaches Events
+	*	@public
+	*	@return {commands.bin.SquareBox}
+	**/
+	attachEvents() {
+		// TODO
+		return this;
+	}
+
+	/**
+	*	Read all command arguments using {commands.bin.visitor.Commander}
+	*	@public
+	*	@async
+	*	@return {commands.bin.SquareBox}
+	**/
+	read() {
+		// TODO
+		return this;
 	}
 
 	/**
@@ -38,7 +57,7 @@ class SquareBox extends Command {
 	*	@param {Symbol} pte - constructor enforcer
 	*	@return {commands.bin.SquareBox}
 	**/
-	validate(pte) {
+	isPrivate(pte) {
 		if(!_.isEqual(pte, enforcer)) throw new Error('Private Violation');
 		return this;
 	}
@@ -46,10 +65,12 @@ class SquareBox extends Command {
 	/**
 	*	Register Command Factories
 	*	@public
+	*	@override
 	*	@return {commands.bin.SquareBox}
 	**/
 	register() {
-		Factory.registerAll(Squarebox.commands);
+		super.register();
+		Factory.registerAll(this.constructor.commands);
 		return this;
 	}
 
@@ -59,11 +80,31 @@ class SquareBox extends Command {
 	*	@type {Array}
 	**/
 	static commands = [
-		'help',
-		'clean',
-		'bundle',
-		'visualize'
+		'help/help',
+		'clean/clean',
+		'bundle/bundle',
+		'visualize/visualize'
 	];
+
+	/**
+	*	SquareBox visitors
+	*	@static
+	*	@override
+	*	@type {Array}
+	**/
+	static visitors = [
+		'bin/visitor/commander'
+	].concat(Command.visitors);
+
+	/**
+	*	Static enforcer validation
+	*	@static
+	*	@param {commands.bin.SquareBox} instance - squarebox instance reference
+	*	@return {commands.bin.SquareBox}
+	**/
+	static isPrivate(instance) {
+		return instance.isPrivate(enforcer);
+	}
 
 	/**
 	*	Static Run
@@ -71,7 +112,7 @@ class SquareBox extends Command {
 	*	@return commands.bin.SquareBox
 	**/
 	static run() {
-		return new Proxy(this.new(enforcer, { cwd: process.cwd() }), Commander.new());
+		return this.new({ cwd: process.cwd() }).read();
 	}
 
 }

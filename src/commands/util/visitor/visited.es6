@@ -17,24 +17,24 @@ class Visited extends EventEmitter {
 	/**
 	*	Constructor
 	*	@public
-	*	@param {Any} target - instance to be visited
 	*	@param {Any} [...args] - constructor arguments
 	*	@return {commands.util.visitor.Visited}
 	**/
-	constructor(target, ...args) {
+	constructor(...args) {
 		super();
-		return new Proxy(extend(true, this._valid(target), ...args), this);
+		return extend(true, this, ...args);
 	}
 
 	/**
-	*	Validate Target to be visited
-	*	@public
-	*	@param {Any} target - instance to be visited
-	*	@return {Any}
+	*	Resolves proxified function binding with context
+	*	@private
+	*	@param target {Any} proxy target
+	*	@param property {String} property name
+	*	@param func {Function} proxified function
+	*	@return {Function}
 	**/
-	_valid(target) {
-		if(!_.defined(target)) throw InterfaceException.new('proxy');
-		return target;
+	_context(target, property, func) {
+		return _.defined(this[property]) ? this[property] : _.bind(func, target, this);
 	}
 
 	/**
@@ -44,20 +44,30 @@ class Visited extends EventEmitter {
 	*	@return {Object}
 	**/
 	getPrototypeOf(target) {
-		return target.constructor.prototype;
+		return this.constructor.prototype;
+	}
+
+	/**
+	*	Proxy ownKeys trap override
+	*	@public
+	*	@param {Any} target - visited proxy target
+	*	@return {Array}
+	**/
+	ownKeys(target) {
+		return _.keys(this);
 	}
 
 	/**
 	*	Proxy get trap override
 	*	@public
-	*	@override
 	*	@param {Any} target - visited target reference
 	*	@param {String} property - visited target property
 	*	@param {Any} receiver - visited target constructor
 	*	@return {Any}
 	**/
 	get(target, property, receiver) {
-		return _.defined(target[property]) ? target[property] : this[property];
+		let value = _.defined(this[property]) ? this[property] : target[property];
+		return _.isFunction(value) ? this._context(target, property, value) : value;
 	}
 
 	/**

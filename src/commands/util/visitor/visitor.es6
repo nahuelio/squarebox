@@ -45,10 +45,11 @@ class Visitor extends EventEmitter {
 	*	This method is most likely to be overriden by subsclasses of this visitor.
 	*	@public
 	*	@param {commands.util.visitor.Visited} vi - instance to be visited by this visitor
+	*	@param {Any} [...args] - arguments passed to the vistior who visit the current visited instance
 	*	@return {commands.util.visitor.Visited}
 	**/
-	visit(vi) {
-		return this.validate(vi) ? vi : null;
+	visit(vi, ...args) {
+		return this.validate(vi) ? new Proxy(this, vi) : null;
 	}
 
 	/**

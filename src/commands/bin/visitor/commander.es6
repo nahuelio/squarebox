@@ -1,5 +1,5 @@
 /**
-*	@module commands.util.visitor
+*	@module commands.bin.visitor
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'underscore';
@@ -15,11 +15,24 @@ import QueueAsync from 'commands/util/adt/queue-async';
 class Commander extends Visitor {
 
 	/**
-	*	Default arguments parsing
+	*	Constructor
 	*	@public
+	*	@override
+	*	@param {Any} [...args] - constructor arguments
 	*	@return {commands.bin.visitor.Commander}
 	**/
-	async parse() {
+	constructor(...args) {
+		super(...args);
+		return extend(true, this, { queue: QueueAsync.new() });
+	}
+
+	/**
+	*	Parses Configuration options
+	*	@public
+	*	@param {commands.util.proxy.Json} ctx - context reference
+	*	@return {commands.bin.visitor.Commander}
+	**/
+	parse(ctx) {
 		// TODO: [js,json,uri] QueueAsync for executing for configuration
 		return this;
 	}
@@ -64,7 +77,7 @@ class Commander extends Visitor {
 	static options = [
 		'config',
 		'source-scan',
-		'source-extensions'
+		'source-extensions',
 		'source-alias',
 		'target-destination',
 		'target-format'

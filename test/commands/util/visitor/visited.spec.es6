@@ -32,31 +32,64 @@ describe('commands.util.visitor.Visited', function() {
 	describe('constructor', () => {
 
 		it('Should get a new instance', () => {
-			const input = { option: true };
-			assert.instanceOf(Visited.new(input, { property: 'Visited' }), Object);
-			assert.equal('Visited', input.property);
+			const exp = Visited.new({ property: 'Visited' });
+			assert.instanceOf(exp, Visited);
+			assert.equal('Visited', exp.property);
 		});
 
 	});
 
-	describe('_valid()', () => {
+	describe('getPrototypeOf', () => {
 
-		it('Should throw InterfaceException: target is not defined', () => {
-			assert.throws(() => Visited.new(), InterfaceException.type.proxy());
+		it('Should return visited prototype when instanceOf evaluation occur', () => {
+			const target = function() {};
+			const exp = Visited.new({});
+			assert.equal(exp.getPrototypeOf(target), exp.constructor.prototype);
 		});
 
 	});
 
-	describe('proxy->get()', () => {
+	describe('ownKeys()', () => {
+
+		it('Should always return visited own keys on proxified target', () => {
+			const target = { name: 'Target' };
+			const exp = Visited.new({ name: 'visited' });
+			assert.lengthOf(_.keys(exp), exp.ownKeys(target).length);
+		});
+
+	});
+
+	describe('get()', () => {
 
 		it('Should proxify input with Visited: access to target property', () => {
-			const input = { option: true, method: this.sandbox.spy() };
-			const exp = Visited.new(input, { property: 'fromVisited' });
-			exp.method();
+			const input = { target: 'fromTarget', targetMethod: this.sandbox.spy() };
+			const exp = Visited.new({ visited: 'fromVisited', visitedMethod: this.sandbox.spy() });
 
-			assert.equal(true, exp.option);
-			assert.equal('fromVisited', exp.property);
-			assert.isTrue(input.method.calledOnce);
+			// Target Visitor
+			exp.get(input, 'targetMethod')();
+			assert.equal('fromTarget', exp.get(input, 'target'));
+			assert.isTrue(input.targetMethod.calledOnce);
+			assert.equal(input.targetMethod.getCall(0).args[0], exp);
+
+			// Visited
+			exp.get(input, 'visitedMethod')();
+			assert.equal('fromVisited', exp.get(input, 'visited'));
+			assert.isTrue(exp.visitedMethod.calledOnce);
+			assert.lengthOf(exp.visitedMethod.getCall(0).args, 0);
+
+			assert.isNotNull(exp.accept);
+		});
+
+		it('Should proxify the visited always if property/function names have the same name/key', () => {
+			const input = { property: 'fromTarget', method: this.sandbox.spy() };
+			const exp = Visited.new({ property: 'fromVisited', method: this.sandbox.spy() });
+
+			// Always Visited
+			exp.get(input, 'method')();
+			assert.equal('fromVisited', exp.get(input, 'property'));
+			assert.isTrue(exp.method.calledOnce);
+			assert.isFalse(input.method.called);
+
 			assert.isNotNull(exp.accept);
 		});
 
