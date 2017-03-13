@@ -1,8 +1,11 @@
-{
+#!/usr/bin/env node
+
+require('babel-register')({
 	"presets": ["es2015", "stage-2"],
 	"plugins": [
 		["module-resolver", {
-			"root": ["./lib"],
+			"root": ["../"],
+			"cwd": __dirname,
 			"alias": {
 				"bin": "bin",
 				"bundle": "bundle",
@@ -13,10 +16,7 @@
 				"visualize": "visualize"
 			}
 		}]
-	],
-	"env": {
-	    "test": {
-			"plugins": ["istanbul"]
-		}
-	}
-}
+	]
+});
+require('babel-polyfill');
+require('commands/bin/sqbox').run(__dirname);
