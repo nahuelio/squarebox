@@ -36,7 +36,7 @@ class Command extends Visited {
 	*	@return {Command}
 	**/
 	settings(options) {
-		return extend(true, this, this.constructor.defaults, _.pick(options, Command.options));
+		return extend(true, this, this.constructor.defaults, _.pick(options, this.constructor.options));
 	}
 
 	/**
@@ -55,7 +55,7 @@ class Command extends Visited {
 	*	@return {command.Command}
 	**/
 	acceptAll() {
-		return _.reduce(this.constructor.visitors, (memo, v) => memo.accept(Factory.get(v)), this);
+		return _.reduce(this.constructor.visitors, (memo, v) => memo.accept(Factory.get(v, this)), this);
 	}
 
 	/**
@@ -121,69 +121,6 @@ class Command extends Visited {
 	}
 
 	/**
-	*	Retrieves source
-	*	@public
-	*	@return {Object}
-	**/
-	source() {
-		return this.source;
-	}
-
-	/**
-	*	Retrieves and resolves scan directory (glob)
-	*	@public
-	*	@return {String}
-	**/
-	scan() {
-		return this.source().scan;
-	}
-
-	/**
-	*	Retrieves list of extensions to scan
-	*	@public
-	*	@return {Array}
-	**/
-	extensions() {
-		return this.source().extensions;
-	}
-
-	/**
-	*	Retrieves aliases for modules
-	*	@public
-	*	@return {Object}
-	**/
-	alias() {
-		return this.source().alias;
-	}
-
-	/**
-	*	Retrieves target
-	*	@public
-	*	@return {Object}
-	**/
-	target() {
-		return this.target;
-	}
-
-	/**
-	*	Retrieves and resolves destination
-	*	@public
-	*	@return {String}
-	**/
-	destination() {
-		return this.target().destination;
-	}
-
-	/**
-	*	Retrieves export format
-	*	@public
-	*	@return {String}
-	**/
-	format() {
-		return this.target().format;
-	}
-
-	/**
 	*	Command Visitors
 	*	@static
 	*	@type {Array}
@@ -212,12 +149,7 @@ class Command extends Visited {
 	static options = [
 		'env',
 		'dirname',
-		'cwd',
-		'name',
-		'aliases',
-		'params',
-		'description',
-		'options'
+		'cwd'
 	];
 
 	/**

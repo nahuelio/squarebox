@@ -42,7 +42,7 @@ class Visitor extends EventEmitter {
 
 	/**
 	*	Default Visit Strategy will return the visited object verbatim.
-	*	This method is most likely to be overriden by subsclasses of this visitor.
+	*	This method is likely to be overriden by subsclasses of this visitor when needed.
 	*	@public
 	*	@param {util.visitor.Visited} vi - instance to be visited by this visitor
 	*	@param {Any} [...args] - arguments passed to the vistior who visit the current visited instance

@@ -36,7 +36,7 @@ class SquareBox extends Command {
 	*	@return {bin.SquareBox}
 	**/
 	attachEvents() {
-		this.on(SquareBox.events.done, this.after);
+		this.once(SquareBox.events.done, this.after);
 		return this;
 	}
 
@@ -44,11 +44,10 @@ class SquareBox extends Command {
 	*	Before Run
 	*	@public
 	*	@override
-	*	@return {Object}
+	*	@return {bin.SquareBox}
 	**/
 	before() {
-		super.before().build();
-		return this;
+		return super.before().build();
 	}
 
 	/**
@@ -59,7 +58,7 @@ class SquareBox extends Command {
 	**/
 	run() {
 		this.before();
-		// TODO
+		this.parse();
 		return this;
 	}
 
@@ -114,6 +113,13 @@ class SquareBox extends Command {
 	static isPrivate(instance) {
 		return instance.isPrivate(enforcer);
 	}
+
+	/**
+	*	Command options
+	*	@static
+	*	@type {Array}
+	**/
+	static options = Command.options.concat(['options']);
 
 	/**
 	*	Static Run

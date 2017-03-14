@@ -1,38 +1,41 @@
 [{
 	"name": "help",
-	"aliases": ["h"],
+	"aliases": ["help"],
 	"description": "Help",
 	"path": "help/help",
 	"options": {
-		"clean": { "alias": "c" },
-		"bundle": { "alias": "b" },
-		"graph": { "alias": "g" }
+		"clean": {},
+		"bundle": {},
+		"graph": {}
 	}
 }, {
 	"name": "clean",
-	"aliases": ["c"],
+	"aliases": ["clean"],
 	"description": "Clean output directory",
 	"path": "clean/clean",
 	"options": {
-		"config": { "alias": "c", "default": ".sqboxrc" },
-		"url": { "alias": "u" }
+		"override": { "default": false },
+		"config": { "default": ".sqboxrc" },
+		"url": {}
 	}
 }, {
 	"name": "bundle",
-	"aliases": ["b"],
+	"aliases": ["bundle"],
 	"description": "Module Bundler",
 	"path": "bundle/bundle",
 	"options": {
-		"config": { "alias": "c", "default": ".sqboxrc" },
-		"url": { "alias": "u" }
+		"override": { "default": false },
+		"config": { "default": ".sqboxrc" },
+		"url": {}
 	}
 }, {
 	"name": "graph",
-	"aliases": ["g"],
+	"aliases": ["graph"],
 	"description": "Generates a graphical representation of your bundles",
 	"path": "visualize/graph",
 	"options": {
-		"config": { "alias": "c", "default": ".sqboxrc" },
-		"url": { "alias": "u" }
+		"override": { "default": false },
+		"config": { "default": ".sqboxrc" },
+		"url": {}
 	}
 }]

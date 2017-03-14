@@ -18,23 +18,97 @@ class Configuration extends Visitor {
 	*	Constructor
 	*	@public
 	*	@override
-	*	@param {Command} commnand - command reference
+	*	@param {Command} command - command visited by this visitor
 	*	@return {visitors.Configuration}
 	**/
 	constructor(command) {
-		super();
-		return extend(true, this, { queue: QueueAsync.new() });
+		super({ command });
+		return extend(true, this, { queue: QueueAsync.new([], { capacity: 2 }) });
 	}
 
 	/**
-	*	Load Configuration
-	*	@public
-	*	@param {util.visitor.Visited} ctx - context reference
-	*	@return {visitors.Commander}
+	*	Create configuration retrieval method
+	*	@private
+	*	@param {On}
+	*	@param {String} method - configuration method path
+	*	@return {util.visitor.Visitor}
 	**/
-	load(ctx) {
-		// TODO: [js,json,uri] QueueAsync for executing for configuration
+	_create(options, method) {
+		this.queue.offer(Factory.get(method, this, options));
+	}
+
+	/**
+	*	Parse Configuration based on source
+	*	@public
+	*	@return {Promise}
+	**/
+	parse() {
+		Configuration.methods.forEach(_.bind(this._create, this, this.command.options));
+		// Execute Poll
 		return this;
+	}
+
+	/**
+	*	Retrieves source
+	*	@public
+	*	@return {Object}
+	**/
+	source() {
+		return this.source;
+	}
+
+	/**
+	*	Retrieves and resolves scan directory (glob)
+	*	@public
+	*	@return {String}
+	**/
+	scan() {
+		return this.source().scan;
+	}
+
+	/**
+	*	Retrieves list of extensions to scan
+	*	@public
+	*	@return {Array}
+	**/
+	extensions() {
+		return this.source().extensions;
+	}
+
+	/**
+	*	Retrieves aliases for modules
+	*	@public
+	*	@return {Object}
+	**/
+	alias() {
+		return this.source().alias;
+	}
+
+	/**
+	*	Retrieves target
+	*	@public
+	*	@return {Object}
+	**/
+	target() {
+		return this.target;
+	}
+
+	/**
+	*	Retrieves and resolves destination
+	*	@public
+	*	@return {String}
+	**/
+	destination() {
+		return this.target().destination;
+	}
+
+	/**
+	*	Retrieves export format
+	*	@public
+	*	@return {String}
+	**/
+	format() {
+		return this.target().format;
 	}
 
 	/**
@@ -61,18 +135,38 @@ class Configuration extends Visitor {
 	};
 
 	/**
-	*	Configuration options
+	*	Factory
 	*	@static
-	*	@type {Array}
+	*	@type {util.factory.Factory}
 	**/
-	static options = [
-		'config',
-		'source-scan',
-		'source-extensions',
-		'source-alias',
-		'target-destination',
-		'target-format'
+	static methods = [
+		'visitors/configuration/remote',
+		'visitors/configuration/local'
 	];
+
+	/**
+	*	Configuration Events
+	*	@static
+	*	@type {Object}
+	**/
+	static events = {
+		/**
+		*	@event parse
+		**/
+		parse: 'visitors:configuration:parse'
+	}
+
+	/**
+	*	Static Constructor
+	*	@static
+	*	@override
+	*	@param {Any} [...args] - constructor arguments
+	*	@return {visitors.Configuration}
+	**/
+	static new(...args) {
+		Factory.registerAll(Configuration.methods);
+		return new this(...args);
+	}
 
 }
 

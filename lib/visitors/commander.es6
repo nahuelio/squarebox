@@ -2,13 +2,14 @@
 *	@module visitors
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
+import { resolve } from 'path';
 import _ from 'underscore';
 import extend from 'extend';
 import yargs from 'yargs';
 import chalk from 'chalk';
 import Factory from 'util/factory/factory';
-import Collection from 'util/adt/collection';
 import Visitor from 'util/visitor/visitor';
+import logger from 'util/logger/logger';
 
 /**
 *	Class Commander
@@ -17,21 +18,35 @@ import Visitor from 'util/visitor/visitor';
 class Commander extends Visitor {
 
 	/**
-	*	Adds Program Version
+	*	Constructor
 	*	@public
-	*	@param {String} version - program version
-	*	@return {yargs}
+	*	@override
+	*	@param {Command} command - command visited by this visitor
+	*	@return {util.visitor.Visitor}
 	**/
-	_version() {
-		// FIXME: Get it from package.json
-		return yargs.version('1.0.0');
+	constructor(command) {
+		return super({ command });
 	}
 
 	/**
-	*	Adds Usage message
+	*	Default Strategy to add version option to the CLI
+	*	@public
+	*	@return {visitors.Commander}
+	**/
+	_version() {
+		try {
+			yargs.version(require(resolve(this.command.dirname, '..', 'package.json')).version);
+		} catch(ex) {
+			logger(`[WARN] SquareBox Version not detected caused by ${ex.message}`).debug(logger.yellow);
+		}
+		return this;
+	}
+
+	/**
+	*	Default Strategy to add usage to the CLI
 	*	@public
 	*	@param {String} [message = 'sqbox <command> [args]'] - usage message to display
-	*	@return {yargs}
+	*	@return {visitors.Commander}
 	**/
 	_usage(message = 'sqbox <command> [args]') {
 		yargs.usage(chalk.white(message));
@@ -39,7 +54,93 @@ class Commander extends Visitor {
 	}
 
 	/**
-	*	Default Strategy that returns Command name using yargs convention format
+	*	Default Strategy to add commands into the CLI via yargs
+	*	@private
+	*	@return {visitors.Commander}
+	**/
+	_commands() {
+		this.command.constructor.commands.reduce(_.bind(this._new, this), yargs);
+		return this;
+	}
+
+	/**
+	*	Reducer appends a command into the memoized yargs reference
+	*	@public
+	*	@param {yargs} memo - memoized yargs reference
+	*	@param {Command} command - command instance
+	*	@return {yargs}
+	**/
+	_new(memo, command) {
+		return memo.command(_.reduce(Commander.builder(), _.bind(this._create, this, command), {}));
+	}
+
+	/**
+	*	Build a new command object and
+	*	@public
+	*	@param {Command} command - command instance
+	*	@param {Object} memo - memoized object
+	*	@param {String} option - Yargs command option
+	*	@return {Object}
+	**/
+	_create(command, memo, option) {
+		memo[option] = this[`_${option}`](command);
+		return memo;
+	}
+
+	/**
+	*	Default Strategy that adds an epilogue information
+	*	@private
+	*	@return {visitors.Commander}
+	**/
+	_epilogue() {
+		yargs.epilogue(chalk.cyan(`For more information, please visit http://squarebox.nahuel.io/`));
+		return this;
+	}
+
+	/**
+	*	Default Strategy that controls yargs width used for displaying information
+	*	@private
+	*	@return {visitors.Commander}
+	**/
+	_width() {
+		yargs.wrap(120);
+		return this;
+	}
+
+	/**
+	*	Default Strategy for yargs argument parsing and returns the reference to the visited
+	*	@public
+	*	@return {util.visitor.Visited}
+	**/
+	_parse() {
+		yargs.parse(this.programArgv(), (err, argv, output) =>
+			this.command.emit(Commander.events.parse, err, argv, output));
+		return this.command;
+	}
+
+	/**
+	*	Parses Configuration options
+	*	@public
+	*	@return {yargs}
+	**/
+	build() {
+		yargs.reset();
+		return this._version()._usage()._commands()._epilogue()._width()._parse();
+	}
+
+	/**
+	*	Default Strategy to retrieve program arguments
+	*	@private
+	*	@param {util.visitor.Visited} ctx - context reference
+	*	@param {Any} [args = process.argv] - optional arguments
+	*	@return {Array}
+	**/
+	programArgv(ctx, args = process.argv) {
+		return args;
+	}
+
+	/**
+	*	Creates command nomenclature for yargs
 	*	@private
 	*	@param {Command} command - command instance
 	*	@return {String}
@@ -70,7 +171,7 @@ class Commander extends Visitor {
 	}
 
 	/**
-	*	Default Strategy that returns Command Options defaults
+	*	Default Strategy that returns command options
 	*	@private
 	*	@param {Command} command - command instance
 	*	@return {Object}
@@ -82,86 +183,14 @@ class Commander extends Visitor {
 	/**
 	*	Default Strategy that returns Command Handler
 	*	@private
-	*	@param {util.visitor.Visited} ctx - context reference
+	*	@param {Command} command - command instance
 	*	@return {Function}
 	**/
-	_handler(command, ctx) {
-		const instance = Factory.register(command.path).get(command.path);
-		return _.bind(instance.run, instance);
-	}
-
-	/**
-	*	Epilogue Information to show at the end
-	*	@private
-	*	@return {String}
-	**/
-	_epilogue() {
-		return chalk.cyan(`For more information about the configuration, please visit http://squarebox.nahuel.io/`);
-	}
-
-	/**
-	*	Parses Configuration options
-	*	@public
-	*	@param {util.visitor.Visited} ctx - context reference
-	*	@param {Function} parse -
-	*	@return {yargs}
-	**/
-	build(ctx, parse) {
-		const { commands } = ctx.constructor;
-		yargs.reset();
-		return commands.reduce(_.bind(this.command, this, ctx), this._usage()._version())
-			.epilogue(this._epilogue())
-			.wrap(120)
-			.parse(this.programArgv(), this.onParse);
-	}
-
-	/**
-	*	Default Strategy to retrieve program arguments
-	*	@private
-	*	@param {util.visitor.Visited} ctx - context reference
-	*	@param {Any} [args = process.argv] - optional arguments
-	*	@return {Array}
-	**/
-	programArgv(ctx, args = process.argv) {
-		return args;
-	}
-
-	/**
-	*	Default Parse Handler
-	*	@public
-	*	@param {Error} [err] - error reference while parsing
-	*	@param {Object} argv - arguments parsed
-	*	@param {Object} output - output reference
-	*	@return {visitors.Commander}
-	**/
-	onParse(err, argv, output) {
-		return this;
-	}
-
-	/**
-	*	Reducer appends a command into the memoized yargs reference
-	*	@public
-	*	@param {util.visitor.Visited} ctx - context reference
-	*	@param {yargs} memo - memoized yargs reference
-	*	@param {Command} command - command instance
-	*	@param {String} [description = ''] - command description
-	*	@return {yargs}
-	**/
-	command(ctx, memo, command, description = '') {
-		return memo.command(_.reduce(Commander.builder(), _.bind(this.newCommand, this, command), {}, this));
-	}
-
-	/**
-	*	Build a new command object and
-	*	@public
-	*	@param {Command} command - command instance
-	*	@param {Object} memo - memoized object
-	*	@param {String} option - Yargs command option
-	*	@return {Object}
-	**/
-	newCommand(command, memo, option) {
-		memo[option] = this[`_${option}`](command);
-		return memo;
+	_handler(command) {
+		return (argv) => {
+			Factory.register(command.path);
+			this.command.settings({ options: extend(false, _.omit(argv, Commander.ignore), { path: command.path }) });
+		};
 	}
 
 	/**
@@ -174,6 +203,25 @@ class Commander extends Visitor {
 	}
 
 	/**
+	*	Commander Events
+	*	@static
+	*	@type {Object}
+	**/
+	static events = {
+		/**
+		*	@event read
+		**/
+		parse: 'visitors:commander:read'
+	}
+
+	/**
+	*	Yargs arguments to ignore
+	*	@static
+	*	@type {Array}
+	**/
+	static ignore = ['$0', '_', 'version']
+
+	/**
 	*	Yargs Command Builder option names
 	*	@static
 	*	@return {Array}
@@ -181,16 +229,6 @@ class Commander extends Visitor {
 	static builder() {
 		return ['command', 'aliases', 'desc', 'builder', 'handler'];
 	}
-
-	/**
-	*	Move to Configuration - Available Artifacts
-	*	@static
-	*	@type {Array}
-	**/
-	static artifacts = [
-		'visitors/configuration/remote',
-		'visitors/configuration/local'
-	];
 
 }
 
