@@ -13,6 +13,17 @@ import Visitor from 'util/visitor/visitor';
 class Asynchronous extends Visitor {
 
 	/**
+	*	Constructor
+	*	@public
+	*	@override
+	*	@param {Any} [...args] - constructor arguments
+	*	@return {visitors.async.Asynchronous}
+	**/
+	constructor(...args) {
+		return super();
+	}
+
+	/**
 	*	Default Next Strategy to always resolve the promise.
 	*	Note: This method was designed (and it's most likely) to be overriden by
 	*	{@link util.visitor.Visited} subclasses that use this visitor.

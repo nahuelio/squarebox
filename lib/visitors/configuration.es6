@@ -18,11 +18,11 @@ class Configuration extends Visitor {
 	*	Constructor
 	*	@public
 	*	@override
-	*	@param {Any} [...args] - constructor arguments
+	*	@param {Command} commnand - command reference
 	*	@return {visitors.Configuration}
 	**/
-	constructor(...args) {
-		super(...args);
+	constructor(command) {
+		super();
 		return extend(true, this, { queue: QueueAsync.new() });
 	}
 

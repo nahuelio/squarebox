@@ -1,5 +1,5 @@
 /**
-*	@module clean
+*	@module visualize
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'underscore';
@@ -7,23 +7,23 @@ import extend from 'extend';
 import Command from 'command';
 
 /**
-*	Class Clean
+*	Class Graph
 *	@extends {Command}
 **/
-class Clean extends Command {
+class Graph extends Command {
 
 	/**
 	*	Run
 	*	@public
 	*	@override
-	*	@return {clean.Clean}
+	*	@return {visualize.Graph}
 	**/
 	run() {
 		// TODO
-		console.log('Clean.run()...');
+		console.log('Graph.run()...');
 		return super.run();
 	}
 
 }
 
-export default Clean;
+export default Graph;

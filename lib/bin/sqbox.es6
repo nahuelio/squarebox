@@ -4,9 +4,10 @@
 **/
 import 'util/mixins';
 import extend from 'extend';
-
+import Collection from 'util/adt/collection';
 import Factory from 'util/factory/factory';
 import Command from 'command';
+import CommandsList from './commands.json';
 
 let enforcer = Symbol('SquareBox');
 
@@ -43,10 +44,11 @@ class SquareBox extends Command {
 	*	Before Run
 	*	@public
 	*	@override
-	*	@return {bin.SquareBox}
+	*	@return {Object}
 	**/
 	before() {
-		return super.before().parse();
+		super.before().build();
+		return this;
 	}
 
 	/**
@@ -88,14 +90,9 @@ class SquareBox extends Command {
 	/**
 	*	Available Commands
 	*	@static
-	*	@type {Array}
+	*	@type {util.adt.Collection}
 	**/
-	static commands = [
-		{ help: 'help/help' },
-		{ clean: 'clean/clean' },
-		{ bundle: 'bundle/bundle' },
-		{ visualize: 'visualize/visualize' }
-	];
+	static commands = Collection.new(CommandsList);
 
 	/**
 	*	SquareBox visitors
@@ -124,8 +121,8 @@ class SquareBox extends Command {
 	*	@param {String} [cwd = process.cwd()] - base path
 	*	@return {bin.SquareBox}
 	**/
-	static run(cwd) {
-		return this.new({ cwd }).read();
+	static run(cwd = process.cwd()) {
+		return this.new({ cwd }).run();
 	}
 
 }

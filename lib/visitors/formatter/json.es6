@@ -13,6 +13,17 @@ import InterfaceException from 'util/exception/proxy/interface';
 class Json extends Visitor {
 
 	/**
+	*	Constructor
+	*	@public
+	*	@override
+	*	@param {Any} [...args] - constructor arguments
+	*	@return {visitors.formatter.Json}
+	**/
+	constructor(...args) {
+		return super();
+	}
+
+	/**
 	*	Reducer Strategy to iterate over properties
 	*	@public
 	*	@param {Object} m - memoized object reference

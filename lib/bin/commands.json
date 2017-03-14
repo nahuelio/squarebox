@@ -1,0 +1,38 @@
+[{
+	"name": "help",
+	"aliases": ["h"],
+	"description": "Help",
+	"path": "help/help",
+	"options": {
+		"clean": { "alias": "c" },
+		"bundle": { "alias": "b" },
+		"graph": { "alias": "g" }
+	}
+}, {
+	"name": "clean",
+	"aliases": ["c"],
+	"description": "Clean output directory",
+	"path": "clean/clean",
+	"options": {
+		"config": { "alias": "c", "default": ".sqboxrc" },
+		"url": { "alias": "u" }
+	}
+}, {
+	"name": "bundle",
+	"aliases": ["b"],
+	"description": "Module Bundler",
+	"path": "bundle/bundle",
+	"options": {
+		"config": { "alias": "c", "default": ".sqboxrc" },
+		"url": { "alias": "u" }
+	}
+}, {
+	"name": "graph",
+	"aliases": ["g"],
+	"description": "Generates a graphical representation of your bundles",
+	"path": "visualize/graph",
+	"options": {
+		"config": { "alias": "c", "default": ".sqboxrc" },
+		"url": { "alias": "u" }
+	}
+}]

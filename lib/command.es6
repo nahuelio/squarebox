@@ -212,7 +212,12 @@ class Command extends Visited {
 	static options = [
 		'env',
 		'dirname',
-		'cwd'
+		'cwd',
+		'name',
+		'aliases',
+		'params',
+		'description',
+		'options'
 	];
 
 	/**
