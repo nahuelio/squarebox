@@ -3,6 +3,6 @@
 --require babel-polyfill
 --recursive
 --ui bdd
---timeout 300
+--timeout 2000
 --reporter spec
 --compilers es6:babel-register
