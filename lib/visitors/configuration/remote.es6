@@ -18,24 +18,55 @@ class Remote extends Visited {
 	/**
 	*	Constructor
 	*	@public
-	*	@param {visitors.Configuration} configuration - configuration reference
+	*	@param {Command} command - command reference
 	*	@param {Object} options - command options
 	*	@return {visitors.configuration.Remote}
 	**/
-	constructor(configuration, options) {
-		return super({ configuration, options });
+	constructor(command, options) {
+		return super({ command, options });
 	}
 
 	/**
-	*	Load remote configuration file
+	*	Load remote configuration file from url
 	*	@public
-	*	@param {String} name - file name
+	*	@param {String} url - url
 	*	@return {Object}
 	**/
-	load(name) {
-		// TODO
-		console.log('Remote.load()...');
-		return this.emit(Remote.events.load, true);
+	load(url) {
+		request(url, _.bind(this.onLoad, this));
+		return this;
+	}
+
+	/**
+	*	Remote Load Handler
+	*	@public
+	*	@param {Error} [err] - request error
+	*	@param {Object} response - request response reference
+	*	@param {String} body - request error
+	*	@return {Boolean}
+	**/
+	onLoad(err, response, body) {
+		let output = {};
+		try {
+			if(_.defined(err))
+				return this.out({ warn: Remote.messages.error({ warn: err }) });
+			if(response.statusCode !== 200)
+				return this.out({ warn: Remote.messages.error({ warn: response.statusCode }) });
+			this.out(JSON.parse(body));
+		} catch(ex) {
+			// logger.debug();
+			this.out({ warn: (Remote.messages.invalid + ' - ' + ex.message) });
+		}
+	}
+
+	/**
+	*	Result Output
+	*	@public
+	*	@param {Object} output - output to dispatch
+	*	@return {Boolean}
+	**/
+	out(output) {
+		return this.emit(Remote.events.load, output);
 	}
 
 	/**
@@ -48,8 +79,9 @@ class Remote extends Visited {
 	*	@return {Promise}
 	**/
 	next(adt, resolve, reject) {
+		const { url } = this.options;
 		this.once(Remote.events.load, resolve);
-		return this.load();
+		return _.defined(url) ? this.load(url) : this.out(null);
 	}
 
 	/**
@@ -62,6 +94,16 @@ class Remote extends Visited {
 		*	@event load
 		**/
 		load: 'visitors:configuration:remote:load'
+	}
+
+	/**
+	*	Remote Configuration Messages
+	*	@static
+	*	@type {Object}
+	**/
+	static messages = {
+		error: _.template(`Remote Configuration - <%= warn %>`),
+		invalid: `Invalid JSON format`
 	}
 
 }

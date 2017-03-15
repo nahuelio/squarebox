@@ -45,7 +45,12 @@ describe('bin.SquareBox', function() {
 	describe('static->run()', () => {
 
 		it('Should run the command', () => {
-			this.input = this.input.concat(['sqbox', 'bundle', '--url', 'http://squarebox.nahuel.io?profile=dev']);
+			this.input = this.input.concat([
+				'sqbox',
+				'bundle',
+				//'--url', 'http://squarebox.nahuel.io?profile=dev',
+				'--config', 'test/specs/.sqboxrc'
+			]);
 			const expProgramArgv = this.mockCommander.expects('programArgv')
 				.once()
 				.returns(this.input);

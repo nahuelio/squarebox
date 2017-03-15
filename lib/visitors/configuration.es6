@@ -7,6 +7,7 @@ import extend from 'extend';
 import Factory from 'util/factory/factory';
 import Visitor from 'util/visitor/visitor';
 import QueueAsync from 'util/adt/queue-async';
+import logger from 'util/logger/logger';
 
 /**
 *	Class Configuration
@@ -34,7 +35,7 @@ class Configuration extends Visitor {
 	*	@return {util.visitor.Visitor}
 	**/
 	_create(options, method) {
-		this.queue.offer(Factory.get(method, this, options));
+		this.queue.offer(Factory.get(method, this.command, options));
 	}
 
 	/**
@@ -44,7 +45,40 @@ class Configuration extends Visitor {
 	**/
 	parse() {
 		Configuration.methods.forEach(_.bind(this._create, this, this.command.options));
-		return this.queue.poll();
+		return this.queue.poll().then(_.bind(this.onParse, this));
+	}
+
+	/**
+	*	Configuration Parse Complete Handler
+	*	@public
+	*	@param {Array} results - configuration results
+	*	@return {visitors.Configuration}
+	**/
+	onParse(results) {
+		_.each(_.compact(results), this.onOptions, this);
+		return this;
+	}
+
+	/**
+	*	Configuration options handler based on results
+	*	@public
+	*	@param {Object} result - result
+	*	@return
+	**/
+	onOptions(result) {
+		if(_.defined(result.warn)) return this.onParseError(result.warn);
+		return this;
+	}
+
+	/**
+	*	Configuration Parse Error Handler
+	*	@public
+	*	@param {String} message - error message reference
+	*	@return {visitors.Configuration}
+	**/
+	onParseError(message) {
+		logger(message).warn();
+		return this;
 	}
 
 	/**

@@ -73,9 +73,12 @@ describe('util.adt.StackAsync', function() {
 			assert.isTrue(exp.push({ env: 'dev' }, { silent: true }));
 			assert.isTrue(exp.push({ env: 'stage' }, { silent: true }));
 
-			const result = exp.pop({ silent: true }).then((stack) => {
-				assert.instanceOf(stack, StackAsync);
-				assert.isTrue(stack.isEmpty());
+			const result = exp.pop({ silent: true }).then((results) => {
+				assert.instanceOf(results, Array);
+				assert.lengthOf(results, 2);
+				assert.instanceOf(results[0], Command);
+				assert.isTrue(exp.isEmpty());
+
 				done();
 			}).catch((err) => console.log(err));
 		});

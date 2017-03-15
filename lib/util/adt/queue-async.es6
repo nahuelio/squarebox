@@ -65,9 +65,11 @@ class QueueAsync extends Queue {
 	*	@async
 	*	@override
 	*	@param {Object} [opts = {}] - additional options
+	*	@param {Boolean} [next = false] - async queue already started
 	*	@return {Promise}
 	**/
-	async poll(opts = {}) {
+	async poll(opts = {}, next = false) {
+		if(!next) this._resetLast();
 		const res = await this.next(opts);
 		return this.onNext(res, opts);
 	}
@@ -94,19 +96,19 @@ class QueueAsync extends Queue {
 	**/
 	onNext(res, opts) {
 		this._last.push(res);
-		return this.isEmpty() ? this.end(opts) : this.poll(opts);
+		return this.isEmpty() ? this.end(opts) : this.poll(opts, true);
 	}
 
 	/**
-	*	Asynchronous Queue end
+	*	Asynchronous Queue end will return last results.
 	*	@public
 	*	@emits {QueueAsync.events.end} - when opts.silent is false or undefined
 	*	@param {Object} [opts = {}] - additional options
-	*	@return {util.adt.QueueAsync}
+	*	@return {Array}
 	**/
 	end(opts) {
 		if(!opts.silent) this.emit(QueueAsync.events.end, this._last);
-		return this._resetLast();
+		return this._last;
 	}
 
 	/**

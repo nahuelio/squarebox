@@ -73,9 +73,12 @@ describe('util.adt.QueueAsync', function() {
 			assert.isTrue(exp.offer({ env: 'dev' }, { silent: true }));
 			assert.isTrue(exp.offer({ env: 'stage' }, { silent: true }));
 
-			const result = exp.poll({ silent: true }).then((queue) => {
-				assert.instanceOf(queue, QueueAsync);
-				assert.isTrue(queue.isEmpty());
+			const result = exp.poll({ silent: true }).then((results) => {
+				assert.instanceOf(results, Array);
+				assert.lengthOf(results, 2);
+				assert.instanceOf(results[0], Command);
+				assert.isTrue(exp.isEmpty());
+
 				done();
 			}).catch((err) => console.log(err));
 		});

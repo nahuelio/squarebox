@@ -65,9 +65,11 @@ class StackAsync extends Stack {
 	*	@async
 	*	@override
 	*	@param [opts = {}] {Object} additional options
+	*	@param {Boolean} [next = false] - async queue already started
 	*	@return {Promise}
 	**/
-	async pop(opts = {}) {
+	async pop(opts = {}, next = false) {
+		if(!next) this._resetLast();
 		const res = await this.next(opts);
 		return this.onNext(res, opts);
 	}
@@ -94,7 +96,7 @@ class StackAsync extends Stack {
 	**/
 	onNext(res, opts) {
 		this._last.push(res);
-		return this.isEmpty() ? this.end(opts) : this.pop(opts);
+		return this.isEmpty() ? this.end(opts) : this.pop(opts, true);
 	}
 
 	/**
@@ -106,7 +108,7 @@ class StackAsync extends Stack {
 	**/
 	end(opts) {
 		if(!opts.silent) this.emit(StackAsync.events.end, this._last);
-		return this._resetLast();
+		return this._last;
 	}
 
 	/**

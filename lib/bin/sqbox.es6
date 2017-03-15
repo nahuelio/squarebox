@@ -59,29 +59,19 @@ class SquareBox extends Command {
 	**/
 	run() {
 		this.before();
-		this.parse().then(_.bind(this.onParse, this)).catch(_.bind(this.onParseError, this));
+		this.parse().then(_.bind(this.onConfiguration, this));
 		return this;
 	}
 
 	/**
-	*	Configuration Parse Complete Handler
+	*	Configuration Loaded and Parsed Handler
 	*	@public
-	*	@param {Array} results - configuration results
+	*	@param {visitors.Configuration} configuration - configuration visitor reference
 	*	@return {bin.SquareBox}
 	**/
-	onParse(results) {
-		// TODO: do this.options.override with results
-		return this;
-	}
-
-	/**
-	*	Configuration Parse Error Handler
-	*	@public
-	*	@param {Error} err - error reference
-	*	@return {bin.SquareBox}
-	**/
-	onParseError(err) {
-		logger(err.message).fatal();
+	onConfiguration() {
+		const { path } = this.options;
+		// TODO: Factory.get(path, this.params()).run();
 		return this;
 	}
 
