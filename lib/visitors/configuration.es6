@@ -23,7 +23,7 @@ class Configuration extends Visitor {
 	**/
 	constructor(command) {
 		super({ command });
-		return extend(true, this, { queue: QueueAsync.new([], { capacity: 2 }) });
+		return extend(true, this, { queue: QueueAsync.new([], { capacity: Configuration.methods.length }) });
 	}
 
 	/**
@@ -44,8 +44,7 @@ class Configuration extends Visitor {
 	**/
 	parse() {
 		Configuration.methods.forEach(_.bind(this._create, this, this.command.options));
-		// Execute Poll
-		return this;
+		return this.queue.poll();
 	}
 
 	/**
@@ -109,6 +108,22 @@ class Configuration extends Visitor {
 	**/
 	format() {
 		return this.target().format;
+	}
+
+	/**
+	*	Default Options
+	*	@public
+	*	@type {Array}
+	**/
+	defaultOptions() {
+		return [
+			'config',
+			'source-scan',
+			'source-extensions',
+			'source-alias',
+			'target-destination',
+			'target-format'
+		];
 	}
 
 	/**

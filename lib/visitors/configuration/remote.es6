@@ -2,8 +2,9 @@
 *	@module visitors.configuration
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
-import _ from 'underscore';
+import _ from 'util/mixins';
 import extend from 'extend';
+import request from 'request';
 import Visited from 'util/visitor/visited';
 
 /**
@@ -22,7 +23,19 @@ class Remote extends Visited {
 	*	@return {visitors.configuration.Remote}
 	**/
 	constructor(configuration, options) {
-		return super();
+		return super({ configuration, options });
+	}
+
+	/**
+	*	Load remote configuration file
+	*	@public
+	*	@param {String} name - file name
+	*	@return {Object}
+	**/
+	load(name) {
+		// TODO
+		console.log('Remote.load()...');
+		return this.emit(Remote.events.load, true);
 	}
 
 	/**
@@ -35,23 +48,21 @@ class Remote extends Visited {
 	*	@return {Promise}
 	**/
 	next(adt, resolve, reject) {
-		// TODO
-		return resolve();
+		this.once(Remote.events.load, resolve);
+		return this.load();
 	}
 
 	/**
-	*	Remote options
+	*	Remote Events
 	*	@static
-	*	@type {Array}
+	*	@type {Object}
 	**/
-	static options = [
-		'config',
-		'source-scan',
-		'source-extensions',
-		'source-alias',
-		'target-destination',
-		'target-format'
-	];
+	static events = {
+		/**
+		*	@event load
+		**/
+		load: 'visitors:configuration:remote:load'
+	}
 
 }
 

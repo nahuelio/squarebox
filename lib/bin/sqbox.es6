@@ -8,6 +8,7 @@ import Collection from 'util/adt/collection';
 import Factory from 'util/factory/factory';
 import Command from 'command';
 import CommandsList from './commands.json';
+import logger from 'util/logger/logger';
 
 let enforcer = Symbol('SquareBox');
 
@@ -58,7 +59,29 @@ class SquareBox extends Command {
 	**/
 	run() {
 		this.before();
-		this.parse();
+		this.parse().then(_.bind(this.onParse, this)).catch(_.bind(this.onParseError, this));
+		return this;
+	}
+
+	/**
+	*	Configuration Parse Complete Handler
+	*	@public
+	*	@param {Array} results - configuration results
+	*	@return {bin.SquareBox}
+	**/
+	onParse(results) {
+		// TODO: do this.options.override with results
+		return this;
+	}
+
+	/**
+	*	Configuration Parse Error Handler
+	*	@public
+	*	@param {Error} err - error reference
+	*	@return {bin.SquareBox}
+	**/
+	onParseError(err) {
+		logger(err.message).fatal();
 		return this;
 	}
 

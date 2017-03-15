@@ -70,6 +70,37 @@ _.mixin({
 	},
 
 	/**
+	*	Returns true if the content is in json format, false otherwise.
+	*	@public
+	*	@param {String} content - content to be evaluated
+	*	@return {Boolean}
+	**/
+	isJson: function(content) {
+		try {
+			JSON.parse(content);
+			return true;
+		} catch(ex) {
+			return false;
+		}
+	},
+
+	/**
+	*	Returns true if the content is in javascript format, false otherwise.
+	*	@FIXME: Need to improve validation against javascript
+	*	@public
+	*	@param {String} content - content to be evaluated
+	*	@return {Boolean}
+	**/
+	isJS: function(content) {
+		try {
+			JSON.parse(content);
+			return false;
+		} catch(ex) {
+			return true;
+		}
+	},
+
+	/**
 	*	Returns true if parameter source is an instance of parameter constructor, false otherwise.
 	*	@public
 	*	@param source {Object} source to be evaluated

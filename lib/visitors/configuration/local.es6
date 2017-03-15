@@ -2,7 +2,7 @@
 *	@module visitors.configuration
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
-import _ from 'underscore';
+import _ from 'util/mixins';
 import extend from 'extend';
 import Visited from 'util/visitor/visited';
 
@@ -22,7 +22,29 @@ class Local extends Visited {
 	*	@return {visitors.configuration.Local}
 	**/
 	constructor(configuration, options) {
-		return super();
+		return super({ configuration, options });
+	}
+
+	/**
+	*	Returns true if local configuration exists, false otherwise
+	*	@public
+	*	@param {String} path - path to local configuration
+	*	@return {Boolean}
+	**/
+	exists() {
+		return true;
+	}
+
+	/**
+	*	Load local configuration file
+	*	@public
+	*	@param {String} name - file name
+	*	@return {Object}
+	**/
+	load(name) {
+		// TODO
+		console.log('Local.load()...');
+		return true;
 	}
 
 	/**
@@ -35,23 +57,8 @@ class Local extends Visited {
 	*	@return {Promise}
 	**/
 	next(adt, resolve, reject) {
-		// TODO
-		return resolve();
+		return resolve(this.load());
 	}
-
-	/**
-	*	Local options
-	*	@static
-	*	@type {Array}
-	**/
-	static options = [
-		'config',
-		'source-scan',
-		'source-extensions',
-		'source-alias',
-		'target-destination',
-		'target-format'
-	];
 
 }
 
