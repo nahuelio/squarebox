@@ -11,18 +11,23 @@ module.exports = {
 			libraries: 'libs'
 		}
 	},
-	target: [{
-		destination: './dist/global',
-		format: 'ifie'
-	}, {
-		destination: './dist/cjs',
-		format: 'cjs'
-	}, {
-		destination: './dist/umd',
-		format: 'umd'
-	}, {
-		destination: './dist/amd',
-		format: 'amd'
-	}],
+	target: {
+		global: {
+			destination: './dist/global',
+			format: 'ifie'
+		},
+		umd: {
+			destination: './dist/umd',
+			format: 'umd'
+		},
+		cjs: {
+			destination: './dist/cjs',
+			format: 'cjs'
+		},
+		amd: {
+			destination: './dist/amd',
+			format: 'amd'
+		}
+	},
 	logLevel: 'debug'
 };

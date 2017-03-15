@@ -121,6 +121,61 @@ class Command extends Visited {
 	}
 
 	/**
+	*	Retrieves source
+	*	@public
+	*	@return {Object}
+	**/
+	source() {
+		return this.source;
+	}
+
+	/**
+	*	Retrieves and resolves scan directory (glob)
+	*	@public
+	*	@return {String}
+	**/
+	scan() {
+		return this.source().scan;
+	}
+
+	/**
+	*	Retrieves list of extensions to scan
+	*	@public
+	*	@return {Array}
+	**/
+	extensions() {
+		return this.source().extensions;
+	}
+
+	/**
+	*	Retrieves aliases for modules
+	*	@public
+	*	@return {Object}
+	**/
+	alias() {
+		return this.source().alias;
+	}
+
+	/**
+	*	Retrieves target
+	*	@public
+	*	@return {Object}
+	**/
+	target() {
+		return this.target;
+	}
+
+	/**
+	*	Retrieve targets by using a given predicate passed by parameter
+	*	@public
+	*	@param {Function} predicate - predicate to walk over the targets
+	*	@return {Array}
+	**/
+	targets(predicate) {
+		return _.defined(predicate) && _.isFunction(predicate) ? _.map(this.target, predicate, this) : [];
+	}
+
+	/**
 	*	Command Visitors
 	*	@static
 	*	@type {Array}
@@ -149,7 +204,11 @@ class Command extends Visited {
 	static options = [
 		'env',
 		'dirname',
-		'cwd'
+		'cwd',
+		'scan',
+		'extensions',
+		'alias',
+		'target'
 	];
 
 	/**

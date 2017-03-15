@@ -48,14 +48,17 @@ describe('bin.SquareBox', function() {
 			this.input = this.input.concat([
 				'sqbox',
 				'bundle',
-				//'--url', 'http://squarebox.nahuel.io?profile=dev',
-				'--config', 'test/specs/.sqboxrc'
+				'--config', 'test/specs/.sqboxrc',
+				'--scan', './source/**',
+				'--extensions', '.js,.es6',
+				'--alias', 'common:./path/common',
+				'--target', 'add>umd:./dist/umd,other>cjs:./dist/cjs'
 			]);
 			const expProgramArgv = this.mockCommander.expects('programArgv')
 				.once()
 				.returns(this.input);
 
-			this.sqbox.run();
+			assert.instanceOf(this.sqbox.run(), SquareBox);
 		});
 
 	});

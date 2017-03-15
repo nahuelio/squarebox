@@ -7,7 +7,7 @@ import extend from 'extend';
 import Factory from 'util/factory/factory';
 import Visitor from 'util/visitor/visitor';
 import QueueAsync from 'util/adt/queue-async';
-import logger from 'util/logger/logger';
+import logger, { Logger } from 'util/logger/logger';
 
 /**
 *	Class Configuration
@@ -39,6 +39,66 @@ class Configuration extends Visitor {
 	}
 
 	/**
+	*	Format and overrides command options from the CLI arguments
+	*	@private
+	*	@param {Object} opts - cli options for source
+	*	@return {visitors.Configuration}
+	**/
+	_override(opts) {
+		let toOverride = _.pick(opts, Configuration.cliOptions);
+		extend(true, this.command, _.reduce(toOverride, this._format, toOverride, this));
+		return this;
+	}
+
+	/**
+	*	Format a given CLI option by evaluating the key to load the factory formatter and passing the value
+	*	to the formatter.
+	*	@public
+	*	@param {Object} memo - options being memoized
+	*	@param {Any} memo - options being memoized
+	*	@param {String} memo - options being memoized
+	*	@return
+	**/
+	_format(memo, value, key) {
+		let ph = this.formatterPath(key);
+		if(Factory.exists(ph)) memo[key] = Factory.get(ph, value);
+		return memo;
+	}
+
+	/**
+	*	Merge configuration options (and possibly) applies overrides by CLI arguments.
+	*	@private
+	*	@param {Object} opts - configuration options for target
+	*	@return {visitors.Configuration}
+	**/
+	_source(opts) {
+		extend(true, this.command, _.pick(opts, Configuration.cliOptions))
+		return this;
+	}
+
+	/**
+	*	Merge configuration options (and possibly) applies overrides by CLI arguments.
+	*	@private
+	*	@param {Object} opts - configuration options for target
+	*	@return {visitors.Configuration}
+	**/
+	_target(opts) {
+		extend(true, this.command, _.pick(opts, Configuration.cliOptions));
+		return this;
+	}
+
+	/**
+	*	Sets Logger level
+	*	@private
+	*	@param {String} level - logger level
+	*	@return {visitors.Configuration}
+	**/
+	_logger(level) {
+		logger.level(Logger.level[level]);
+		return this;
+	}
+
+	/**
 	*	Parse Configuration based on source
 	*	@public
 	*	@return {Promise}
@@ -67,6 +127,10 @@ class Configuration extends Visitor {
 	**/
 	onOptions(result) {
 		if(_.defined(result.warn)) return this.onParseError(result.warn);
+		this._source(result.source)
+			._target(result.target)
+			._logger(result.logLevel)
+			._override(this.command.options);
 		return this;
 	}
 
@@ -82,82 +146,13 @@ class Configuration extends Visitor {
 	}
 
 	/**
-	*	Retrieves source
+	*	Resolves and return full formatter path
 	*	@public
-	*	@return {Object}
-	**/
-	source() {
-		return this.source;
-	}
-
-	/**
-	*	Retrieves and resolves scan directory (glob)
-	*	@public
+	*	@param {String} name - formatter name
 	*	@return {String}
 	**/
-	scan() {
-		return this.source().scan;
-	}
-
-	/**
-	*	Retrieves list of extensions to scan
-	*	@public
-	*	@return {Array}
-	**/
-	extensions() {
-		return this.source().extensions;
-	}
-
-	/**
-	*	Retrieves aliases for modules
-	*	@public
-	*	@return {Object}
-	**/
-	alias() {
-		return this.source().alias;
-	}
-
-	/**
-	*	Retrieves target
-	*	@public
-	*	@return {Object}
-	**/
-	target() {
-		return this.target;
-	}
-
-	/**
-	*	Retrieves and resolves destination
-	*	@public
-	*	@return {String}
-	**/
-	destination() {
-		return this.target().destination;
-	}
-
-	/**
-	*	Retrieves export format
-	*	@public
-	*	@return {String}
-	**/
-	format() {
-		return this.target().format;
-	}
-
-	/**
-	*	Default Options
-	*	@public
-	*	@type {Array}
-	**/
-	defaultOptions() {
-		return [
-			'config',
-			'source-scan',
-			'source-extensions',
-			'source-alias',
-			'target-destination',
-			'target-format'
-		];
+	formatterPath(name) {
+		return `visitors/configuration/formatter/${name}`;
 	}
 
 	/**
@@ -170,20 +165,6 @@ class Configuration extends Visitor {
 	}
 
 	/**
-	*	Configuration Defaults
-	*	@static
-	*	@type {Object}
-	**/
-	static defaults = {
-		'config': '.sqboxrc',
-		'source-scan': '.',
-		'source-extensions': ['.js', '.jsx', '.es6', '.es'],
-		'source-alias': {},
-		'target-destination': './dist',
-		'target-format': 'ifie'
-	};
-
-	/**
 	*	Factory
 	*	@static
 	*	@type {util.factory.Factory}
@@ -192,6 +173,24 @@ class Configuration extends Visitor {
 		'visitors/configuration/remote',
 		'visitors/configuration/local'
 	];
+
+	/**
+	*	Factory Formatters for Options
+	*	@static
+	*	@type {Array}
+	**/
+	static formatters = [
+		'visitors/configuration/formatter/alias',
+		'visitors/configuration/formatter/extensions',
+		'visitors/configuration/formatter/target'
+	];
+
+	/**
+	*	CLI Argument Options
+	*	@static
+	*	@type {Array}
+	**/
+	static cliOptions = ['scan', 'extensions', 'alias', 'target'];
 
 	/**
 	*	Configuration Events
@@ -203,7 +202,7 @@ class Configuration extends Visitor {
 		*	@event parse
 		**/
 		parse: 'visitors:configuration:parse'
-	}
+	};
 
 	/**
 	*	Static Constructor
@@ -213,7 +212,7 @@ class Configuration extends Visitor {
 	*	@return {visitors.Configuration}
 	**/
 	static new(...args) {
-		Factory.registerAll(Configuration.methods);
+		Factory.registerAll(Configuration.methods.concat(Configuration.formatters));
 		return new this(...args);
 	}
 
