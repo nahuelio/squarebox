@@ -5,6 +5,7 @@
 module.exports = {
 	source: {
 		scan: './src/**',
+		exclude: ['./src/dependencies/**'],
 		extensions: ['.js', '.es6', '.es'],
 		alias: {
 			common: 'shared/common',

@@ -1,6 +1,7 @@
 {
 	"source": {
 		"scan": "./src/**",
+		"exclude": ["./src/dependencies/**"],
 		"extensions": [".js", ".es6"],
 		"alias": {
 			"common": "shared/common",

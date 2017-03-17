@@ -139,6 +139,15 @@ class Command extends Visited {
 	}
 
 	/**
+	*	Retrieves and resolves excluded folders
+	*	@public
+	*	@return {Array}
+	**/
+	exclude() {
+		return this.source().exclude;
+	}
+
+	/**
 	*	Retrieves list of extensions to scan
 	*	@public
 	*	@return {Array}
@@ -206,6 +215,7 @@ class Command extends Visited {
 		'dirname',
 		'cwd',
 		'scan',
+		'exclude',
 		'extensions',
 		'alias',
 		'target'

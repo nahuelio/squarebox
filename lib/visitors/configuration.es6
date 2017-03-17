@@ -105,7 +105,7 @@ class Configuration extends Visitor {
 	**/
 	parse() {
 		Configuration.methods.forEach(_.bind(this._create, this, this.command.options));
-		return this.queue.poll().then(_.bind(this.onParse, this));
+		return this.queue.poll().then(_.bind(this.onParse, this)).catch(_.bind(this.onParseError, this));
 	}
 
 	/**
@@ -131,6 +131,7 @@ class Configuration extends Visitor {
 			._target(result.target)
 			._logger(result.logLevel)
 			._override(this.command.options);
+		console.log(this.command);
 		return this;
 	}
 
@@ -181,6 +182,7 @@ class Configuration extends Visitor {
 	**/
 	static formatters = [
 		'visitors/configuration/formatter/alias',
+		'visitors/configuration/formatter/exclude',
 		'visitors/configuration/formatter/extensions',
 		'visitors/configuration/formatter/target'
 	];
@@ -190,7 +192,7 @@ class Configuration extends Visitor {
 	*	@static
 	*	@type {Array}
 	**/
-	static cliOptions = ['scan', 'extensions', 'alias', 'target'];
+	static cliOptions = ['scan', 'exclude', 'extensions', 'alias', 'target'];
 
 	/**
 	*	Configuration Events

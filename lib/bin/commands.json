@@ -27,17 +27,13 @@
 	"options": {
 		"override": { "default": false },
 		"config": { "default": ".sqboxrc" },
-		"url": {},
-		"scan": { "default": "." },
-		"extensions": { "default": [".js", ".jsx", ".es6", ".es"] },
-		"alias": { "default": {} },
- 		"target": {
-			"default": [{
-				"destination": "./dist",
-				"format": "umd"
-			}]
-		},
-		"logLevel": { "default": "output" }
+		"url": { "alias": "u" },
+		"scan": { "alias": "s", "default": "." },
+		"exclude": { "alias": "x" },
+		"extensions": { "alias": "e", "default": ".js,.jsx,.es6,.es" },
+		"alias": { "alias": "a", "default": {} },
+ 		"target": { "alias": "t", "default": "dist>umd:./dist" },
+		"logLevel": { "alias": "lv", "default": "output" }
 	}
 }, {
 	"name": "graph",

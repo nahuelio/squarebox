@@ -49,10 +49,11 @@ describe('bin.SquareBox', function() {
 				'sqbox',
 				'bundle',
 				'--config', 'test/specs/.sqboxrc',
-				'--scan', './source/**',
-				'--extensions', '.js,.es6',
-				'--alias', 'common:./path/common',
-				'--target', 'add>umd:./dist/umd,other>cjs:./dist/cjs'
+				'--s', './source/**',
+				'--x', './source/dependencies/**,./source/package/**',
+				'--e', '.js,.es6',
+				'--a', 'common:./path/common',
+				'--t', 'add>umd:./dist/umd,other>cjs:./dist/cjs'
 			]);
 			const expProgramArgv = this.mockCommander.expects('programArgv')
 				.once()
