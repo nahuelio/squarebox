@@ -119,6 +119,18 @@ class Commander extends Visitor {
 	}
 
 	/**
+	*	Visit Strategy
+	*	@public
+	*	@override
+	*	@param {util.visitor.Visited} vi - instance to be visited by this visitor
+	*	@param {Any} [...args] - arguments passed to the visitor
+	*	@return {util.visitor.Visited}
+	**/
+	visit(vi, ...args) {
+		return this.validate(vi) ? extend(false, vi, { commander: this }) : null;
+	}
+
+	/**
 	*	Parses Configuration options
 	*	@public
 	*	@return {yargs}

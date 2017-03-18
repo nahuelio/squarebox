@@ -26,7 +26,7 @@ describe('util.visitor.Visitor', function() {
 		delete this.sandbox;
 	});
 
-	describe('constructor', () => {
+	describe('constructor()', () => {
 
 		it('Should get a new instance', () => {
 			const exp = Visitor.new();
@@ -36,7 +36,7 @@ describe('util.visitor.Visitor', function() {
 
 	});
 
-	describe('validate', () => {
+	describe('validate()', () => {
 
 		it('Should return true', () => {
 			const exp = Visitor.new();
@@ -57,22 +57,74 @@ describe('util.visitor.Visitor', function() {
 
 	});
 
+	describe('_methods()', () => {
+
+		it('Should filter visitor internal methods', () => {
+			const vi = Visitor.new({ someMethod: () => {} });
+			const exp = vi._methods();
+			assert.lengthOf(exp, 1);
+			assert.equal('someMethod', exp[0]);
+		});
+
+	});
+
+	describe('_decorate()', () => {
+
+		it('Should decorate visited object', () => {
+			const arg = { prop: 'one' };
+			const exp = Visitor.new({ func: this.sandbox.spy() });
+			const input = Visited.new();
+
+			const spyWith = exp.func.withArgs(input, arg);
+
+			const expMethods = this.mockProto.expects('_methods')
+				.once()
+				.returns(['func']);
+
+			assert.instanceOf(exp._decorate(input), Visited);
+
+			input.func(arg);
+
+			assert.isTrue(spyWith.calledOnce);
+			assert.isTrue(spyWith.calledOn(exp));
+			assert.isTrue(spyWith.calledWith(input, arg));
+		});
+
+		it('Should skip methods already defined in visited', () => {
+			const exp = Visitor.new({ func: () => {}, existent: this.sandbox.spy() });
+			const input = Visited.new({ existent: () => {} });
+
+			assert.instanceOf(exp._decorate(input), Visited);
+			input.existent();
+			assert.isFalse(exp.existent.calledOnce);
+		});
+
+	});
+
 	describe('visit', () => {
 
 		it('Should visit the visted instance', () => {
 			const exp = Visitor.new();
 			const input = Visited.new({});
+			const expDecorate = this.mockProto.expects('_decorate')
+				.once()
+				.withArgs(input)
+				.returns(input);
+
 			const expValidate = this.mockProto.expects('validate')
 				.once()
 				.withArgs(input)
 				.returns(true);
 
 			assert.instanceOf(exp.visit(input), Object);
+			assert.isTrue(expValidate.calledBefore(expDecorate));
 		});
 
 		it('Should NOT visit the visted instance', () => {
 			const exp = Visitor.new();
 			const input = {};
+			const expDecorate = this.mockProto.expects('_decorate').never();
+
 			const expValidate = this.mockProto.expects('validate')
 				.once()
 				.withArgs(input)

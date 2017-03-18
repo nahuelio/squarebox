@@ -26,51 +26,6 @@ class Visited extends EventEmitter {
 	}
 
 	/**
-	*	Resolves proxified function binding with context
-	*	@private
-	*	@param {Any} target - proxy target
-	*	@param {String} property - property name
-	*	@param {Function} func - proxified function
-	*	@return {Function}
-	**/
-	_context(target, property, func) {
-		return _.defined(this[property]) ? this[property] : _.bind(func, target, this);
-	}
-
-	/**
-	*	Proxy getPrototypeOf trap override
-	*	@public
-	*	@param {Any} target - target reference
-	*	@return {Object}
-	**/
-	getPrototypeOf(target) {
-		return this.constructor.prototype;
-	}
-
-	/**
-	*	Proxy ownKeys trap override
-	*	@public
-	*	@param {Any} target - visited proxy target
-	*	@return {Array}
-	**/
-	ownKeys(target) {
-		return _.keys(this);
-	}
-
-	/**
-	*	Proxy get trap override
-	*	@public
-	*	@param {Any} target - visited target reference
-	*	@param {String} property - visited target property
-	*	@param {Any} receiver - visited target constructor
-	*	@return {Any}
-	**/
-	get(target, property, receiver) {
-		let value = _.defined(this[property]) ? this[property] : target[property];
-		return _.isFunction(value) ? this._context(target, property, value) : value;
-	}
-
-	/**
 	*	Returns true if a given visitor is defined and an instance of util.visitor.Visitor, false otherwise
 	*	@public
 	*	@param {util.visitor.Visitor} visitor - visitor to validate

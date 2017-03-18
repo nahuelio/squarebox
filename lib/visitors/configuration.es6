@@ -99,6 +99,18 @@ class Configuration extends Visitor {
 	}
 
 	/**
+	*	Visit Strategy
+	*	@public
+	*	@override
+	*	@param {util.visitor.Visited} vi - instance to be visited by this visitor
+	*	@param {Any} [...args] - arguments passed to the visitor
+	*	@return {util.visitor.Visited}
+	**/
+	visit(vi, ...args) {
+		return this.validate(vi) ? extend(false, vi, { configuration: this }) : null;
+	}
+
+	/**
 	*	Parse Configuration based on source
 	*	@public
 	*	@return {Promise}
@@ -131,7 +143,6 @@ class Configuration extends Visitor {
 			._target(result.target)
 			._logger(result.logLevel)
 			._override(this.command.options);
-		console.log(this.command);
 		return this;
 	}
 

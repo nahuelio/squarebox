@@ -48,7 +48,9 @@ class SquareBox extends Command {
 	*	@return {bin.SquareBox}
 	**/
 	before() {
-		return super.before().build();
+		super.before();
+		this.commander.build();
+		return this;
 	}
 
 	/**
@@ -59,7 +61,7 @@ class SquareBox extends Command {
 	**/
 	run() {
 		this.before();
-		this.parse().then(_.bind(this.onConfiguration, this));
+		this.configuration.parse().then(_.bind(this.onConfiguration, this));
 		return this;
 	}
 

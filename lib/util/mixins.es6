@@ -70,34 +70,15 @@ _.mixin({
 	},
 
 	/**
-	*	Returns true if the content is in json format, false otherwise.
+	*	Returns an array of all method names of a given object.
 	*	@public
-	*	@param {String} content - content to be evaluated
+	*	@param {String} o - object to be evaluated
 	*	@return {Boolean}
 	**/
-	isJson: function(content) {
-		try {
-			JSON.parse(content);
-			return true;
-		} catch(ex) {
-			return false;
-		}
-	},
-
-	/**
-	*	Returns true if the content is in javascript format, false otherwise.
-	*	@FIXME: Need to improve validation against javascript
-	*	@public
-	*	@param {String} content - content to be evaluated
-	*	@return {Boolean}
-	**/
-	isJS: function(content) {
-		try {
-			JSON.parse(content);
-			return false;
-		} catch(ex) {
-			return true;
-		}
+	methods: function(o) {
+		return _.filter(Object.getOwnPropertyNames(o), (name) => {
+			return (typeof(o[name]) === 'function');
+		});
 	},
 
 	/**

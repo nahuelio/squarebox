@@ -34,7 +34,8 @@ describe('Command', function() {
 	describe('#toJSON()', () => {
 
 		it('Should return a json representation', () => {
-			const exp = Command.new({ env: 'production' });
+			const exp = Command.new({ env: 'production' }).toJSON();
+			assert.property(exp, 'env');
 		});
 
 	});
