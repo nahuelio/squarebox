@@ -101,7 +101,7 @@ describe('util.visitor.Visitor', function() {
 
 	});
 
-	describe('visit', () => {
+	describe('visit()', () => {
 
 		it('Should visit the visted instance', () => {
 			const exp = Visitor.new();

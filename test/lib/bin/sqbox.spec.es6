@@ -24,6 +24,7 @@ describe('bin.SquareBox', function() {
 
 		this.sandbox.restore();
 
+		delete this.mockCommander;
 		delete this.mockProto;
 		delete this.input;
 	});
@@ -55,7 +56,8 @@ describe('bin.SquareBox', function() {
 				'--a', 'common:./path/common',
 				'--t', 'add>umd:./dist/umd,other>cjs:./dist/cjs'
 			]);
-			const expProgramArgv = this.mockCommander.expects('programArgv')
+
+			this.mockCommander.expects('_args')
 				.once()
 				.returns(this.input);
 

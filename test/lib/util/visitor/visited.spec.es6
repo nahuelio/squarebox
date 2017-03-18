@@ -29,7 +29,7 @@ describe('util.visitor.Visited', function() {
 		delete this.sandbox;
 	});
 
-	describe('constructor', () => {
+	describe('constructor()', () => {
 
 		it('Should get a new instance', () => {
 			const exp = Visited.new({ property: 'Visited' });

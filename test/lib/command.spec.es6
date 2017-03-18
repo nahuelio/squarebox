@@ -23,7 +23,7 @@ describe('Command', function() {
 		delete this.sandbox;
 	});
 
-	describe('#constructor', () => {
+	describe('constructor()', () => {
 
 		it('Should get a new instance', () => {
 			assert.instanceOf(Command.new(), Command);
@@ -31,7 +31,7 @@ describe('Command', function() {
 
 	});
 
-	describe('#toJSON()', () => {
+	describe('toJSON()', () => {
 
 		it('Should return a json representation', () => {
 			const exp = Command.new({ env: 'production' }).toJSON();

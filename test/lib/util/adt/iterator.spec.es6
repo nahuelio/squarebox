@@ -23,7 +23,7 @@ describe('util.adt.Iterator', function() {
 		delete this.sandbox;
 	});
 
-	describe('#constructor', () => {
+	describe('constructor()', () => {
 
 		it('Should get a new instance', () => {
 			assert.instanceOf(Iterator.new(), Iterator);
@@ -38,7 +38,7 @@ describe('util.adt.Iterator', function() {
 
 	});
 
-	describe('#_valid()', () => {
+	describe('_valid()', () => {
 
 		it('Should return true (valid element)', () => {
 			const exp = Iterator.new();
@@ -53,7 +53,7 @@ describe('util.adt.Iterator', function() {
 
 	});
 
-	describe('#set()', () => {
+	describe('set()', () => {
 
 		it('Should set the iterator', () => {
 			const exp = Iterator.new();
@@ -78,7 +78,7 @@ describe('util.adt.Iterator', function() {
 
 	});
 
-	describe('#hasNext()', () => {
+	describe('hasNext()', () => {
 
 		it('Should return true and false', () => {
 			const exp = Iterator.new([1,2]);
@@ -91,7 +91,7 @@ describe('util.adt.Iterator', function() {
 
 	});
 
-	describe('#next()', () => {
+	describe('next()', () => {
 
 		it('Should return next element', () => {
 			const exp = Iterator.new([1,2]);
@@ -102,7 +102,7 @@ describe('util.adt.Iterator', function() {
 
 	});
 
-	describe('#rewind()', () => {
+	describe('rewind()', () => {
 
 		it('Should rewind the iterator (pointer to the begin of the iterator)', () => {
 			const exp = Iterator.new([1,2]);
@@ -117,7 +117,7 @@ describe('util.adt.Iterator', function() {
 
 	});
 
-	describe('#remove()', () => {
+	describe('remove()', () => {
 
 		it('Should remove the current element by the pointer', () => {
 			const exp = Iterator.new([1,2,3]);

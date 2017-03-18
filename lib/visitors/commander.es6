@@ -29,96 +29,6 @@ class Commander extends Visitor {
 	}
 
 	/**
-	*	Default Strategy to add version option to the CLI
-	*	@public
-	*	@return {visitors.Commander}
-	**/
-	_version() {
-		try {
-			yargs.version(require(resolve(this.command.dirname, '..', 'package.json')).version);
-		} catch(ex) {
-			logger(`[WARN] SquareBox Version not detected caused by ${ex.message}`).debug(logger.yellow);
-		}
-		return this;
-	}
-
-	/**
-	*	Default Strategy to add usage to the CLI
-	*	@public
-	*	@param {String} [message = 'sqbox <command> [args]'] - usage message to display
-	*	@return {visitors.Commander}
-	**/
-	_usage(message = 'sqbox <command> [args]') {
-		yargs.usage(chalk.white(message));
-		return this;
-	}
-
-	/**
-	*	Default Strategy to add commands into the CLI via yargs
-	*	@private
-	*	@return {visitors.Commander}
-	**/
-	_commands() {
-		this.command.constructor.commands.reduce(_.bind(this._new, this), yargs);
-		return this;
-	}
-
-	/**
-	*	Reducer appends a command into the memoized yargs reference
-	*	@public
-	*	@param {yargs} memo - memoized yargs reference
-	*	@param {Command} command - command instance
-	*	@return {yargs}
-	**/
-	_new(memo, command) {
-		return memo.command(_.reduce(Commander.builder(), _.bind(this._create, this, command), {}));
-	}
-
-	/**
-	*	Build a new command object and
-	*	@public
-	*	@param {Command} command - command instance
-	*	@param {Object} memo - memoized object
-	*	@param {String} option - Yargs command option
-	*	@return {Object}
-	**/
-	_create(command, memo, option) {
-		memo[option] = this[`_${option}`](command);
-		return memo;
-	}
-
-	/**
-	*	Default Strategy that adds an epilogue information
-	*	@private
-	*	@return {visitors.Commander}
-	**/
-	_epilogue() {
-		yargs.epilogue(chalk.cyan(`For more information, please visit http://squarebox.nahuel.io/`));
-		return this;
-	}
-
-	/**
-	*	Default Strategy that controls yargs width used for displaying information
-	*	@private
-	*	@return {visitors.Commander}
-	**/
-	_width() {
-		yargs.wrap(120);
-		return this;
-	}
-
-	/**
-	*	Default Strategy for yargs argument parsing and returns the reference to the visited
-	*	@public
-	*	@return {util.visitor.Visited}
-	**/
-	_parse() {
-		yargs.parse(this.programArgv(), (err, argv, output) =>
-			this.command.emit(Commander.events.parse, err, argv, output));
-		return this.command;
-	}
-
-	/**
 	*	Visit Strategy
 	*	@public
 	*	@override
@@ -127,27 +37,39 @@ class Commander extends Visitor {
 	*	@return {util.visitor.Visited}
 	**/
 	visit(vi, ...args) {
-		return this.validate(vi) ? extend(false, vi, { commander: this }) : null;
+		return this.validate(vi) ? extend(false, vi, { commander: this }) : vi;
 	}
 
 	/**
-	*	Parses Configuration options
+	*	Reads CLI arguments and build yargs interface
 	*	@public
 	*	@return {yargs}
 	**/
-	build() {
-		yargs.reset();
-		return this._version()._usage()._commands()._epilogue()._width()._parse();
+	read() {
+		return _.reduce(Commander.decorators, (memo, decorator) => {
+			return Factory.get(decorator, memo, this.command, this);
+		}, yargs.reset().wrap(120));
 	}
 
 	/**
-	*	Default Strategy to retrieve program arguments
+	*	Commander CLI Options Parse Handler
+	*	@public
+	*	@param {Error} [err] - Parse Error
+	*	@param {Object} argv - parsed options
+	*	@param {Object} output - yargs output
+	*	@return {visitors.Commander}
+	**/
+	onParse(err, argv, output) {
+		return this.emit(Commander.events.parse, err, argv, output);
+	}
+
+	/**
+	*	Commander Arguments
 	*	@private
-	*	@param {util.visitor.Visited} ctx - context reference
-	*	@param {Any} [args = process.argv] - optional arguments
+	*	@param {Array} [args = process.argv] - command line arguments verbatim
 	*	@return {Array}
 	**/
-	programArgv(ctx, args = process.argv) {
+	_args(args = process.argv) {
 		return args;
 	}
 
@@ -199,10 +121,20 @@ class Commander extends Visitor {
 	*	@return {Function}
 	**/
 	_handler(command) {
-		return (argv) => {
-			Factory.register(command.path);
-			this.command.settings({ options: extend(false, _.omit(argv, Commander.ignore), { path: command.path }) });
-		};
+		return (argv) => { return this._onHandler(command, argv); };
+	}
+
+	/**
+	*	Default Command Handler
+	*	@private
+	*	@param {Command} command - command instance
+	*	@param {Object} argv - yargs parsed arguments
+	*	@return {viitors.Commander}
+	**/
+	_onHandler(command, argv) {
+		Factory.register(command.path);
+		this.command.settings({ options: extend(false, _.omit(argv, Commander.ignore), { path: command.path }) });
+		return this;
 	}
 
 	/**
@@ -215,15 +147,28 @@ class Commander extends Visitor {
 	}
 
 	/**
+	*	Commander decorators
+	*	@static
+	*	@type {Array}
+	**/
+	static decorators = [
+		'visitors/commander/version',
+		'visitors/commander/usage',
+		'visitors/commander/epilogue',
+		'visitors/commander/commands',
+		'visitors/commander/parse'
+	];
+
+	/**
 	*	Commander Events
 	*	@static
 	*	@type {Object}
 	**/
 	static events = {
 		/**
-		*	@event read
+		*	@event parse
 		**/
-		parse: 'visitors:commander:read'
+		parse: 'visitors:commander:parse'
 	}
 
 	/**
@@ -231,15 +176,18 @@ class Commander extends Visitor {
 	*	@static
 	*	@type {Array}
 	**/
-	static ignore = ['$0', '_', 'version']
+	static ignore = ['$0', '_', 'version'];
 
 	/**
-	*	Yargs Command Builder option names
+	*	Static Constructor
 	*	@static
-	*	@return {Array}
+	*	@override
+	*	@param {Any} [...args] - constructor arguments
+	*	@return {visitors.Commander}
 	**/
-	static builder() {
-		return ['command', 'aliases', 'desc', 'builder', 'handler'];
+	static new(...args) {
+		Factory.registerAll(Commander.decorators);
+		return new this(...args);
 	}
 
 }

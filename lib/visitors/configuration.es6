@@ -57,7 +57,7 @@ class Configuration extends Visitor {
 	*	@param {Object} memo - options being memoized
 	*	@param {Any} memo - options being memoized
 	*	@param {String} memo - options being memoized
-	*	@return
+	*	@return {Object}
 	**/
 	_format(memo, value, key) {
 		let ph = this.formatterPath(key);

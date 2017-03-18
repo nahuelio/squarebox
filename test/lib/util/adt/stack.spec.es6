@@ -25,7 +25,7 @@ describe('util.adt.Stack', function() {
 		delete this.sandbox;
 	});
 
-	describe('#constructor()', () => {
+	describe('constructor()', () => {
 
 		it('Should get an instance (initial emtpy elements)', () => {
 			const exp = Stack.new();
@@ -41,7 +41,7 @@ describe('util.adt.Stack', function() {
 
 	});
 
-	describe('#push()', () => {
+	describe('push()', () => {
 
 		it('Should push a new element', () => {
 			const toPush = { option: true };
@@ -65,7 +65,7 @@ describe('util.adt.Stack', function() {
 
 	});
 
-	describe('#peek()', () => {
+	describe('peek()', () => {
 
 		it('Should get the first element', () => {
 			const exp = Stack.new([1,2,3]);
@@ -80,7 +80,7 @@ describe('util.adt.Stack', function() {
 
 	});
 
-	describe('#pop()', () => {
+	describe('pop()', () => {
 
 		it('Should remove and get the first element', () => {
 			const exp = Stack.new([{ env: 'dev' }, { env: 'stage' }], { interface: Command });
@@ -103,7 +103,7 @@ describe('util.adt.Stack', function() {
 
 	});
 
-	describe('#search()', () => {
+	describe('search()', () => {
 
 		it('Should search and retrieve the position of an element', () => {
 			const exp = Stack.new(['a','b','c']);
