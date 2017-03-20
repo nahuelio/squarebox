@@ -36,6 +36,7 @@ class Configuration extends Visitor {
 	**/
 	_create(options, method) {
 		this.queue.offer(Factory.get(method, this.command, options));
+		return this;
 	}
 
 	/**
@@ -107,7 +108,7 @@ class Configuration extends Visitor {
 	*	@return {util.visitor.Visited}
 	**/
 	visit(vi, ...args) {
-		return this.validate(vi) ? extend(false, vi, { configuration: this }) : null;
+		return this.validate(vi) ? extend(false, vi, { configuration: this }) : vi;
 	}
 
 	/**
