@@ -129,7 +129,7 @@ class Commander extends Visitor {
 	*	@private
 	*	@param {Command} command - command instance
 	*	@param {Object} argv - yargs parsed arguments
-	*	@return {viitors.Commander}
+	*	@return {visitors.Commander}
 	**/
 	_onHandler(command, argv) {
 		Factory.register(command.path);

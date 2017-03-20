@@ -3,6 +3,8 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import Commander from 'visitors/commander';
+import Factory from 'util/factory/factory';
+import yargs from 'yargs';
 import Command from 'command';
 import chalk from 'chalk';
 
@@ -16,14 +18,23 @@ describe('visitors.Commander', function() {
 
 	beforeEach(() => {
 		this.mockProto = this.sandbox.mock(Commander.prototype);
+		this.mockYargs = this.sandbox.mock(yargs);
+		this.mockCommand = this.sandbox.mock(Command.prototype);
+		this.mockFactory = this.sandbox.mock(Factory);
 	});
 
 	afterEach(() => {
 		this.mockProto.verify();
+		this.mockYargs.verify();
+		this.mockFactory.verify();
+		this.mockCommand.verify();
 
 		this.sandbox.restore();
 
 		delete this.mockProto;
+		delete this.mockYargs;
+		delete this.mockFactory;
+		delete this.mockCommand;
 	});
 
 	after(() => {
@@ -121,8 +132,24 @@ describe('visitors.Commander', function() {
 
 	describe('_onHandler()', () => {
 
-		xit('Should execute command handler for yargs', () => {
+		it('Should execute command handler for yargs', () => {
+			const command = { path: 'bundle/bundle' };
+			const inputArgv = { $0: '/path/to/script.js', url: 'http://squarebox.nahuel.io' };
+			const expCommand = { options: { path: command.path, url: inputArgv.url } };
+			const exp = Commander.new(this.command);
 
+			const expRegister = this.mockFactory.expects('register')
+				.once()
+				.withArgs(command.path)
+				.returns(Factory);
+
+			const expSettings = this.mockCommand.expects('settings')
+				.once()
+				.withArgs(expCommand)
+				.returns(this.command);
+
+			assert.instanceOf(this.commander._onHandler(command, inputArgv), Commander);
+			assert.isTrue(expRegister.calledBefore(expSettings));
 		});
 
 	});
@@ -156,13 +183,34 @@ describe('visitors.Commander', function() {
 
 	describe('onParse()', () => {
 
-		xit('Should execute onParse handler', () => {});
+		it('Should execute onParse handler', () => {
+			const err = null;
+			const inputArgv = { $0: '/path/to/script.js', url: 'http://squarebox.nahuel.io' };
+			const output = {};
+
+			const expEmit = this.mockProto.expects('emit')
+				.once()
+				.withArgs(Commander.events.parse, err, inputArgv, output)
+				.returns(true);
+
+			assert.isTrue(this.commander.onParse(err, inputArgv, output));
+		});
 
 	});
 
 	describe('read()', () => {
 
-		xit('Should read CLI arguments via this visitor', () => {});
+		it('Should read CLI arguments via this visitor', () => {
+			const expReset = this.mockYargs.expects('reset').once().returns(yargs);
+			const expWrap = this.mockYargs.expects('wrap').once().withArgs(120).returns(yargs);
+
+			const expFactoryGet = this.mockFactory.expects('get')
+				.exactly(5)
+				.withArgs(sinon.match((v) => _.contains(Commander.decorators, v)), yargs, this.command, this.commander)
+				.returns(yargs);
+
+			assert.typeOf(this.commander.read(), 'Function');
+		});
 
 	});
 
