@@ -84,7 +84,12 @@ class Configuration extends Visitor {
 	*	@return {visitors.Configuration}
 	**/
 	_target(opts) {
-		extend(true, this.command, _.pick(opts, Configuration.cliOptions));
+		extend(true, this.command, {
+			target: _.reduce(opts, (memo, cfg, name) => {
+				memo[name] = _.pick(cfg, Configuration.cliOptions);
+				return memo;
+			}, opts)
+		});
 		return this;
 	}
 
@@ -118,7 +123,7 @@ class Configuration extends Visitor {
 	**/
 	parse() {
 		Configuration.methods.forEach(_.bind(this._create, this, this.command.options));
-		return this.queue.poll().then(_.bind(this.onParse, this)).catch(_.bind(this.onParseError, this));
+		return this.queue.poll().then(_.bind(this.onParse, this), _.bind(this.onParseError, this));
 	}
 
 	/**
@@ -204,7 +209,7 @@ class Configuration extends Visitor {
 	*	@static
 	*	@type {Array}
 	**/
-	static cliOptions = ['scan', 'exclude', 'extensions', 'alias', 'target'];
+	static cliOptions = ['scan', 'exclude', 'extensions', 'alias', 'target', 'destination', 'format'];
 
 	/**
 	*	Configuration Events

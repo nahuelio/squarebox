@@ -54,7 +54,7 @@ _.mixin({
 	**/
 	isRealObject: function(o) {
 		if(!_.defined(o) || !_.defined(o.constructor)) return false;
-		return ((o).constructor.toString().indexOf('Object') !== -1);
+		return ((o).constructor.toString().indexOf('function Object() {') !== -1);
 	},
 
 	/**

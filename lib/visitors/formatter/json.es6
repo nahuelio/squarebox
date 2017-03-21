@@ -31,8 +31,8 @@ class Json extends Visitor {
 	*	@param {String} k - current object's key
 	*	@return {Object}
 	**/
-	_reduce(m, v, k) {
-		if(_.isAdt(v)) this._clean(v, v);
+	_filterObject(m, v, k) {
+		if(_.isAdt(v)) return this._clean(v, v);
 		if(!_.isFunction(v)) { m[k] = v; return m; }
 		if(_.isArray(m)) m.splice(k, 1)
 		if(_.isRealObject(m)) delete m[k];
@@ -48,7 +48,7 @@ class Json extends Visitor {
 	**/
 	_clean(current, memo = {}) {
 		let keys = Object.getOwnPropertyNames(current);
-		return _.reduce(keys, (m, k) => this._reduce(m, current[k], k), memo, this);
+		return _.reduce(keys, (m, k) => this._filterObject(m, current[k], k), memo, this);
 	}
 
 	/**
