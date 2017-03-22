@@ -185,7 +185,7 @@ describe('visitors.configuration.Local', function() {
 
 	describe('next()', () => {
 
-		it('Should resolve promise for asynchronous operation', () => {
+		it('Should resolve promise for asynchronous operation', (done) => {
 			const expResolved = { result: true };
 			const resolvePromise = this.sandbox.stub().returnsPromise();
 			const spyReject = this.sandbox.spy();
@@ -199,10 +199,13 @@ describe('visitors.configuration.Local', function() {
 				.withArgs(this.options.config)
 				.returns(expResolved);
 
-			const exp = this.local.next({}, resolvePromise.resolves(expResolved), spyReject);
-			assert.isTrue(exp.resolved);
-			assert.deepEqual(expResolved, exp.resolveValue);
-			assert.isTrue(spyReject.notCalled);
+			const exp = this.local.next({}, _.bind(resolvePromise.resolves, resolvePromise), spyReject)();
+			exp.then((result) => {
+				assert.isTrue(exp.resolved);
+				assert.deepEqual(expResolved, exp.resolveValue);
+				assert.isTrue(spyReject.notCalled);
+				done();
+			});
 		});
 
 	});
