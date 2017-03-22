@@ -19,11 +19,10 @@ class Remote extends Visited {
 	*	Constructor
 	*	@public
 	*	@param {Command} command - command reference
-	*	@param {Object} options - command options
 	*	@return {visitors.configuration.Remote}
 	**/
-	constructor(command, options) {
-		return super({ command, options });
+	constructor(command) {
+		return super({ command });
 	}
 
 	/**
@@ -79,7 +78,7 @@ class Remote extends Visited {
 	*	@return {Promise}
 	**/
 	next(adt, resolve, reject) {
-		const { url } = this.options;
+		const { url } = this.command.getOptions();
 		this.once(Remote.events.load, resolve);
 		return _.defined(url) ? this.load(url) : this.out(null);
 	}

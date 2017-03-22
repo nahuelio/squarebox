@@ -185,6 +185,15 @@ class Command extends Visited {
 	}
 
 	/**
+	*	Retrieves command options
+	*	@public
+	*	@return {Object}
+	**/
+	getOptions() {
+		return this.options;
+	}
+
+	/**
 	*	Command Visitors
 	*	@static
 	*	@type {Array}

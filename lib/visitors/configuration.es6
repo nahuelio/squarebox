@@ -30,12 +30,11 @@ class Configuration extends Visitor {
 	/**
 	*	Create configuration retrieval method
 	*	@private
-	*	@param {On}
 	*	@param {String} method - configuration method path
 	*	@return {util.visitor.Visitor}
 	**/
-	_create(options, method) {
-		this.queue.offer(Factory.get(method, this.command, options));
+	_create(method) {
+		this.queue.offer(Factory.get(method, this.command));
 		return this;
 	}
 
@@ -122,7 +121,7 @@ class Configuration extends Visitor {
 	*	@return {Promise}
 	**/
 	parse() {
-		Configuration.methods.forEach(_.bind(this._create, this, this.command.options));
+		Configuration.methods.forEach(_.bind(this._create, this));
 		return this.queue.poll().then(_.bind(this.onParse, this), _.bind(this.onParseError, this));
 	}
 

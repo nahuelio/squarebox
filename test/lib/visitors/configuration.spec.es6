@@ -90,7 +90,7 @@ describe('visitors.Configuration', function() {
 			const options = { option: true };
 			const expGet = this.mockFactory.expects('get')
 				.once()
-				.withArgs('visitors/configuration/remote', this.command, options)
+				.withArgs('visitors/configuration/remote')
 				.returns(options);
 
 			const expOffer = this.mockQueueAsync.expects('offer')
@@ -98,7 +98,7 @@ describe('visitors.Configuration', function() {
 				.withArgs(options)
 				.returns(this.configuration.queue);
 
-			const exp = this.configuration._create(options, 'visitors/configuration/remote');
+			const exp = this.configuration._create('visitors/configuration/remote');
 			assert.instanceOf(exp, Configuration);
 		});
 
@@ -310,7 +310,7 @@ describe('visitors.Configuration', function() {
 			const queueStubPromise = this.sandbox.stub().returnsPromise();
 			const expCreate = this.mockProto.expects('_create')
 				.exactly(2)
-				.withArgs(undefined)
+				.withArgs(sinon.match.string)
 				.returns(this.configuration);
 
 			const expOnParse = this.mockProto.expects('onParse')
@@ -334,7 +334,7 @@ describe('visitors.Configuration', function() {
 			let queueStubPromise = this.sandbox.stub().returnsPromise();
 			const expCreate = this.mockProto.expects('_create')
 				.exactly(2)
-				.withArgs(undefined, sinon.match.string)
+				.withArgs(sinon.match.string)
 				.returns(this.configuration);
 
 			const expOnParse = this.mockProto.expects('onParse').never();

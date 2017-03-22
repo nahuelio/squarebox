@@ -21,11 +21,10 @@ class Local extends Visited {
 	*	Constructor
 	*	@public
 	*	@param {Command} command - command reference
-	*	@param {Object} options - command options
 	*	@return {visitors.configuration.Local}
 	**/
-	constructor(command, options) {
-		return super({ command, options });
+	constructor(command) {
+		return super({ command });
 	}
 
 	/**
@@ -48,7 +47,7 @@ class Local extends Visited {
 		try {
 			return _.defined(file) && _.defined(fs.statSync(file));
 		} catch(ex) {
-			// TODO: logger.debug();
+			logger(`LocalConfiguration: ${ex.message}`).debug({}, logger.yellow);
 			return false;
 		}
 	}
@@ -63,24 +62,35 @@ class Local extends Visited {
 		try {
 			return fs.readJsonSync(path);
 		} catch(ex) {
-			// TODO: logger.debug();
+			logger(`LocalConfiguration: ${ex.message}`).debug({}, logger.yellow);
 			return null;
 		}
 	}
 
 	/**
-	*	Will try to open configuration as javascript via module.export
+	*	Will try to open configuration as javascript via module.exports
 	*	@public
 	*	@param {String} path - resolved path to configuration
 	*	@return {Object}
 	**/
 	tryJs(path) {
 		try {
-			return eval(fs.readFileSync(path, { encoding: 'utf8' }).toString());
+			return require(path);
 		} catch(ex) {
-			// TODO: logger.debug();
+			logger(`LocalConfiguration: ${ex.message}`).debug({}, logger.yellow);
 			return null;
 		}
+	}
+
+	/**
+	*	Outputs a warn message and returns the object
+	*	@public
+	*	@param {String} message - warning message
+	*	@return {Object}
+	**/
+	warn(warn) {
+		logger(warn).debug({}, logger.yellow);
+		return { warn };
 	}
 
 	/**
@@ -91,9 +101,9 @@ class Local extends Visited {
 	**/
 	load(name) {
 		let file = this.resolvePath(name), output = '';
-		if(this.exists(file) && (output = (this.tryJson(file) || this.tryJs(file)))) return output;
-		// logger.debug()
-		return { warn: Local.messages.notFound };
+		if(!this.exists(file)) return this.warn(Local.messages.notFound);
+		if(!(output = (this.tryJson(file) || this.tryJs(file)))) return this.warn(Local.messages.invalid);
+		return output;
 	}
 
 	/**
@@ -106,7 +116,7 @@ class Local extends Visited {
 	*	@return {Promise}
 	**/
 	next(adt, resolve, reject) {
-		const { config } = this.options;
+		const { config } = this.command.getOptions();
 		return resolve(this.load(config));
 	}
 
@@ -116,7 +126,8 @@ class Local extends Visited {
 	*	@type {Object}
 	**/
 	static messages = {
-		notFound: `Local configuration not found`
+		notFound: `Local configuration not found`,
+		invalid: `Local configuration: sqbox file is invalid`
 	}
 
 }
