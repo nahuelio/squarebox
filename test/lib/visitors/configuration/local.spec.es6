@@ -49,8 +49,9 @@ describe('visitors.configuration.Local', function() {
 	describe('constructor()', () => {
 
 		it('Should get a new instance', () => {
-			this.local = Local.new(this.command, this.options);
+			this.local = Local.new(this.command);
 			assert.instanceOf(this.local, Local);
+			assert.property(this.local, 'command');
 		});
 
 	});
@@ -188,7 +189,7 @@ describe('visitors.configuration.Local', function() {
 		it('Should resolve promise for asynchronous operation', (done) => {
 			const expResolved = { result: true };
 			const resolvePromise = this.sandbox.stub().returnsPromise();
-			const spyReject = this.sandbox.spy();
+			const spyResolve = this.sandbox.spy();
 
 			const expGetOptions = this.mockCommand.expects('getOptions')
 				.once()
@@ -199,11 +200,11 @@ describe('visitors.configuration.Local', function() {
 				.withArgs(this.options.config)
 				.returns(expResolved);
 
-			const exp = this.local.next({}, _.bind(resolvePromise.resolves, resolvePromise), spyReject)();
+			const exp = this.local.next({}, _.bind(resolvePromise.resolves, resolvePromise), spyResolve)();
 			exp.then((result) => {
 				assert.isTrue(exp.resolved);
 				assert.deepEqual(expResolved, exp.resolveValue);
-				assert.isTrue(spyReject.notCalled);
+				assert.isTrue(spyResolve.notCalled);
 				done();
 			});
 		});

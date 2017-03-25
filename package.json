@@ -64,6 +64,7 @@
     "minimatch": "3.0.3",
     "node-watch": "0.4.1",
     "request": "2.79.0",
+    "request-promise": "4.2.0",
     "underscore": "1.8.3",
     "underscore.string": "3.3.4",
     "yargs": "6.6.0"

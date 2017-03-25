@@ -31,10 +31,11 @@ class Asynchronous extends Visitor {
 	*	@param adt {util.proxy.Asynchronous} adt used for asynchronous operations
 	*	@param resolve {Function} asynchronous promise's resolve
 	*	@param reject {Function} asynchronous promise's reject
-	*	@return {Promise}
+	*	@return {visitors.async.Asynchronous}
 	**/
 	next(adt, resolve, reject) {
-		return resolve();
+		resolve();
+		return this;
 	}
 
 	/**

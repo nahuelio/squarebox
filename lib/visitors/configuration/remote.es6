@@ -4,7 +4,7 @@
 **/
 import _ from 'util/mixins';
 import extend from 'extend';
-import request from 'request';
+import request from 'request-promise';
 import Visited from 'util/visitor/visited';
 
 /**
@@ -28,44 +28,39 @@ class Remote extends Visited {
 	/**
 	*	Load remote configuration file from url
 	*	@public
-	*	@param {String} url - url
+	*	@param {String} url - url to load remote configuration from
+	*	@param resolve {Function} asynchronous promise's resolve
+	*	@param reject {Function} asynchronous promise's reject
+	*	@return {Promise}
+	**/
+	load(url, resolve, reject) {
+		return request.get(url, { json: true })
+			.then(_.bind(this.onResponse, this, resolve, reject))
+			.catch(_.bind(this.onResponseError, this, resolve, reject));
+	}
+
+	/**
+	*	Remote Response Success
+	*	@public
+	*	@param resolve {Function} asynchronous promise's resolve
+	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Object} response - request response
+	*	@return {visitors.configuration.Remote}
+	**/
+	onResponse(resolve, reject, response) {
+		return resolve(response);
+	}
+
+	/**
+	*	Remote Response Error
+	*	@public
+	*	@param resolve {Function} asynchronous promise's resolve
+	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Object} err - response error
 	*	@return {Object}
 	**/
-	load(url) {
-		request(url, _.bind(this.onLoad, this));
-		return this;
-	}
-
-	/**
-	*	Remote Load Handler
-	*	@public
-	*	@param {Error} [err] - request error
-	*	@param {Object} response - request response reference
-	*	@param {String} body - request error
-	*	@return {Boolean}
-	**/
-	onLoad(err, response, body) {
-		let output = {};
-		try {
-			if(_.defined(err))
-				return this.out({ warn: Remote.messages.error({ warn: err }) });
-			if(response.statusCode !== 200)
-				return this.out({ warn: Remote.messages.error({ warn: response.statusCode }) });
-			this.out(JSON.parse(body));
-		} catch(ex) {
-			// logger.debug();
-			this.out({ warn: (Remote.messages.invalid + ' - ' + ex.message) });
-		}
-	}
-
-	/**
-	*	Result Output
-	*	@public
-	*	@param {Object} output - output to dispatch
-	*	@return {Boolean}
-	**/
-	out(output) {
-		return this.emit(Remote.events.load, output);
+	onResponseError(resolve, reject, err) {
+		return resolve({ warn: Remote.messages.error({ err }) });
 	}
 
 	/**
@@ -79,20 +74,9 @@ class Remote extends Visited {
 	**/
 	next(adt, resolve, reject) {
 		const { url } = this.command.getOptions();
-		this.once(Remote.events.load, resolve);
-		return _.defined(url) ? this.load(url) : this.out(null);
-	}
-
-	/**
-	*	Remote Events
-	*	@static
-	*	@type {Object}
-	**/
-	static events = {
-		/**
-		*	@event load
-		**/
-		load: 'visitors:configuration:remote:load'
+		return _.defined(url) ?
+			this.load(url, resolve, reject) :
+			resolve({ warn: Remote.messages.noUrl });
 	}
 
 	/**
@@ -101,8 +85,8 @@ class Remote extends Visited {
 	*	@type {Object}
 	**/
 	static messages = {
-		error: _.template(`Remote Configuration - <%= warn %>`),
-		invalid: `Invalid JSON format`
+		noUrl: `No Url specified`,
+		error: _.template(`Remote Url Error - <%= err %>`)
 	}
 
 }
