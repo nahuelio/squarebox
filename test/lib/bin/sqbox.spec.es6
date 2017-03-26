@@ -54,7 +54,8 @@ describe('bin.SquareBox', function() {
 				'--x', './source/dependencies/**,./source/package/**',
 				'--e', '.js,.es6',
 				'--a', 'common:./path/common',
-				'--t', 'add>umd:./dist/umd,other>cjs:./dist/cjs'
+				'--t', 'add>umd:./dist/umd,other>cjs:./dist/cjs',
+				'--lv', 'silent'
 			]);
 
 			this.mockCommander.expects('_args')

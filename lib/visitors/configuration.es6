@@ -7,7 +7,7 @@ import extend from 'extend';
 import Factory from 'util/factory/factory';
 import Visitor from 'util/visitor/visitor';
 import QueueAsync from 'util/adt/queue-async';
-import logger, { Logger } from 'util/logger/logger';
+import logger from 'util/logger/logger';
 
 /**
 *	Class Configuration
@@ -93,17 +93,6 @@ class Configuration extends Visitor {
 	}
 
 	/**
-	*	Sets Logger level
-	*	@private
-	*	@param {String} level - logger level
-	*	@return {visitors.Configuration}
-	**/
-	_logger(level) {
-		logger.level(Logger.level[level]);
-		return this;
-	}
-
-	/**
 	*	Visit Strategy
 	*	@public
 	*	@override
@@ -146,7 +135,6 @@ class Configuration extends Visitor {
 		if(_.defined(result.warn)) return this.onParseError(result.warn);
 		this._source(result.source)
 			._target(result.target)
-			._logger(result.logLevel)
 			._override(this.command.options);
 		return this;
 	}
@@ -208,7 +196,16 @@ class Configuration extends Visitor {
 	*	@static
 	*	@type {Array}
 	**/
-	static cliOptions = ['scan', 'exclude', 'extensions', 'alias', 'target', 'destination', 'format'];
+	static cliOptions = [
+		'scan',
+		'exclude',
+		'extensions',
+		'alias',
+		'target',
+		'destination',
+		'format',
+		'logLevel'
+	];
 
 	/**
 	*	Configuration Events

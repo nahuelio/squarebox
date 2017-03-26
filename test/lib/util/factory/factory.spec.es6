@@ -3,7 +3,7 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import factory from 'util/factory/factory';
-import logger from 'util/logger/logger';
+import logger, { Logger } from 'util/logger/logger';
 import Command from 'command';
 import Collection from 'util/adt/collection';
 
@@ -91,8 +91,10 @@ describe('util.factory.Factory', function() {
 		});
 
 		it('Should return false: resolved path doesn\'t exists (fs.statSync)', () => {
+			logger.level(Logger.level.output);
 			const expLoggerOutput = this.mockLogger.expects('_stdout').atLeast(1).returns(logger);
 			assert.isFalse(factory._validate('file-unexistent'));
+			logger.level(Logger.level.silent);
 		});
 
 	});

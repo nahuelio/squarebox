@@ -26,7 +26,7 @@ contextual help - sqbox [command] help
 * sqbox help - global help (list of commands and general usage)
 * sbox bundle --options
 * sbox clean
-* sbox visualize
+* sbox graph
 ```
 
 Programmatic API
@@ -35,7 +35,7 @@ Programmatic API
 const sqbox = require('squarebox');
 sqbox.clean([opts])
 	.bundle([config])
-	.visualize([opts]);
+	.graph([opts]);
 ```
 
 #### Official Documentation

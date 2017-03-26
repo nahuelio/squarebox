@@ -29,6 +29,5 @@ module.exports = {
 			destination: './dist/amd',
 			format: 'amd'
 		}
-	},
-	logLevel: 'debug'
+	}
 };

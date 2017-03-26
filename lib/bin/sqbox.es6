@@ -73,8 +73,7 @@ class SquareBox extends Command {
 	**/
 	onConfiguration() {
 		const { path } = this.options;
-		//console.log(_.pick(this, Command.options));
-		// TODO: Factory.get(path, this.params()).run();
+		Factory.get(path, _.pick(this, Command.options)).run();
 		return this;
 	}
 

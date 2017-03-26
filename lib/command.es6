@@ -227,7 +227,8 @@ class Command extends Visited {
 		'exclude',
 		'extensions',
 		'alias',
-		'target'
+		'target',
+		'logLevel'
 	];
 
 	/**

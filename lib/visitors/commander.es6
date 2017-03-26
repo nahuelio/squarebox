@@ -9,7 +9,7 @@ import yargs from 'yargs';
 import chalk from 'chalk';
 import Factory from 'util/factory/factory';
 import Visitor from 'util/visitor/visitor';
-import logger from 'util/logger/logger';
+import logger, { Logger } from 'util/logger/logger';
 
 /**
 *	Class Commander
@@ -60,7 +60,18 @@ class Commander extends Visitor {
 	*	@return {visitors.Commander}
 	**/
 	onParse(err, argv, output) {
-		return this.emit(Commander.events.parse, err, argv, output);
+		return this._logger(argv.logLevel).emit(Commander.events.parse, err, argv, output);
+	}
+
+	/**
+	*	Sets Logger Level
+	*	@public
+	*	@param {String} lvl - Logger level
+	*	@return {visitors.Commander}
+	**/
+	_logger(lvl) {
+		logger.level(Logger.level[lvl]);
+		return this;
 	}
 
 	/**

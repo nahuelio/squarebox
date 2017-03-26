@@ -19,8 +19,7 @@ class Bundle extends Command {
 	*	@return {bundle.Bundle}
 	**/
 	run() {
-		// TODO
-		console.log('Bundle.run()...');
+		//console.log(this.toJSON());
 		return super.run();
 	}
 

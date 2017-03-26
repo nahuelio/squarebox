@@ -187,15 +187,6 @@ describe('visitors.Configuration', function() {
 
 	});
 
-	describe('_logger()', () => {
-
-		it('Should apply logger configuration option to the singleton logger', () => {
-			assert.instanceOf(this.configuration._logger('silent'), Configuration);
-			logger.level(Logger.level.output);
-		});
-
-	});
-
 	describe('_override()', () => {
 
 		it('Should override configuration options with cli options', () => {
@@ -274,10 +265,6 @@ describe('visitors.Configuration', function() {
 				.once()
 				.withArgs(expResult.target)
 				.returns(this.configuration);
-			const expLogger = this.mockProto.expects('_logger')
-				.once()
-				.withArgs(expResult.logLevel)
-				.returns(this.configuration);
 			const expOverride = this.mockProto.expects('_override')
 				.once()
 				.withArgs(this.command.options)
@@ -295,7 +282,6 @@ describe('visitors.Configuration', function() {
 				.returns(this.configuration);
 			const expSource = this.mockProto.expects('_source').never();
 			const expTarget = this.mockProto.expects('_target').never();
-			const expLogger = this.mockProto.expects('_logger').never();
 			const expOverride = this.mockProto.expects('_override').never();
 
 			assert.instanceOf(this.configuration.onOptions(expResult), Configuration);
