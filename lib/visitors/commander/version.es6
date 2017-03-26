@@ -17,7 +17,7 @@ export default (yargs, command) => {
 	try {
 		return yargs.version(require(resolve(command.dirname, '..', 'package.json')).version);
 	} catch(ex) {
-		logger(`[WARN] SquareBox Version not detected caused by ${ex.message}`).debug(logger.yellow);
+		logger(`[WARN] SquareBox Version not detected - ${ex.message}`).debug(logger.yellow);
 	}
 	return yargs;
 };
