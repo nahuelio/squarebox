@@ -11,5 +11,6 @@ import _ from 'underscore';
 *	@return {Object}
 **/
 export default (input = '') => {
+	if(input.length === 0) return {};
 	return _.chain(input.split(',')).invoke('split', ':').object().value();
 };

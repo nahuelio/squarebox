@@ -11,5 +11,5 @@ import _ from 'underscore';
 *	@return {Object}
 **/
 export default (input = '') => {
-	return input.split(',');
+	return (_.isString(input) && input.length > 0) ? input.split(',') : [];
 };
