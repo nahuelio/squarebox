@@ -1,0 +1,49 @@
+[{
+	"name": "help",
+	"aliases": ["help"],
+	"description": "Help",
+	"path": "help/help",
+	"options": {
+		"clean": {},
+		"bundle": {},
+		"graph": {}
+	}
+}, {
+	"name": "clean",
+	"aliases": ["clean"],
+	"description": "Clean output directory",
+	"path": "clean/clean",
+	"options": {
+		"override": { "default": false },
+		"config": { "default": ".sqboxrc" },
+		"url": {},
+		"target": { "default": "./dist" }
+	}
+}, {
+	"name": "bundle",
+	"aliases": ["bundle"],
+	"description": "Module Bundler",
+	"path": "bundle/bundle",
+	"options": {
+		"override": { "default": false },
+		"config": { "default": ".sqboxrc" },
+		"url": { "alias": "u" },
+		"scan": { "alias": "s", "default": "." },
+		"exclude": { "alias": "x" },
+		"extensions": { "alias": "e", "default": ".js,.jsx,.es6,.es" },
+		"alias": { "alias": "a", "default": {} },
+ 		"target": { "alias": "t", "default": "dist>umd:./dist" },
+		"logLevel": { "alias": "lv", "default": "output" }
+	}
+}, {
+	"name": "graph",
+	"aliases": ["graph"],
+	"description": "Generates a graphical representation of your bundles",
+	"path": "visualize/graph",
+	"options": {
+		"override": { "default": false },
+		"config": { "default": ".sqboxrc" },
+		"url": {},
+		"target": { "default": "./dist" }
+	}
+}]

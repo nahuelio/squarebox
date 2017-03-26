@@ -1,6 +1,5 @@
 # Project
-/bin
-lib
+.nyc_output
 coverage
 node_modules
 
