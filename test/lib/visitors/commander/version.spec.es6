@@ -3,7 +3,7 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import version from 'visitors/commander/version';
-import Command from 'Command';
+import Command from 'command';
 import yargs from 'yargs';
 import logger, { Logger } from 'util/logger/logger';
 
