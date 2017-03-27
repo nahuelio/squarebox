@@ -23,12 +23,13 @@ class SquareBox extends Command {
 	/**
 	*	Constructor
 	*	@public
-	*	@param {Object} [args = {}] - Constructor arguments
+	*	@param {Symbol} _enforcer - private enforcer symbol
+	*	@param {Object} [...args] - Constructor arguments
 	*	@return {bin.SquareBox}
 	**/
-	constructor(...args) {
+	constructor(_enforcer, ...args) {
 		super(...args);
-		return SquareBox.isPrivate(this.attachEvents());
+		return SquareBox.isPrivate(_enforcer, this.attachEvents());
 	}
 
 	/**
@@ -122,11 +123,12 @@ class SquareBox extends Command {
 	/**
 	*	Static enforcer validation
 	*	@static
+	*	@param {Symbol} _enforcer - private enforcer symbol
 	*	@param {bin.SquareBox} instance - squarebox instance reference
 	*	@return {bin.SquareBox}
 	**/
-	static isPrivate(instance) {
-		return instance.isPrivate(enforcer);
+	static isPrivate(_enforcer, instance) {
+		return instance.isPrivate(_enforcer);
 	}
 
 	/**
@@ -143,7 +145,7 @@ class SquareBox extends Command {
 	*	@return {bin.SquareBox}
 	**/
 	static run(cwd = process.cwd()) {
-		return this.new({ cwd }).run();
+		return this.new(enforcer, { cwd }).run();
 	}
 
 }

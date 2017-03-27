@@ -4,6 +4,7 @@
 **/
 import SquareBox from 'bin/sqbox';
 import Commander from 'visitors/commander';
+import Bundle from 'bundle/bundle';
 
 describe('bin.SquareBox', function() {
 
@@ -13,17 +14,20 @@ describe('bin.SquareBox', function() {
 	});
 
 	beforeEach(() => {
-		if(this.sqbox) this.mockProto = this.sandbox.mock(this.sqbox);
+		this.mockProto = this.sandbox.mock(SquareBox.prototype);
 		this.mockCommander = this.sandbox.mock(Commander.prototype);
+		this.mockBundle = this.sandbox.mock(Bundle.prototype);
 		this.input = [process.argv[0], this.cwd];
 	});
 
 	afterEach(() => {
-		if(this.mockProto) this.mockProto.verify();
+		this.mockProto.verify();
 		this.mockCommander.verify();
+		this.mockBundle.verify();
 
 		this.sandbox.restore();
 
+		delete this.mockBundle;
 		delete this.mockCommander;
 		delete this.mockProto;
 		delete this.input;
@@ -36,9 +40,20 @@ describe('bin.SquareBox', function() {
 
 	describe('constructor()', () => {
 
-		it('Should get an instance', () => {
-			this.sqbox = require('bin/sqbox').default.new();
-			assert.instanceOf(this.sqbox, SquareBox);
+		it('Should throw Error: Violation Error', () => {
+			assert.throws(() => new SquareBox, 'Private Violation');
+		});
+
+	});
+
+	describe('static->run()', () => {
+
+		it('Should get a new instance and run it (with custom cwd)', () => {
+			const expRun = this.mockProto.expects('run')
+				.once()
+				.returns(sinon.match.instanceOf(SquareBox));
+
+			SquareBox.run(__dirname);
 		});
 
 	});
@@ -58,11 +73,16 @@ describe('bin.SquareBox', function() {
 				'--lv', 'silent'
 			]);
 
-			this.mockCommander.expects('_args')
+			const expBundleRun = this.mockBundle.expects('run')
+				.once()
+				.returns(sinon.match.instanceOf(Bundle));
+
+			const expArgs = this.mockCommander.expects('_args')
 				.once()
 				.returns(this.input);
 
-			assert.instanceOf(this.sqbox.run(), SquareBox);
+			this.sqbox = SquareBox.run();
+			assert.instanceOf(this.sqbox, SquareBox);
 		});
 
 	});

@@ -19,7 +19,7 @@ class Bundle extends Command {
 	*	@return {bundle.Bundle}
 	**/
 	run() {
-		//console.log(this.toJSON());
+		//console.log('OUTPUT: ', this.toJSON());
 		return super.run();
 	}
 

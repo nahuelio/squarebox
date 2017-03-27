@@ -70,6 +70,18 @@ _.mixin({
 	},
 
 	/**
+	*	Returns true if a given object's constructor is a native type, false otherwise.
+	*	@public
+	*	@param [o] {Object}
+	*	@return {Boolean}
+	**/
+	isNative: function(o) {
+		if(!_.defined(o) || !_.defined(o.constructor)) return true;
+		let _c = _s.strRightBack(_s.strLeft(o.constructor.toString(), '('), 'function ');
+		return _.contains(['String', 'Number', 'Boolean', 'Object', 'Array'], _c);
+	},
+
+	/**
 	*	Returns an array of all method names of a given object.
 	*	@public
 	*	@param {String} o - object to be evaluated

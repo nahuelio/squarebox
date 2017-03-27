@@ -32,10 +32,10 @@ class Json extends Visitor {
 	*	@return {Object}
 	**/
 	_filterObject(m, v, k) {
-		if(_.isAdt(v)) return this._clean(v, v);
-		if(!_.isFunction(v)) { m[k] = v; return m; }
-		if(_.isArray(m)) m.splice(k, 1)
-		if(_.isRealObject(m)) delete m[k];
+		if(_.isNative(v)) {
+			m[k] = v;
+			return m;
+		}
 		return m;
 	}
 
