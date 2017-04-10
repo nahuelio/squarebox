@@ -1,10 +1,12 @@
 /**
 *	@module bin
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
+*	@Notes Think about the API require('sqbox').clean({}).bundle({}).graph({});
 **/
 import 'util/mixins';
 import extend from 'extend';
 import Collection from 'util/adt/collection';
+import StackAsync from 'util/adt/stack-async';
 import Factory from 'util/factory/factory';
 import Command from 'command';
 import CommandsList from './commands.json';
@@ -33,12 +35,14 @@ class SquareBox extends Command {
 	}
 
 	/**
-	*	Attaches Events
+	*	Attach Events
 	*	@public
 	*	@return {bin.SquareBox}
 	**/
 	attachEvents() {
-		this.once(SquareBox.events.done, this.after);
+		this.on(Command.events.pending, _.bind(this.onCommandPending, this));
+		this.on(Command.events.done, _.bind(this.onCommandDone, this));
+		this.stack.on(StackAsync.events.push, _.bind(this.onCommand, this));
 		return this;
 	}
 
@@ -62,20 +66,66 @@ class SquareBox extends Command {
 	**/
 	run() {
 		this.before();
-		this.configuration.parse().then(_.bind(this.onConfiguration, this));
+		this.configuration.parse()
+			.then(_.bind(this.push, this, this, this.options.path))
+			.catch(_.bind(this.after, this));
 		return this;
 	}
 
 	/**
-	*	Configuration Loaded and Parsed Handler
+	*	Subcommand push Handler
 	*	@public
-	*	@param {visitors.Configuration} configuration - configuration visitor reference
+	*	@param {util.adt.StackAsync} stack - stack reference
+	*	@param {Command} command - command offered
 	*	@return {bin.SquareBox}
 	**/
-	onConfiguration() {
-		const { path } = this.options;
-		Factory.get(path, _.pick(this, Command.options)).run();
+	onCommand(stack, command) {
+		let dependents = command.getDependsOn();
+		return (dependents.length > 0) ? _.reduce(dependents, this.push, this, this) : this.after();
+	}
+
+	/**
+	*	Command Pending Handler
+	*	@public
+	*	@param {Command} command - command reference on pending state
+	*	@return {bin.SquareBox}
+	**/
+	onCommandPending(command) {
 		return this;
+	}
+
+	/**
+	*	Command Done Handler
+	*	@public
+	*	@param {Command} command - command reference on done state
+	*	@return {bin.SquareBox}
+	**/
+	onCommandDone(command) {
+		return this;
+	}
+
+	/**
+	*	After Run
+	*	@public
+	*	@override
+	*	@param {Error} [err] - error reference
+	*	@return {bin.SquareBox}
+	**/
+	after(err, results) {
+		if(_.defined(err)) logger(err.message).fatal();
+		if(this.stack.isEmpty()) return this.complete(results);
+		this.stack.pop().then(_.bind(this.after, this, null)).catch(_.bind(this.after, this));
+		return this;
+	}
+
+	/**
+	*	SquareBox Complete Handler
+	*	@public
+	*	@param {Array} results - all Results
+	*	@return {bin.SquareBox}
+	**/
+	complete(results) {
+		return super.after();
 	}
 
 	/**
@@ -87,18 +137,6 @@ class SquareBox extends Command {
 	**/
 	isPrivate(pte) {
 		if(!_.isEqual(pte, enforcer)) throw new Error('Private Violation');
-		return this;
-	}
-
-	/**
-	*	Register Command Factories
-	*	@public
-	*	@override
-	*	@return {bin.SquareBox}
-	**/
-	register() {
-		super.register();
-		Factory.registerAll(this.constructor.commands);
 		return this;
 	}
 

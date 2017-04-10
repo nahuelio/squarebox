@@ -73,9 +73,9 @@ describe('bin.SquareBox', function() {
 				'--lv', 'silent'
 			]);
 
-			const expBundleRun = this.mockBundle.expects('run')
-				.once()
-				.returns(sinon.match.instanceOf(Bundle));
+			// const expBundleRun = this.mockBundle.expects('run')
+			// 	.once()
+			// 	.returns(sinon.match.instanceOf(Bundle));
 
 			const expArgs = this.mockCommander.expects('_args')
 				.once()
