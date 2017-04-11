@@ -17,7 +17,8 @@
 		"override": { "default": false },
 		"config": { "default": ".sqboxrc" },
 		"url": {},
-		"target": { "default": "./dist" }
+		"target": { "default": "./dist" },
+		"logLevel": { "alias": "lv", "default": "output" }
 	}
 }, {
 	"name": "bundle",
@@ -44,6 +45,7 @@
 		"override": { "default": false },
 		"config": { "default": ".sqboxrc" },
 		"url": {},
-		"target": { "default": "./dist" }
+		"target": { "default": "./dist" },
+		"logLevel": { "alias": "lv", "default": "output" }
 	}
 }]

@@ -40,8 +40,6 @@ class SquareBox extends Command {
 	*	@return {bin.SquareBox}
 	**/
 	attachEvents() {
-		this.on(Command.events.pending, _.bind(this.onCommandPending, this));
-		this.on(Command.events.done, _.bind(this.onCommandDone, this));
 		this.stack.on(StackAsync.events.push, _.bind(this.onCommand, this));
 		return this;
 	}
@@ -53,7 +51,6 @@ class SquareBox extends Command {
 	*	@return {bin.SquareBox}
 	**/
 	before() {
-		super.before();
 		this.commander.read();
 		return this;
 	}
@@ -82,26 +79,6 @@ class SquareBox extends Command {
 	onCommand(stack, command) {
 		let dependents = command.getDependsOn();
 		return (dependents.length > 0) ? _.reduce(dependents, this.push, this, this) : this.after();
-	}
-
-	/**
-	*	Command Pending Handler
-	*	@public
-	*	@param {Command} command - command reference on pending state
-	*	@return {bin.SquareBox}
-	**/
-	onCommandPending(command) {
-		return this;
-	}
-
-	/**
-	*	Command Done Handler
-	*	@public
-	*	@param {Command} command - command reference on done state
-	*	@return {bin.SquareBox}
-	**/
-	onCommandDone(command) {
-		return this;
 	}
 
 	/**

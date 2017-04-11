@@ -21,7 +21,7 @@ class Graph extends Command {
 	*	@return {visualize.Graph}
 	**/
 	run(resolve, reject) {
-		return super.run();
+		return super.run(resolve, reject);
 	}
 
 	/**
@@ -31,7 +31,7 @@ class Graph extends Command {
 	*	@type {Array}
 	**/
 	static dependsOn = Command.dependsOn.concat([
-		'bundle/bundle';
+		'bundle/bundle'
 	]);
 
 }

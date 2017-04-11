@@ -162,6 +162,15 @@ class Command extends Visited {
 	}
 
 	/**
+	*	Retrieves parent command
+	*	@public
+	*	@return {Command}
+	**/
+	getParent() {
+		return this.parent;
+	}
+
+	/**
 	*	Command Visitors
 	*	@static
 	*	@type {Array}

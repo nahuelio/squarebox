@@ -22,15 +22,6 @@ class Properties extends Visitor {
 	}
 
 	/**
-	*	Retrieves parent command
-	*	@public
-	*	@return {Command}
-	**/
-	getParent() {
-		return this.parent;
-	}
-
-	/**
 	*	Visitor Name
 	*	@public
 	*	@type {String}

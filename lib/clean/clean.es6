@@ -21,7 +21,7 @@ class Clean extends Command {
 	*	@return {clean.Clean}
 	**/
 	run(resolve, reject) {
-		return super.run();
+		return super.run(resolve, reject);
 	}
 
 	/**

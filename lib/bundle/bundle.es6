@@ -34,7 +34,7 @@ class Bundle extends Command {
 	*	@return {bundle.Bundle}
 	**/
 	run(resolve, reject) {
-		return super.run();
+		return super.run(resolve, reject);
 	}
 
 	/**

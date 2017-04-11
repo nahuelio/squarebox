@@ -4,7 +4,10 @@
 **/
 import SquareBox from 'bin/sqbox';
 import Commander from 'visitors/commander';
+import Command from 'command';
+import Graph from 'visualize/graph';
 import Bundle from 'bundle/bundle';
+import Clean from 'clean/clean';
 
 describe('bin.SquareBox', function() {
 
@@ -16,18 +19,15 @@ describe('bin.SquareBox', function() {
 	beforeEach(() => {
 		this.mockProto = this.sandbox.mock(SquareBox.prototype);
 		this.mockCommander = this.sandbox.mock(Commander.prototype);
-		this.mockBundle = this.sandbox.mock(Bundle.prototype);
 		this.input = [process.argv[0], this.cwd];
 	});
 
 	afterEach(() => {
 		this.mockProto.verify();
 		this.mockCommander.verify();
-		this.mockBundle.verify();
 
 		this.sandbox.restore();
 
-		delete this.mockBundle;
 		delete this.mockCommander;
 		delete this.mockProto;
 		delete this.input;
@@ -63,7 +63,7 @@ describe('bin.SquareBox', function() {
 		it('Should run the command', () => {
 			this.input = this.input.concat([
 				'sqbox',
-				'bundle',
+				'graph',
 				'--config', 'test/specs/.sqboxrc',
 				'--s', './source/**',
 				'--x', './source/dependencies/**,./source/package/**',
@@ -73,9 +73,18 @@ describe('bin.SquareBox', function() {
 				'--lv', 'silent'
 			]);
 
-			// const expBundleRun = this.mockBundle.expects('run')
-			// 	.once()
-			// 	.returns(sinon.match.instanceOf(Bundle));
+			const stubCommandAfter = this.sandbox.stub(Command.prototype, 'getParent', () => this.sqbox);
+
+			const stubRun = (construct) => {
+				return (resolve, reject) => {
+					resolve({});
+					return construct.prototype;
+				};
+			};
+
+			const stubCleanRun = this.sandbox.stub(Clean.prototype, 'run', stubRun(Clean));
+			const stubBundleRun = this.sandbox.stub(Bundle.prototype, 'run', stubRun(Bundle));
+			const stubGraphRun = this.sandbox.stub(Graph.prototype, 'run', stubRun(Graph));
 
 			const expArgs = this.mockCommander.expects('_args')
 				.once()
@@ -83,6 +92,8 @@ describe('bin.SquareBox', function() {
 
 			this.sqbox = SquareBox.run();
 			assert.instanceOf(this.sqbox, SquareBox);
+
+			Command.prototype.getParent.restore();
 		});
 
 	});
