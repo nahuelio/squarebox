@@ -186,6 +186,7 @@ class Configuration extends Visitor {
 	**/
 	static formatters = [
 		'visitors/configuration/formatter/alias',
+		'visitors/configuration/formatter/external',
 		'visitors/configuration/formatter/exclude',
 		'visitors/configuration/formatter/extensions',
 		'visitors/configuration/formatter/target'
@@ -201,6 +202,7 @@ class Configuration extends Visitor {
 		'exclude',
 		'extensions',
 		'alias',
+		'external',
 		'target',
 		'destination',
 		'format',

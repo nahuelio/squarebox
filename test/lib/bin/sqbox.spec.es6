@@ -69,6 +69,7 @@ describe('bin.SquareBox', function() {
 				'--x', './source/dependencies/**,./source/package/**',
 				'--e', '.js,.es6',
 				'--a', 'common:./path/common',
+				'--l', 'jquery,react',
 				'--t', 'add>umd:./dist/umd,other>cjs:./dist/cjs',
 				'--lv', 'silent'
 			]);

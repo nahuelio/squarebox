@@ -76,9 +76,9 @@ class Task extends Visitor {
 	*	@type {util.adt.Collection}
 	**/
 	static types = Collection.new([
-		'bundle/types/export',
-		'bundle/types/import',
-		'bundle/types/annotation'
+		'bundle/types/export/export',
+		'bundle/types/import/import',
+		'bundle/types/annotation/annotation'
 	]);
 
 	/**

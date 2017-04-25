@@ -1,5 +1,5 @@
 /**
-*	@module bundle.types
+*	@module bundle.types.annotation
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
@@ -8,11 +8,11 @@ import Type from 'bundle/types/type';
 import logger from 'util/logger/logger';
 
 /**
-*	Class Export
+*	Class Annotation
 *	@extends {bundle.types.Type}
 **/
-class Export extends Type {
+class Annotation extends Type {
 
 }
 
-export default Export;
+export default Annotation;

@@ -1,5 +1,5 @@
 /**
-*	@module bundle.format
+*	@module bundle.format.es6
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';

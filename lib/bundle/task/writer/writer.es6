@@ -9,6 +9,8 @@ import Task from 'bundle/task/task';
 
 /**
 *	Class Writer
+*	@desc
+*		Responsible for writing bundle files with dependency information gathered from a Reader source.
 *	@extends {bundle.task.Task}
 **/
 class Writer extends Task {

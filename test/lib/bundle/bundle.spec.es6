@@ -11,8 +11,9 @@ describe('bundle.Bundle', function() {
 			scan: './test/specs/es6/**',
 			extensions: ['.js', '.es6'],
 			alias: { common: 'common' },
+			external: ['jquery'],
 			target: {
-				global: { destination: './test/specs/dist/global', format: 'ifie' },
+				iife: { destination: './test/specs/dist/iife', format: 'iife' },
 			 	umd: { destination: './test/specs/dist/umd', format: 'umd' },
 				cjs: { destination: './test/specs/dist/cjs', format: 'cjs' },
 				amd: { destination: './test/specs/dist/amd', format: 'amd' }

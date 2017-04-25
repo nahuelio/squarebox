@@ -1,18 +1,18 @@
 /**
-*	@module bundle.types
+*	@module bundle.format.iife
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
 import extend from 'extend';
-import Type from 'bundle/types/type';
+import Format from 'bundle/format/format';
 import logger from 'util/logger/logger';
 
 /**
-*	Class Import
-*	@extends {bundle.types.Type}
+*	Class Iife
+*	@extends {bundle.format.Format}
 **/
-class Import extends Type {
+class Iife extends Format {
 
 }
 
-export default Import;
+export default Iife;

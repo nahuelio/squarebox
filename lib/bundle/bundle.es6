@@ -22,6 +22,7 @@ class Bundle extends Command {
 	*	@return {bundle.Bundle}
 	**/
 	run(resolve, reject) {
+		// TODO: Review Promise.All (First Read, then write) Synchronous
 		Promise.all([this.read(), this.write()])
 			.then(_.bind(this.after, this))
 			.catch(_.bind(this.after, this));

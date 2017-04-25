@@ -213,6 +213,7 @@ class Command extends Visited {
 		'exclude',
 		'extensions',
 		'alias',
+		'external',
 		'target',
 		'logLevel',
 		'parent'

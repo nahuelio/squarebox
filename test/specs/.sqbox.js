@@ -10,12 +10,13 @@ module.exports = {
 		alias: {
 			common: 'shared/common',
 			libraries: 'libs'
-		}
+		},
+		external: ['jquery']
 	},
 	target: {
 		global: {
 			destination: './dist/global',
-			format: 'ifie'
+			format: 'iife'
 		},
 		umd: {
 			destination: './dist/umd',

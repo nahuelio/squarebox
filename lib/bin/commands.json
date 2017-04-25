@@ -33,6 +33,7 @@
 		"exclude": { "alias": "x" },
 		"extensions": { "alias": "e", "default": ".js,.jsx,.es6,.es" },
 		"alias": { "alias": "a", "default": {} },
+		"external": { "alias": "l", "default": "" },
  		"target": { "alias": "t", "default": "dist>umd:./dist" },
 		"logLevel": { "alias": "lv", "default": "output" }
 	}

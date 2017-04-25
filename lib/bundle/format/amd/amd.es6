@@ -1,18 +1,18 @@
 /**
-*	@module bundle.types
+*	@module bundle.format.amd
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
 import extend from 'extend';
-import Type from 'bundle/types/type';
+import Format from 'bundle/format/format';
 import logger from 'util/logger/logger';
 
 /**
-*	Class Annotation
-*	@extends {bundle.types.Type}
+*	Class Amd
+*	@extends {bundle.format.Format}
 **/
-class Annotation extends Type {
+class Amd extends Format {
 
 }
 
-export default Annotation;
+export default Amd;
