@@ -46,15 +46,12 @@ describe('bundle.Bundle', function() {
 
 	});
 
-	describe('before()', () => {
-
-		it('Should execute before hook', () => {});
-
-	});
-
 	describe('run()', () => {
 
-		it('Should execute command run', () => {});
+		it('Should execute command run', () => {
+			// TODO: stubPromise for read and writer on method run
+			this.bundle.run();
+		});
 
 	});
 

@@ -1,18 +1,18 @@
 /**
-*	@module bundle.format
+*	@module bundle.types
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
 import extend from 'extend';
-import Format from 'bundle/format/format';
+import Type from 'bundle/types/type';
 import logger from 'util/logger/logger';
 
 /**
-*	Class Es6
-*	@extends {bundle.format.Format}
+*	Class Import
+*	@extends {bundle.types.Type}
 **/
-class Es6 extends Format {
+class Import extends Type {
 
 }
 
-export default Es6;
+export default Import;

@@ -78,7 +78,7 @@ class Command extends Visited {
 	*	Proxified asynchronous next strategy
 	*	@public
 	*	@override
-	*	@param adt {util.proxy.Asynchronous} adt used for asynchronous operations
+	*	@param adt {visitors.async.Asynchronous} adt used for asynchronous operations
 	*	@param resolve {Function} asynchronous promise's resolve
 	*	@param reject {Function} asynchronous promise's reject
 	*	@return {Promise}

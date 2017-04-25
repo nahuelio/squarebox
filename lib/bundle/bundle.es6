@@ -14,27 +14,30 @@ import Factory from 'util/factory/factory';
 class Bundle extends Command {
 
 	/**
-	*	Before Run
+	*	Run
 	*	@public
 	*	@override
-	*	@return {Promise}
+	*	@param {Function} resolve asynchronous promise's resolve
+	*	@param {Function} reject asynchronous promise's reject
+	*	@return {bundle.Bundle}
 	**/
-	before() {
-		super.before();
-		// TODO: Set Reader/Writer up
+	run(resolve, reject) {
+		Promise.all([this.read(), this.write()])
+			.then(_.bind(this.after, this))
+			.catch(_.bind(this.after, this));
 		return this;
 	}
 
 	/**
-	*	Run
+	*	After Run
 	*	@public
 	*	@override
-	*	@param resolve {Function} asynchronous promise's resolve
-	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Array|Error} result result reference
 	*	@return {bundle.Bundle}
 	**/
-	run(resolve, reject) {
-		return super.run(resolve, reject);
+	after(result) {
+		if(_.instanceOf(result, Error)) return this.emit(Command.events.error, result);
+		return this.done();
 	}
 
 	/**
@@ -48,15 +51,15 @@ class Bundle extends Command {
 	]);
 
 	/**
-	*	Bundle Command Visitors
+	*	List of visitors
 	*	@static
 	*	@override
 	*	@type {Array}
 	**/
-	// static visitors = [
-	// 	'bundle/reader/reader',
-	// 	'bundle/writer/writer'
-	// ].concat(Command.visitors);
+	static visitors = Command.visitors.concat([
+		'bundle/task/reader/reader',
+		'bundle/task/writer/writer'
+	]);
 
 }
 
