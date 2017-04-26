@@ -1,25 +1,62 @@
 /**
+*	Draft
+*	@version 1.0.0
 *	@module bundle.format.es6
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
+import extend from 'extend';
 
 /**
-*	Single Import
-*	@static
-*	@param {Array} id dependency id
-*	@param {Array} dependency dependency path
-*	@return {Function}
+*	Single Import Template
+*	@todo Support for:
+*		- import {id} from '{dependency}';
+*		- import { {id1}, {id2}, {}... } from {dependency};
+*		- import * as {id} from {dependency}
+*	@private
+*	@property __sit__
+*	@type {Function}
 **/
-export const _import = _.template(`import <%= id %> from '<%= dependency %>'`);
+const __sit__ = _.template(`import <%= id %> from '<%= dependency %>'`);
 
 /**
-*	Multiple Imports
+*	Import Template
+*	@private
+*	@property __it__
+*	@type {Function}
+**/
+const __it__ = _.template(`/** <%= name %> **/
+<% print(_.reduce(dependencies, function(memo, dependency, ix) {
+memo += (__sit__({ id: ids[ix], dependency }) + '\n'); return memo;
+}, '') + <%= content %>)`);
+
+/**
+*	Exports Template
+*	@todo Support for:
+*		- export {export}
+*		- export default {export}
+*	@private
+*	@property __it__
+*	@type {Function}
+**/
+const __et__ = _.template(`export <%= export %>`);
+
+/**
+*	Imports
 *	@static
-*	@param {{ name: "", dependencies: [], ids: [], content: "" }} m bundle metadata
+*	@param {{ name: "", dependencies: [], ids: [], content: "" }} attrs parameters to the template
 *	@return {Function}
 **/
-export const _imports = _.template(`/** <%= m.name %> **/
-	${_.reduce(m.dependencies, function(memo, dependency, ix) {
-		memo += (_import({ id: m.ids[ix], dependency }) + '\n'); return memo;
-	}, '')}<%= m.content %>`;
+export const imports = (attrs = {}) => {
+	return __it__(extend({}, attrs, { _, __sit__ }));
+};
+
+/**
+*	Exports
+*	@static
+*	@param {{ exports: {} }} attrs parameters to the template
+*	@return {Function}
+**/
+export const exports = (attrs = {}) => {
+	return __et__(extend({}, attrs));
+};
