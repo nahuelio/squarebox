@@ -9,6 +9,7 @@ describe.skip('bundle.format.cjs.Template', function() {
 	before(() => {
 		this.input = {
 			name: 'bundle',
+			files: [],
 			dependencies: ['react', 'common/module'],
 			ids: ['React', 'Module'],
 			content: 'return MyModule;'
