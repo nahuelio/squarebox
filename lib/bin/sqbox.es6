@@ -125,15 +125,15 @@ class SquareBox extends Command {
 	static commands = Collection.new(CommandsList);
 
 	/**
-	*	SquareBox visitors
+	*	Command Visitors
 	*	@static
 	*	@override
-	*	@type {Array}
+	*	@type {util.adt.Collection}
 	**/
-	static visitors = [
+	static visitors = Collection.new(Command.visitors.toJSON().concat([
 		'visitors/commander',
 		'visitors/configuration'
-	].concat(Command.visitors);
+	]));
 
 	/**
 	*	Static enforcer validation

@@ -4,7 +4,9 @@
 **/
 import _ from 'underscore';
 import extend from 'extend';
+import Collection from 'util/adt/collection';
 import Command from 'command';
+import Metadata from 'bundle/task/metadata/metadata';
 import Factory from 'util/factory/factory';
 
 /**
@@ -12,6 +14,17 @@ import Factory from 'util/factory/factory';
 *	@extends {Command}
 **/
 class Bundle extends Command {
+
+	/**
+	*	Constructor
+	*	@public
+	*	@override
+	*	@param {Object} [args = {}] constructor attributes
+	*	@return {bundle.Bundle}
+	**/
+	constructor(args = {}) {
+		return super(extend(true, args, { bundles: Collection.new([], { interface: Metadata }) }));
+	}
 
 	/**
 	*	Run
@@ -22,11 +35,30 @@ class Bundle extends Command {
 	*	@return {bundle.Bundle}
 	**/
 	run(resolve, reject) {
-		// TODO: Review Promise.All (First Read, then write) Synchronous
-		Promise.all([this.read(), this.write()])
+		this.before().actions()
 			.then(_.bind(this.after, this))
 			.catch(_.bind(this.after, this));
 		return this;
+	}
+
+	/**
+	*	Asynchronous Actions Run
+	*	@public
+	*	@return {Promise}
+	**/
+	actions() {
+		return _.reduce([this.read, this.write], this.action, Promise.resolve());
+	}
+
+	/**
+	*	Action Run
+	*	@public
+	*	@param {Promise} memo memoized promise that chains asynchronous actions synchronously
+	*	@param {Function} action current asynchronous action
+	*	@return {Promise}
+	**/
+	action(memo, action) {
+		return memo.then(action);
 	}
 
 	/**
@@ -44,7 +76,7 @@ class Bundle extends Command {
 	/**
 	*	List of commands that depends on
 	*	@static
-	*	@property dependsOn
+	*	@override
 	*	@type {Array}
 	**/
 	static dependsOn = Command.dependsOn.concat([
@@ -52,15 +84,28 @@ class Bundle extends Command {
 	]);
 
 	/**
-	*	List of visitors
+	*	Command options
 	*	@static
 	*	@override
 	*	@type {Array}
 	**/
-	static visitors = Command.visitors.concat([
+	static options = Command.options.concat([
+		'bundles',
+		'sources',
+		'excludes',
+		'targets'
+	]);
+
+	/**
+	*	List of visitors
+	*	@static
+	*	@override
+	*	@type {util.adt.Collection}
+	**/
+	static visitors = Collection.new(Command.visitors.toJSON().concat([
 		'bundle/task/reader/reader',
 		'bundle/task/writer/writer'
-	]);
+	]));
 
 }
 

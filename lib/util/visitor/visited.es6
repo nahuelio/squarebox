@@ -6,6 +6,8 @@ import { EventEmitter } from 'events';
 import _ from 'underscore';
 import extend from 'extend';
 import Visitor from 'util/visitor/visitor';
+import Factory from 'util/factory/factory';
+import Collection from 'util/adt/collection';
 import InterfaceException from 'util/exception/proxy/interface';
 
 /**
@@ -23,6 +25,28 @@ class Visited extends EventEmitter {
 	constructor(...args) {
 		super();
 		return extend(true, this, ...args);
+	}
+
+	/**
+	*	Default all visitors registration
+	*	@public
+	*	@param {String} dirname - factory base directory name
+	*	@return {util.visitor.Visited}
+	**/
+	registerAll(dirname) {
+		Factory.basePath(dirname);
+		return this.constructor.visitors.reduce(this.register, this, this);
+	}
+
+	/**
+	*	Default single visitor registration
+	*	@public
+	*	@param {util.visitor.Visited} memo memoized reference of the instance of this class
+	*	@param {String} path visitor path to register and load.
+	*	@return {util.visitor.Visited}
+	**/
+	register(memo, path) {
+		return memo.accept(Factory.register(path).get(path, this));
 	}
 
 	/**
@@ -44,6 +68,16 @@ class Visited extends EventEmitter {
 	accept(visitor) {
 		return this.validate(visitor) ? visitor.visit(this) : this;
 	}
+
+	/**
+	*	Default list of visitors
+	*	@static
+	*	@property visitors
+	*	@type {util.adt.Collection}
+	**/
+	static visitors = Collection.new([
+		'visitors/formatter/json'
+	]);
 
 	/**
 	*	Static Constructor

@@ -17,31 +17,30 @@ class Type extends Visited {
 	*	Constructor
 	*	@public
 	*	@override
-	*	@param {bundle.Operator} type - TDB
+	*	@param {bundle.task.Task} task - current task reference
 	*	@return {bundle.types.Type}
 	**/
-	constructor(type) {
-		return super({ type });
+	constructor(task) {
+		return super({ task });
 	}
 
 	/**
 	*	Asynchronous next strategy
 	*	@public
-	*	@method next
 	*	@param adt {visitors.async.Asynchronous} adt used for asynchronous operations
 	*	@param resolve {Function} asynchronous promise's resolve
 	*	@param reject {Function} asynchronous promise's reject
 	*	@return {Promise}
 	**/
 	next(adt, resolve, reject) {
-		if(_.defined(this.type.read)) return this.read(resolve, reject);
-		if(_.defined(this.type.write)) return this.write(resolve, reject);
+		if(_.defined(this.task.read)) return this.read(resolve, reject);
+		if(_.defined(this.task.write)) return this.write(resolve, reject);
+		return resolve(this);
 	}
 
 	/**
 	*	Default Read strategy
 	*	@public
-	*	@method read
 	*	@param resolve {Function} asynchronous promise's resolve
 	*	@param reject {Function} asynchronous promise's reject
 	*	@return {Promise}
@@ -53,7 +52,6 @@ class Type extends Visited {
 	/**
 	*	Default  Write strategy
 	*	@public
-	*	@method write
 	*	@param resolve {Function} asynchronous promise's resolve
 	*	@param reject {Function} asynchronous promise's reject
 	*	@return {Promise}

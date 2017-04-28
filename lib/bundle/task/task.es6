@@ -24,8 +24,18 @@ class Task extends Visitor {
 	*	@return {bundle.task.Task}
 	**/
 	constructor(bundle) {
-		super(extend(_.pick(bundle.toJSON(), bundle.constructor.options), { types: StackAsync.new([]) }));
-		return this.registerAll();
+		super(extend(_.pick(bundle, bundle.constructor.options), { types: StackAsync.new([]) }));
+		return this.attachEvents().registerAll();
+	}
+
+	/**
+	*	Attach Events
+	*	@public
+	*	@return {bundle.task.Task}
+	**/
+	attachEvents() {
+		this.types.on(StackAsync.events.next, _.bind(this.onType, this));
+		return this;
 	}
 
 	/**

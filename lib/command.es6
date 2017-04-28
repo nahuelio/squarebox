@@ -5,6 +5,7 @@
 import { EventEmitter } from 'events';
 import _ from 'util/mixins';
 import extend from 'extend';
+import Collection from 'util/adt/collection';
 import Factory from 'util/factory/factory';
 import StackAsync from 'util/adt/stack-async';
 import Visited from 'util/visitor/visited';
@@ -28,7 +29,7 @@ class Command extends Visited {
 	**/
 	constructor(args = {}) {
 		super();
-		return extend(true, this.settings(args).register().acceptAll(), { stack: StackAsync.new([]) });
+		return extend(true, this.settings(args).registerAll(this.dirname), { stack: StackAsync.new([]) });
 	}
 
 	/**
@@ -40,25 +41,6 @@ class Command extends Visited {
 	**/
 	settings(options) {
 		return extend(true, this, _.defaults(_.pick(options, this.constructor.options), this.constructor.defaults));
-	}
-
-	/**
-	*	Register Visitors
-	*	@public
-	*	@return {Command}
-	**/
-	register() {
-		Factory.basePath(this.dirname).registerAll(this.constructor.visitors);
-		return this;
-	}
-
-	/**
-	*	Accepts All Visitors
-	*	@public
-	*	@return {Command}
-	**/
-	acceptAll() {
-		return _.reduce(this.constructor.visitors, (memo, v) => memo.accept(Factory.get(v, this)), this);
 	}
 
 	/**
@@ -173,13 +155,13 @@ class Command extends Visited {
 	/**
 	*	Command Visitors
 	*	@static
-	*	@type {Array}
+	*	@override
+	*	@type {util.adt.Collection}
 	**/
-	static visitors = [
-		'visitors/command/properties',
-		'visitors/formatter/json',
-		'visitors/async/async'
-	];
+	static visitors = Collection.new(Visited.visitors.toJSON().concat([
+		'visitors/async/async',
+		'visitors/command/properties'
+	]));
 
 	/**
 	*	List of commands that depends on

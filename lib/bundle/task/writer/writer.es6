@@ -22,7 +22,19 @@ class Writer extends Task {
 	*	@return {Promise}
 	**/
 	write(vi) {
-		return this.types.on(StackAsync.events.next, _.bind(this.onType, this, Writer.events.write)).pop();
+		return this.types.pop();
+	}
+
+	/**
+	*	Type execution Handler
+	*	@public
+	*	@override
+	*	@param {String} [eventName = Task.events.execute] event name to emit
+	*	@return {bundle.task}
+	**/
+	onType(eventName = Task.events.execute) {
+		this.emit(Writer.events.write, this);
+		return this;
 	}
 
 	/**

@@ -8,8 +8,10 @@ describe('bundle.Bundle', function() {
 
 	before(() => {
 		this.params = {
-			scan: './test/specs/es6/**',
+			scan: './test/specs/es6',
 			extensions: ['.js', '.es6'],
+			exclude: [],
+			external: ['react'],
 			alias: { common: 'common' },
 			external: ['jquery'],
 			target: {
@@ -49,10 +51,14 @@ describe('bundle.Bundle', function() {
 
 	describe('run()', () => {
 
-		it('Should execute command run', () => {
-			// TODO: stubPromise for read and writer on method run
+		it('Should execute command run over specs/es6', () => {
 			this.bundle.run();
 		});
+
+		xit('Should execute command run over specs/amd', () => {});
+		xit('Should execute command run over specs/cjs', () => {});
+		xit('Should execute command run over specs/iife', () => {});
+		xit('Should execute command run over specs/umd', () => {});
 
 	});
 

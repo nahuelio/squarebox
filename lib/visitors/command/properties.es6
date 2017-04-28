@@ -2,7 +2,8 @@
 *	@module visitors.command
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
-import _ from 'underscore';
+import _ from 'util/mixins';
+import path from 'path';
 import Visitor from 'util/visitor/visitor';
 
 /**
@@ -10,6 +11,27 @@ import Visitor from 'util/visitor/visitor';
 *	@extends {util.visitor.Visitor}
 **/
 class Properties extends Visitor {
+
+	/**
+	*	Resolve scan sources
+	*	@public
+	*	@return {String}
+	**/
+	sources() {
+		return path.resolve(`${this.scan}/**/*+(${this.extensions.join('|')})`);
+	}
+
+	/**
+	*	Resolve excludes
+	*	@public
+	*	@return {Array}
+	**/
+	excludes() {
+		return _.reduce(this.exclude, (memo, pattern) => {
+			memo.push(path.resolve(this.scan, pattern));
+			return memo;
+		}, []);
+	}
 
 	/**
 	*	Retrieve targets by using a given predicate passed by parameter

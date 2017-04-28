@@ -4,15 +4,15 @@
 **/
 import _ from 'util/mixins';
 import extend from 'extend';
-import { EventEmitter } from 'events';
 import Collection from 'util/adt/collection';
+import Visited from 'util/visitor/visited';
 import Bundle from 'bundle/task/metadata/bundle';
 import File from 'bundle/task/metadata/file';
 
 /**
 *	Class Metadata
 *	@version 1.0.0
-*	@extends {events.EventEmitter}
+*	@extends {util.visitor.Visited}
 *
 *	@desc
 *		This is the general ADT used by squarebox to perform operations on it, as a result of collecting metadata
@@ -32,7 +32,7 @@ import File from 'bundle/task/metadata/file';
 *			}, ...]
 *		}
 **/
-class Metadata extends EventEmitter {
+class Metadata extends Visited {
 
 	/**
 	*	Constructor
@@ -41,53 +41,51 @@ class Metadata extends EventEmitter {
 	*	@return {bundle.task.metadata.Metadata}
 	**/
 	constructor(...args) {
-		super();
-		return extend(true, this, { bundle: Bundle.new(), files: Collection.new([], { interface: File }) });
+		super({ bundle: Bundle.new(), files: Collection.new([], { interface: File }) });
+		return this.registerAll().parse(...args);
 	}
 
 	/**
-	*	Metadata Property Definition
+	*	Parse Strategy
+	*	@public
+	*	@param {Object} attrs metadata attributes to parse
+	*	@return {bundle.task.metadata.Metadata}
+	**/
+	parse(attrs = {}) {
+		this.bundle.parse(attrs.bundle);
+		this.files.set(attrs.files);
+		return extend(true, this, _.pick(attrs, this.constructor.properties));
+	}
+
+	/**
+	*	Returns a json representation of the instance of this class
+	*	@public
+	*	@override
+	*	@param {visitors.formatter.Json} [ctx] - context reference
+	*	@return {Object}
+	**/
+	toJSON() {
+		return { bundle: this.bundle.toJSON(), files: this.files.toJSON() };
+	}
+
+	/**
+	*	Property Definition
 	*	@static
-	*	@property files
+	*	@property properties
 	*	@type {Array}
 	**/
-	static properties = [
+	static properties = [];
+
+	/**
+	*	Compound Property Definition
+	*	@static
+	*	@property compound
+	*	@type {Array}
+	**/
+	static compound = [
 		'bundle',
 		'files'
 	];
-
-	/**
-	*	Bundle Property Definition
-	*	@static
-	*	@property bundle
-	*	@type {Array}
-	**/
-	static bundle = [
-		'name',
-		'target',
-		'format'
-	];
-
-	/**
-	*	Bundle File Property Definition
-	*	@static
-	*	@property files
-	*	@type {Array}
-	**/
-	static files = [
-		'source',
-		'ast'
-	];
-
-	/**
-	*	Static Constructor
-	*	@static
-	*	@param {Any} [...args] constructor arguments
-	*	@return {bundle.task.metadata.Metadata}
-	**/
-	static new(...args) {
-		return new this(...args);
-	}
 
 }
 
