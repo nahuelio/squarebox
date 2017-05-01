@@ -39,8 +39,8 @@ class StackAsync extends Stack {
 	*	Default instanciation strategy for new elements added in this collection
 	*	@private
 	*	@override
-	*	@param e {Any} element to instanciate
-	*	@param opts {Object} additional options
+	*	@param {Any} e element to instanciate
+	*	@param {Object} opts additional options
 	*	@return {Any}
 	**/
 	_new(e, opts) {
@@ -64,14 +64,15 @@ class StackAsync extends Stack {
 	*	@public
 	*	@async
 	*	@override
-	*	@param [opts = {}] {Object} additional options
+	*	@param {Object} [opts = {}] additional options
 	*	@param {Boolean} [next = false] - async queue already started
+	*	@param {Any} [...args] additonal arguments
 	*	@return {Promise}
 	**/
-	async pop(opts = {}, next = false) {
+	async pop(opts = {}, next = false, ...args) {
 		if(!next) this._resetLast();
-		const res = await this.next(opts);
-		return this.onNext(res, opts);
+		const res = await this.next(opts, ...args);
+		return this.onNext(res, opts, ...args);
 	}
 
 	/**
@@ -79,31 +80,33 @@ class StackAsync extends Stack {
 	*	@public
 	*	@emits {StackAsync.events.next} - when opts.silent = false or undefined
 	*	@param [opts] {Object} additional options
+	*	@param {Any} [...args] additonal arguments
 	*	@return {Promise}
 	**/
-	next(opts) {
+	next(opts, ...args) {
 		let element = super.pop(opts);
 		if(!opts.silent) this.emit(StackAsync.events.next, element);
-		return element.execute(this);
+		return element.execute(this, ...args);
 	}
 
 	/**
 	*	Retrieves and removes the head of this queue, or returns null if this queue is empty
 	*	@public
-	*	@param res {Promise} promise reference with resolution (resolved or rejected)
-	*	@param [opts] {Object} additional options
+	*	@param {Promise} res promise reference with resolution (resolved or rejected)
+	*	@param {Object} [opts] additional options
+	*	@param {Any} [...args] additonal arguments
 	*	@return {Promise}
 	**/
-	onNext(res, opts) {
+	onNext(res, opts, ...args) {
 		this._last.push(res);
-		return this.isEmpty() ? this.end(opts) : this.pop(opts, true);
+		return this.isEmpty() ? this.end(opts) : this.pop(opts, true, ...args);
 	}
 
 	/**
 	*	Asynchronous Queue end
 	*	@public
 	*	@emits {StackAsync.events.end} - when opts.silent is false or undefined
-	*	@param [opts = {}] {Object} additional options
+	*	@param {Object} [opts = {}] additional options
 	*	@return {util.adt.StackAsync}
 	**/
 	end(opts) {

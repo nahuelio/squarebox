@@ -2,18 +2,18 @@
 *	@module bundle.format
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
-import { EventEmitter } from 'events';
 import _ from 'util/mixins';
 import extend from 'extend';
 import jp from 'jsonpath';
+import Visitor from 'util/visitor/visitor';
 import Collection from 'util/adt/collection';
 import logger from 'util/logger/logger';
 
 /**
 *	Class Format
-*	@extends {events.EventEmitter}
+*	@extends {util.visitor.Visitor}
 **/
-class Format extends EventEmitter {
+class Format extends Visitor {
 
 	/**
 	*	Constructor
@@ -45,16 +45,6 @@ class Format extends EventEmitter {
 	**/
 	result(out) {
 		return this;
-	}
-
-	/**
-	*	Static Constructor
-	*	@static
-	*	@param {Any} [...args] - constructor arguments
-	*	@return {bundle.format.Format}
-	**/
-	static new(...args) {
-		return new this(...args);
 	}
 
 }

@@ -60,12 +60,11 @@ class Command extends Visited {
 	*	Proxified asynchronous next strategy
 	*	@public
 	*	@override
-	*	@param adt {visitors.async.Asynchronous} adt used for asynchronous operations
-	*	@param resolve {Function} asynchronous promise's resolve
-	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Function} resolve asynchronous promise's resolve
+	*	@param {Function} reject asynchronous promise's reject
 	*	@return {Promise}
 	**/
-	next(adt, resolve, reject) {
+	next(resolve, reject) {
 		this.once(Command.events.done, resolve)
 			.once(Command.events.error, reject);
 		return this.run(resolve, reject);

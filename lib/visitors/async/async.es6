@@ -28,12 +28,12 @@ class Asynchronous extends Visitor {
 	*	Note: This method was designed (and it's most likely) to be overriden by
 	*	{@link util.visitor.Visited} subclasses that use this visitor.
 	*	@public
-	*	@param adt {util.proxy.Asynchronous} adt used for asynchronous operations
 	*	@param resolve {Function} asynchronous promise's resolve
 	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Any} [...args] additonal arguments
 	*	@return {visitors.async.Asynchronous}
 	**/
-	next(adt, resolve, reject) {
+	next(resolve, reject) {
 		resolve();
 		return this;
 	}
@@ -43,10 +43,11 @@ class Asynchronous extends Visitor {
 	*	@public
 	*	@param {util.visitor.Visited} [ctx] - context reference
 	*	@param {visitors.async.Asynchronous} adt - reference to adt using this interface on their elements
+	*	@param {Any} [...args] additonal arguments
 	*	@return {Promise}
 	**/
-	execute(ctx, adt) {
-		return new Promise((resolve, reject) => ctx.next(adt, resolve, reject));
+	execute(ctx, adt, ...args) {
+		return new Promise((resolve, reject) => ctx.next(resolve, reject, ...args));
 	}
 
 	/**

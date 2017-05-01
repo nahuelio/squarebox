@@ -7,7 +7,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import extend from 'extend';
 import glob from 'glob';
-import acorn from 'acorn';
+import * as acorn from 'acorn';
 import Collection from 'util/adt/collection';
 import StackAsync from 'util/adt/stack-async';
 import Task from 'bundle/task/task';
@@ -28,21 +28,29 @@ class Reader extends Task {
 	*	@return {Promise}
 	**/
 	read(vi) {
-		// TODO: read => acorn => Metadata.new()
-		this.bundles.addAll(this.files().reduce(this.parse, [], this));
-		return this.types.pop();
+		return this.types.pop({}, false, this.files().reduce(this.get, [], this));
 	}
 
 	/**
 	*	File Parsing Strategy
 	*	@public
 	*	@param {Array} memo memoized array that will hold metadata found
-	*	@param {String} file file path to parse
+	*	@param {String} source file path to parse
 	*	@return {bundle.task.reader.Reader}
 	**/
-	parse(memo, file) {
-		//console.log('File: ', file);
-		return {};
+	get(memo, source) {
+		memo.push({ source, ast: this.parse(source) });
+		return memo;
+	}
+
+	/**
+	*	Acorn Parsing Strategy
+	*	@public
+	*	@param {String} source file path to parse
+	*	@return {Object}
+	**/
+	parse(source) {
+		return acorn.parse(fs.readFileSync(source, { encoding: 'utf8' }), Reader.acornOptions);
 	}
 
 	/**
@@ -79,7 +87,7 @@ class Reader extends Task {
 	}
 
 	/**
-	*	Glob Options
+	*	Default Glob Options
 	*	@public
 	*	@property globOptions
 	*	@type {Object}
@@ -88,6 +96,17 @@ class Reader extends Task {
 		strict: true,
 		nosort: true,
 		nodir: true
+	};
+
+	/**
+	*	Default Acorn Options
+	*	@static
+	*	@property acornOptions
+	*	@type {Object}
+	**/
+	static acornOptions = {
+		ecmaVersion: 8,
+		sourceType: 'module'
 	};
 
 	/**

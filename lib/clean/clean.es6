@@ -16,8 +16,8 @@ class Clean extends Command {
 	*	Run
 	*	@public
 	*	@override
-	*	@param resolve {Function} asynchronous promise's resolve
-	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Function} resolve asynchronous promise's resolve
+	*	@param {Function} reject asynchronous promise's reject
 	*	@return {clean.Clean}
 	**/
 	run(resolve, reject) {

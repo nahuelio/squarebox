@@ -27,13 +27,13 @@ class Type extends Visited {
 	/**
 	*	Asynchronous next strategy
 	*	@public
-	*	@param adt {visitors.async.Asynchronous} adt used for asynchronous operations
-	*	@param resolve {Function} asynchronous promise's resolve
-	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Function} resolve asynchronous promise's resolve
+	*	@param {Function} reject asynchronous promise's reject
+	*	@param {Array} files list of files parsed
 	*	@return {Promise}
 	**/
-	next(adt, resolve, reject) {
-		if(_.defined(this.task.read)) return this.read(resolve, reject);
+	next(resolve, reject, files) {
+		if(_.defined(this.task.read)) return this.read(resolve, reject, files);
 		if(_.defined(this.task.write)) return this.write(resolve, reject);
 		return resolve(this);
 	}
@@ -41,19 +41,20 @@ class Type extends Visited {
 	/**
 	*	Default Read strategy
 	*	@public
-	*	@param resolve {Function} asynchronous promise's resolve
-	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Function} resolve asynchronous promise's resolve
+	*	@param {Function} reject asynchronous promise's reject
+	*	@param {Array} files list of files parsed
 	*	@return {Promise}
 	**/
-	read(resolve, reject) {
+	read(resolve, reject, files) {
 		return resolve(this);
 	}
 
 	/**
 	*	Default  Write strategy
 	*	@public
-	*	@param resolve {Function} asynchronous promise's resolve
-	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Function} resolve asynchronous promise's resolve
+	*	@param {Function} reject asynchronous promise's reject
 	*	@return {Promise}
 	**/
 	write(resolve, reject) {

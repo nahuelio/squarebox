@@ -8,6 +8,7 @@ import Collection from 'util/adt/collection';
 import Command from 'command';
 import Metadata from 'bundle/task/metadata/metadata';
 import Factory from 'util/factory/factory';
+import logger from 'util/logger/logger';
 
 /**
 *	Class Bundle
@@ -69,7 +70,10 @@ class Bundle extends Command {
 	*	@return {bundle.Bundle}
 	**/
 	after(result) {
-		if(_.instanceOf(result, Error)) return this.emit(Command.events.error, result);
+		if(_.instanceOf(result, Error)) {
+			logger(result).warn();
+			return this.emit(Command.events.error, result);
+		}
 		return this.done();
 	}
 

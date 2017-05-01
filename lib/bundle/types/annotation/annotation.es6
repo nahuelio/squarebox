@@ -17,11 +17,12 @@ class Annotation extends Type {
 	*	Annotation Read strategy
 	*	@public
 	*	@override
-	*	@param resolve {Function} asynchronous promise's resolve
-	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Function} resolve asynchronous promise's resolve
+	*	@param {Function} reject asynchronous promise's reject
+	*	@param {Array} files - files parsed
 	*	@return {Promise}
 	**/
-	read(resolve, reject) {
+	read(resolve, reject, files) {
 		return resolve(this);
 	}
 
