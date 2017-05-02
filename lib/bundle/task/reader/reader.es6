@@ -23,12 +23,22 @@ class Reader extends Task {
 
 	/**
 	*	Read Strategy
+	*	Switch parameters
 	*	@public
 	*	@param {util.visitor.Visited} vi - visited instance reference
 	*	@return {Promise}
 	**/
 	read(vi) {
-		return this.types.pop({}, false, this.files().reduce(this.get, [], this));
+		return this.types.pop({}, false, this);
+	}
+
+	/**
+	*	Retrieves files metadata
+	*	@public
+	*	@return {Array}
+	**/
+	getFiles() {
+		return this.files().reduce(this.get, [], this);
 	}
 
 	/**

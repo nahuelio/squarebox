@@ -19,11 +19,47 @@ class Annotation extends Type {
 	*	@override
 	*	@param {Function} resolve asynchronous promise's resolve
 	*	@param {Function} reject asynchronous promise's reject
-	*	@param {Array} files - files parsed
+	*	@param {bundle.task.Task} task current task
 	*	@return {Promise}
 	**/
-	read(resolve, reject, files) {
-		return resolve(this);
+	read(resolve, reject, task) {
+		task.bundles.addAll(this.annotations(task.getFiles()), { new: _.bind(this.create, this) });
+		return super.read(resolve, reject);
+	}
+
+	/**
+	*	Create Bundle Metadata
+	*	@public
+ 	*	@param {Object} bundle annotation information
+	*	@return {util.adt.Collection}
+	**/
+	create(bundle) {
+		// TODO:
+		console.log('Instanciate Metadata: ', bundle);
+		return bundle;
+	}
+
+	/**
+	*	Read all annotations of all files captured
+	*	@public
+	*	@param {Array} files files parsed by Reader Task
+	*	@return {Array}
+	**/
+	annotations(files) {
+		return _.reduce(files, this.annotation, [], this);
+	}
+
+	/**
+	*	Read annotations from a single file
+	*	@public
+	*	@param {Array} memo memoized list of files used to store parsed annotations
+	*	@param {Object} file current file metadata to capture
+	*	@return {Array}
+	**/
+	annotation(memo, file) {
+		// TODO: Factory of format gathered from command!
+		//console.log(file.ast);
+		return memo;
 	}
 
 }

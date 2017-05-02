@@ -25,17 +25,29 @@ class Type extends Visited {
 	}
 
 	/**
-	*	Asynchronous next strategy
+	*	Resolves Task Execution
+	*	@public
+	*	@param {Function} reject asynchronous promise's reject
+	*	@return {bundle.types.Type}
+	**/
+	resolve(reject) {
+		switch(this.task.name) {
+			case 'ReaderVisitor': return _.bind(this.read, this);
+			case 'WriterVisitor': return _.bind(this.write, this);
+			default: return reject;
+		}
+	}
+
+	/**
+	*	Default Asynchronous next strategy
 	*	@public
 	*	@param {Function} resolve asynchronous promise's resolve
 	*	@param {Function} reject asynchronous promise's reject
-	*	@param {Array} files list of files parsed
+	*	@param {Any} [...args] list of arguments
 	*	@return {Promise}
 	**/
-	next(resolve, reject, files) {
-		if(_.defined(this.task.read)) return this.read(resolve, reject, files);
-		if(_.defined(this.task.write)) return this.write(resolve, reject);
-		return resolve(this);
+	next(resolve, reject, ...args) {
+		return this.resolve(reject)(resolve, reject, ...args);
 	}
 
 	/**
@@ -43,10 +55,10 @@ class Type extends Visited {
 	*	@public
 	*	@param {Function} resolve asynchronous promise's resolve
 	*	@param {Function} reject asynchronous promise's reject
-	*	@param {Array} files list of files parsed
+	*	@param {Any} [...args] list of arguments
 	*	@return {Promise}
 	**/
-	read(resolve, reject, files) {
+	read(resolve, reject, ...args) {
 		return resolve(this);
 	}
 
@@ -55,9 +67,10 @@ class Type extends Visited {
 	*	@public
 	*	@param {Function} resolve asynchronous promise's resolve
 	*	@param {Function} reject asynchronous promise's reject
+	*	@param {Any} [...args] list of arguments
 	*	@return {Promise}
 	**/
-	write(resolve, reject) {
+	write(resolve, reject, ...args) {
 		return resolve(this);
 	}
 
