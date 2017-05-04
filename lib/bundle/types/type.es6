@@ -4,6 +4,7 @@
 **/
 import _ from 'util/mixins';
 import extend from 'extend';
+import Collection from 'util/adt/collection';
 import Visited from 'util/visitor/visited';
 import logger from 'util/logger/logger';
 
@@ -21,7 +22,7 @@ class Type extends Visited {
 	*	@return {bundle.types.Type}
 	**/
 	constructor(task) {
-		return super({ task });
+		return super({ task }).registerAll();
 	}
 
 	/**
@@ -73,6 +74,21 @@ class Type extends Visited {
 	write(resolve, reject, ...args) {
 		return resolve(this);
 	}
+
+	/**
+	*	List of Visitors
+	*	@static
+	*	@property visitors
+	*	@type {util.adt.Collection}
+	**/
+	static visitors =  Collection.new(Visited.visitors.toJSON().concat([
+		'bundle/format/standard/standard',
+		'bundle/format/es6/es6',
+		'bundle/format/cjs/cjs',
+		'bundle/format/amd/amd',
+		'bundle/format/iife/iife',
+		'bundle/format/umd/umd'
+	]));
 
 }
 

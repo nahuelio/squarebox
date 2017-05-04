@@ -1,5 +1,5 @@
 /**
-*	@module bundle.format.iife
+*	@module bundle.format.standard
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
@@ -8,23 +8,24 @@ import Format from 'bundle/format/format';
 import logger from 'util/logger/logger';
 
 /**
-*	Class Iife
+*	Class Standard
 *	@extends {bundle.format.Format}
 **/
-class Iife extends Format {
+class Standard extends Format {
 
 	/**
-	*	Iife AST Query
+	*	Standard AST Query
 	*	@public
 	*	@param {util.visitor.Visited} ctx context visited
 	*	@param {Object} o - object to query
 	*	@param {String} expr - json path query
 	*	@return {Any}
 	**/
-	iife(ctx, o, expr) {
+	standard(ctx, o, expr) {
+		console.log(o, expr);
 		return this.query(o, expr);
 	}
 
 }
 
-export default Iife;
+export default Standard;

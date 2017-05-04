@@ -34,7 +34,7 @@ class Visited extends EventEmitter {
 	*	@return {util.visitor.Visited}
 	**/
 	registerAll(dirname) {
-		Factory.basePath(dirname);
+		if(_.defined(dirname)) Factory.basePath(dirname);
 		return this.constructor.visitors.reduce(this.register, this, this);
 	}
 

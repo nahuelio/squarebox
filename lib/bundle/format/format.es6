@@ -4,13 +4,14 @@
 **/
 import _ from 'util/mixins';
 import extend from 'extend';
-import jp from 'jsonpath';
+import AstQ from 'astq'; // documentation - https://www.npmjs.com/package/astq
 import Visitor from 'util/visitor/visitor';
 import Collection from 'util/adt/collection';
 import logger from 'util/logger/logger';
 
 /**
 *	Class Format
+*	@Note: Subjected to refactor formats ast -> format (formats and templates), ast -> query (astq wrapper visitor)
 *	@extends {util.visitor.Visitor}
 **/
 class Format extends Visitor {
@@ -18,23 +19,22 @@ class Format extends Visitor {
 	/**
 	*	Constructor
 	*	@public
-	*	@param {Any} [...args] - constructor arguments
+	*	@override
 	*	@return {bundle.format.Format}
 	**/
 	constructor() {
-		super();
-		return this;
+		return super({ astq: new AstQ() });
 	}
 
 	/**
-	*	Method Wrapper for querying AST
+	*	Method Wrapper for querying Abstract Syntax Tree (AST)
 	*	@public
-	*	@param {String} [expr = ''] - json path query
-	*	@param {Object} [o = {}] - object to query
+	*	@param {Object} [ast = {}] AST to query
+	*	@param {String} [expr = ''] json path query
 	*	@return {Any}
 	**/
-	query(expr = '', o = {}) {
-		return this.result(jp.query(expr, o));
+	query(ctx, ast = {}, expr = '') {
+		return this.result(this.astq.query(ast, expr));
 	}
 
 	/**
@@ -44,6 +44,7 @@ class Format extends Visitor {
 	*	@return {bundle.format.Format}
 	**/
 	result(out) {
+		console.log('Result: ', out);
 		return this;
 	}
 

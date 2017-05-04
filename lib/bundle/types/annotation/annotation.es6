@@ -34,7 +34,6 @@ class Annotation extends Type {
 	*	@return {util.adt.Collection}
 	**/
 	create(bundle) {
-		// TODO:
 		console.log('Instanciate Metadata: ', bundle);
 		return bundle;
 	}
@@ -57,8 +56,7 @@ class Annotation extends Type {
 	*	@return {Array}
 	**/
 	annotation(memo, file) {
-		// TODO: Factory of format gathered from command!
-		//console.log(file.ast);
+		// HERE... this.standard(file.ast.body, '$..[0]');
 		return memo;
 	}
 

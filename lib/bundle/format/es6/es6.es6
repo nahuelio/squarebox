@@ -13,6 +13,18 @@ import logger from 'util/logger/logger';
 **/
 class Es6 extends Format {
 
+	/**
+	*	ES6 AST Query
+	*	@public
+	*	@param {util.visitor.Visited} ctx context visited
+	*	@param {Object} o - object to query
+	*	@param {String} expr - json path query
+	*	@return {Any}
+	**/
+	es6(ctx, o, expr) {
+		return this.query(o, expr);
+	}
+
 }
 
 export default Es6;
