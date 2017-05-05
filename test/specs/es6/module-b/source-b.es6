@@ -1,5 +1,5 @@
 /**
-*	@sqbox({ bundle: "module-b" })
+*	@sqbox({ name: "module-b" })
 **/
 import CommonA from 'common/common-a';
 

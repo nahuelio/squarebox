@@ -21,11 +21,7 @@ import File from 'bundle/task/metadata/file';
 *
 *	@example
 *		[Metadata] => {
-*			bundle: {
-*				name: {uniqueId},
-*				target: {path},
-*				format: {currentFormat}
-*			},
+*			bundle: {name}
 *			files: [{
 *				source: {path},
 *				ast: {object}
@@ -52,7 +48,7 @@ class Metadata extends Visited {
 	*	@return {bundle.task.metadata.Metadata}
 	**/
 	parse(attrs = {}) {
-		this.bundle.parse(attrs.bundle);
+		this.bundle.parse(attrs);
 		this.files.set(attrs.files);
 		return extend(true, this, _.pick(attrs, this.constructor.properties));
 	}

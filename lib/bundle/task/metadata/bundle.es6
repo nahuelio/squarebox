@@ -40,9 +40,7 @@ class Bundle extends Visited {
 	*	@type {Array}
 	**/
 	static properties = [
-		'name',
-		'target',
-		'format'
+		'name'
 	];
 
 }

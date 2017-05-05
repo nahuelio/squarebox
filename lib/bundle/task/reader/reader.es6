@@ -49,7 +49,8 @@ class Reader extends Task {
 	*	@return {bundle.task.reader.Reader}
 	**/
 	get(memo, source) {
-		memo.push({ source, ast: this.parse(source) });
+		let comments = [], ast = this.parse(source, extend(false, { onComment: comments }, Reader.acornOptions));
+		memo.push({ source, ast, comments });
 		return memo;
 	}
 
@@ -59,8 +60,8 @@ class Reader extends Task {
 	*	@param {String} source file path to parse
 	*	@return {Object}
 	**/
-	parse(source) {
-		return acorn.parse(fs.readFileSync(source, { encoding: 'utf8' }), Reader.acornOptions);
+	parse(source, ...args) {
+		return acorn.parse(fs.readFileSync(source, { encoding: 'utf8' }), ...args);
 	}
 
 	/**
@@ -115,7 +116,7 @@ class Reader extends Task {
 	*	@type {Object}
 	**/
 	static acornOptions = {
-		ecmaVersion: 8,
+		ecmaVersion: 6,
 		sourceType: 'module'
 	};
 

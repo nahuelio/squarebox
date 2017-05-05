@@ -41,7 +41,8 @@ class File extends Visited {
 	**/
 	static properties = [
 		'source',
-		'ast'
+		'ast',
+		'comments'
 	];
 
 }

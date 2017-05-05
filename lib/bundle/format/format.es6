@@ -31,10 +31,11 @@ class Format extends Visitor {
 	*	@public
 	*	@param {Object} [ast = {}] AST to query
 	*	@param {String} [expr = ''] json path query
+	*	@param {Any} [...args] additional arguments
 	*	@return {Any}
 	**/
-	query(ctx, ast = {}, expr = '') {
-		return this.result(this.astq.query(ast, expr));
+	query(ctx, ast = {}, expr = '', ...args) {
+		return this.result(this.astq.query(ast, expr, ...args));
 	}
 
 	/**

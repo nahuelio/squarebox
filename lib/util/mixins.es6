@@ -113,6 +113,17 @@ _.mixin({
 	**/
 	defined: function(o) {
 		return (!_.isUndefined(o) && !_.isNull(o));
+	},
+
+	/**
+	*	Trims Globally any special characters from a given expression as string
+	*	Special characters include: '*,\\,\n,\t,\r'
+	*	@public
+	*	@param {String} [expr = ''] expression to trim
+	*	@return {String}
+	**/
+	trimSpecial: function(expr = '') {
+		return _s.replaceAll(_s.clean(expr), /(\*|\n|\\|\t|\r)*/g, '');
 	}
 
 });
