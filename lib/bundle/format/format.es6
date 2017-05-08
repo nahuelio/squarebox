@@ -27,6 +27,40 @@ class Format extends Visitor {
 	}
 
 	/**
+	*	Clean Up
+	*	@public
+	*	@param {Array} comments list of all comments
+	*	@return {Array}
+	**/
+	_clean(comments) {
+		return _.map(comments, (comment) => _.trimSpecial(comment.value));
+	}
+
+	/**
+	*	Default Result Handler
+	*	@private
+	*	@param {Any} out - ast query result
+	*	@return {bundle.format.Format}
+	**/
+	_result(out) {
+		console.log('Result: ', out);
+		return this;
+	}
+
+	/**
+	*	Perform search of annotations over comments in the source code and retrieves
+	*	the first occurence when predicates pass the evaluation
+	*	@public
+	*	@param {util.visitor.Visited} ctx context visited
+	*	@param {Array} comments list of all comments
+	*	@param {Function} [predicate = () => false] predicate walker
+	*	@return {Object}
+	**/
+	search(ctx, comments = [], predicate = () => false) {
+		return _.find(this._clean(comments), predicate);
+	}
+
+	/**
 	*	Method Wrapper for querying Abstract Syntax Tree (AST)
 	*	@public
 	*	@param {Object} [ast = {}] AST to query
@@ -35,18 +69,7 @@ class Format extends Visitor {
 	*	@return {Any}
 	**/
 	query(ctx, ast = {}, expr = '', ...args) {
-		return this.result(this.astq.query(ast, expr, ...args));
-	}
-
-	/**
-	*	Default Result Handler
-	*	@public
-	*	@param {Any} out - ast query result
-	*	@return {bundle.format.Format}
-	**/
-	result(out) {
-		console.log('Result: ', out);
-		return this;
+		return this._result(this.astq.query(ast, expr, ...args));
 	}
 
 }

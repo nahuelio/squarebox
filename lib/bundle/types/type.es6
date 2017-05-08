@@ -82,6 +82,7 @@ class Type extends Visited {
 	*	@type {util.adt.Collection}
 	**/
 	static visitors =  Collection.new(Visited.visitors.toJSON().concat([
+		'bundle/format/format',
 		'bundle/format/standard/standard',
 		'bundle/format/es6/es6',
 		'bundle/format/cjs/cjs',

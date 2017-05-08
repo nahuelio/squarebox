@@ -6,7 +6,9 @@ import _ from 'util/mixins';
 import _s from 'underscore.string';
 import json5 from 'json5';
 import extend from 'extend';
+import Collection from 'util/adt/collection';
 import Type from 'bundle/types/type';
+import * as Helpers from 'bundle/types/annotation/helpers';
 import logger from 'util/logger/logger';
 
 /**
@@ -21,65 +23,51 @@ class Annotation extends Type {
 	*	@override
 	*	@param {Function} resolve asynchronous promise's resolve
 	*	@param {Function} reject asynchronous promise's reject
-	*	@param {bundle.task.Task} task current task
+	*	@param {util.adt.Collection} bundles list of bundles
+	*	@param {Array} files list of files
 	*	@return {Promise}
 	**/
-	read(resolve, reject, task) {
-		task.bundles.addAll(this.annotations(task.getFiles()));
+	read(resolve, reject, bundles, files) {
+		this.annotations(files).reduce(this.create, bundles, this);
 		return super.read(resolve, reject);
+	}
+
+	/**
+	*	Create Bundle Metadata
+	*	@public
+	*	@param {util.adt.Collection} memo memoized list of bundles
+	*	@param {Object} meta data extracted from annotation
+	*	@return {util.adt.Collection}
+	**/
+	create(memo, meta) {
+		if(!Helpers.containsBy(memo, meta.name)) memo.add({ bundle: meta });
+		return memo;
 	}
 
 	/**
 	*	Read all annotations of all files captured
 	*	@public
 	*	@param {Array} files files parsed by Reader Task
-	*	@return {Array}
+	*	@return {util.adt.Collection}
 	**/
 	annotations(files) {
-		return _.reduce(files, this.annotation, [], this);
+		return _.reduce(files, this.annotation, Collection.new(), this);
 	}
 
 	/**
 	*	Read annotations from a single file
 	*	@public
-	*	@param {Array} memo memoized list of files used to store parsed annotations
+	*	@param {util.adt.Collection} memo memoized collection of files used to store parsed annotations
 	*	@param {Object} file current file metadata to capture
-	*	@return {Array}
+	*	@return {util.adt.Collection}
 	**/
 	annotation(memo, file) {
-		let annotation = this.search(file.comments, _.bind(this.match, this));
-		memo.push(this.extract(annotation));
+		let annotation = this.search(file.comments, Helpers.match);
+		if(_.defined(annotation)) {
+			let meta = Helpers.extract(annotation);
+			if(Helpers.valid(meta)) memo.add({ name: meta.name, target: file });
+		}
 		return memo;
-	}
-
-	/**
-	*	Annotation Matcher Evaluation
-	*	@public
-	*	@param {Object} comment current comment to evaluate
-	*	@return {Boolean}
-	**/
-	match(comment) {
-		return _s.startsWith(comment, `${Annotation.name}(`) && _s.endsWith(comment, ')');
-	}
-
-	/**
-	*	Extract Metadata from annotation declaration using json5 specification
-	*	@public
-	*	@param {String} expr annotation expression
-	*	@return {Object}
-	**/
-	extract(expr) {
-		return json5.parse(_s.rtrim(_s.ltrim(expr, `${Annotation.name}(`), ')'));
-	}
-
-	/**
-	*	Annotation Name
-	*	@static
-	*	@property name
-	*	@type {String}
-	**/
-	static get name() {
-		return '@sqbox';
 	}
 
 }

@@ -21,10 +21,11 @@ import File from 'bundle/task/metadata/file';
 *
 *	@example
 *		[Metadata] => {
-*			bundle: {name}
+*			bundle: {uniqueName},
 *			files: [{
 *				source: {path},
-*				ast: {object}
+*				ast: {object},
+*				comments: []
 *			}, ...]
 *		}
 **/
@@ -48,7 +49,7 @@ class Metadata extends Visited {
 	*	@return {bundle.task.metadata.Metadata}
 	**/
 	parse(attrs = {}) {
-		this.bundle.parse(attrs);
+		this.bundle.parse(attrs.bundle);
 		this.files.set(attrs.files);
 		return extend(true, this, _.pick(attrs, this.constructor.properties));
 	}
@@ -60,7 +61,7 @@ class Metadata extends Visited {
 	*	@param {visitors.formatter.Json} [ctx] - context reference
 	*	@return {Object}
 	**/
-	toJSON() {
+	toJSON(ctx) {
 		return { bundle: this.bundle.toJSON(), files: this.files.toJSON() };
 	}
 

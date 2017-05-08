@@ -5,6 +5,7 @@
 import _ from 'util/mixins';
 import extend from 'extend';
 import Visited from 'util/visitor/visited';
+import File from 'bundle/task/metadata/file';
 
 /**
 *	Class Bundle
@@ -19,7 +20,7 @@ class Bundle extends Visited {
 	*	@return {bundle.task.metadata.Bundle}
 	**/
 	constructor(...args) {
-		super(_.object(Bundle.properties, []));
+		super({ name: null, target: File.new() });
 		return this.registerAll().parse(...args);
 	}
 
@@ -30,8 +31,19 @@ class Bundle extends Visited {
 	*	@return {bundle.task.metadata.Bundle}
 	**/
 	parse(attrs = {}) {
+		this.target.parse(attrs.target);
 		return extend(true, this, _.pick(attrs, this.constructor.properties));
 	}
+
+	/**
+	*	Compound Property Definition
+	*	@static
+	*	@property compound
+	*	@type {Array}
+	**/
+	static compound = [
+		'target'
+	];
 
 	/**
 	*	Property Definition

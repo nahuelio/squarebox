@@ -19,10 +19,11 @@ class Export extends Type {
 	*	@override
 	*	@param {Function} resolve asynchronous promise's resolve
 	*	@param {Function} reject asynchronous promise's reject
-	*	@param {bundle.task.Task} task current task
+	*	@param {util.adt.Collection} bundles list of bundles
+	*	@param {Array} files list of files
 	*	@return {Promise}
 	**/
-	read(resolve, reject) {
+	read(resolve, reject, bundles) {
 		return super.read(resolve, reject);
 	}
 

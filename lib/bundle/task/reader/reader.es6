@@ -29,7 +29,7 @@ class Reader extends Task {
 	*	@return {Promise}
 	**/
 	read(vi) {
-		return this.types.pop({}, false, this);
+		return this.types.pop({}, false, this.bundles, this.getFiles());
 	}
 
 	/**
@@ -116,7 +116,7 @@ class Reader extends Task {
 	*	@type {Object}
 	**/
 	static acornOptions = {
-		ecmaVersion: 6,
+		ecmaVersion: 8,
 		sourceType: 'module'
 	};
 

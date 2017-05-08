@@ -1,5 +1,3 @@
 // @sqbox({ name: "module-a" })
-import CommonA from 'common/common-a';
-import CommonB from 'common/common-b';
-
-export default () => { console.log('module-a/SourceA'); };
+import SourceA1 from 'module-a/s-a-1';
+import SourceA2 from 'module-a/s-a-2';

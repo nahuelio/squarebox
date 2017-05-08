@@ -143,7 +143,7 @@ class Collection extends EventEmitter {
 	}
 
 	/**
-	*	Returns true if the a given element existis in this collection, false otherwise
+	*	Returns true if the a given element exists in this collection, false otherwise
 	*	@public
 	*	@param element {Any} element to evaluate
 	*	@return {Boolean}
