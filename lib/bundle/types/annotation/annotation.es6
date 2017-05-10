@@ -3,12 +3,10 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
-import _s from 'underscore.string';
-import json5 from 'json5';
 import extend from 'extend';
-import Collection from 'util/adt/collection';
 import Type from 'bundle/types/type';
 import * as Helpers from 'bundle/types/annotation/helpers';
+import Collection from 'util/adt/collection';
 import logger from 'util/logger/logger';
 
 /**

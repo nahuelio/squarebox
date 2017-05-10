@@ -36,6 +36,15 @@ class Bundle extends Visited {
 	}
 
 	/**
+	*	Returns a json representation of the instance of this class
+	*	@public
+	*	@return {Object}
+	**/
+	toJSON() {
+		return { name: this.name, target: this.target.toJSON() };
+	}
+
+	/**
 	*	Compound Property Definition
 	*	@static
 	*	@property compound

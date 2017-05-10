@@ -39,12 +39,11 @@ class Format extends Visitor {
 	/**
 	*	Default Result Handler
 	*	@private
-	*	@param {Any} out - ast query result
-	*	@return {bundle.format.Format}
+	*	@param {Array} out - ast query result
+	*	@return {Any}
 	**/
-	_result(out) {
-		console.log('Result: ', out);
-		return this;
+	_result(out = [], cb) {
+		return cb(Collection.new(out));
 	}
 
 	/**
@@ -65,11 +64,12 @@ class Format extends Visitor {
 	*	@public
 	*	@param {Object} [ast = {}] AST to query
 	*	@param {String} [expr = ''] json path query
+	*	@param {Function} [cb = () => {}]
 	*	@param {Any} [...args] additional arguments
 	*	@return {Any}
 	**/
-	query(ctx, ast = {}, expr = '', ...args) {
-		return this._result(this.astq.query(ast, expr, ...args));
+	query(ctx, ast = {}, expr = '', cb = () => {}, ...args) {
+		return this._result(this.astq.query(ast, expr, ...args), cb);
 	}
 
 }

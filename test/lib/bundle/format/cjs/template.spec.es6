@@ -20,16 +20,4 @@ describe.skip('bundle.format.cjs.Template', function() {
 		delete this.input;
 	});
 
-	describe('template()', () => {
-
-		it('Should output amd imports', () => {
-			//const result = Cjs.imports(this.input);
-			//console.log(result);
-			// assert.include(result, `/** <${this.input.name}> **/`);
-			// assert.include(result, `define(`);
-			// assert.include(result, `return MyModule;`);
-		});
-
-	});
-
 });

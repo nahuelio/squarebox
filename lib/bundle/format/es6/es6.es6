@@ -25,6 +25,38 @@ class Es6 extends Format {
 		return this.query(o, expr);
 	}
 
+	/**
+	*	ASTQ Import Declaration Query
+	*	@static
+	*	@property importDeclaration
+	*	@type {String}
+	**/
+	static importDeclaration = '// * [@type == "ImportDeclaration"]';
+
+	/**
+	*	ASTQ Import Identifier Query
+	*	@static
+	*	@property importIdentifier
+	*	@type {String}
+	**/
+	static importIdentifier = '// * [@type == "ImportDefaultSpecifier"]';
+
+	/**
+	*	ASTQ Export Declaration Query
+	*	@static
+	*	@property exportDeclaration
+	*	@type {String}
+	**/
+	static exportDeclaration = '// * [@type == "ExportDeclaration"]';
+
+	/**
+	*	ASTQ Export Identifier Query
+	*	@static
+	*	@property exportIdentifier
+	*	@type {String}
+	**/
+	static exportIdentifier = '// * [@type == "ExportDefaultSpecifier"]';
+
 }
 
 export default Es6;

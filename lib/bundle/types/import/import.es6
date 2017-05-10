@@ -5,6 +5,8 @@
 import _ from 'util/mixins';
 import extend from 'extend';
 import Type from 'bundle/types/type';
+import * as Helpers from 'bundle/types/import/helpers';
+import Collection from 'util/adt/collection';
 import logger from 'util/logger/logger';
 
 /**
@@ -23,21 +25,34 @@ class Import extends Type {
 	*	@param {Array} files list of files
 	*	@return {Promise}
 	**/
-	read(resolve, reject, bundles) {
+	read(resolve, reject, bundles, files) {
+		this.dependencies(bundles, files);
 		return super.read(resolve, reject);
 	}
 
 	/**
-	*	Annotation Write strategy
+	*	Read Dependencies
 	*	@public
-	*	@override
-	*	@param {Function} resolve asynchronous promise's resolve
-	*	@param {Function} reject asynchronous promise's reject
-	*	@param {bundle.task.Task} task current task
-	*	@return {Promise}
+	*	@param {util.adt.Collection} bundles all bundles captured by annotations
+	*	@param {Array} files complete list of files parsed
+	*	@return {bundle.types.import.Import}
 	**/
-	write(resolve, reject) {
-		return super.write(resolve, reject);
+	dependencies(bundles, files) {
+		bundles.reduce(this.dependency, Collection.new(), this);
+		return this;
+	}
+
+	/**
+	*	Read Dependencies on a single file
+	*	@public
+	*	@param {util.adt.Collection} memo memoized collection to augment
+	*	@param {bundle.task.metadata.Metadata} metadata instance of meta found as a bundle
+	*	@return {util.adt.Collection}
+	**/
+	dependency(memo, metadata) {
+		const { target } = metadata.bundle;
+		//this.query(target.ast, Helpers.importDeclaration, _.bind(Helpers.onImport, Helpers, this));
+		return memo;
 	}
 
 }
