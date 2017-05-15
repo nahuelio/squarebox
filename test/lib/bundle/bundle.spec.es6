@@ -51,7 +51,6 @@ describe('bundle.Bundle', function() {
 	describe('run()', () => {
 
 		it('Should execute command run over specs/es6', () => {
-
 			this.bundle.run();
 		});
 

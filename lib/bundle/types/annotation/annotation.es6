@@ -60,12 +60,22 @@ class Annotation extends Type {
 	*	@return {util.adt.Collection}
 	**/
 	annotation(memo, file) {
-		let annotation = this.search(file.comments, Helpers.match);
+		let annotation = this.comments(file.comments, Helpers.match);
 		if(_.defined(annotation)) {
 			let meta = Helpers.extract(annotation);
 			if(Helpers.valid(meta)) memo.add({ name: meta.name, target: file });
 		}
 		return memo;
+	}
+
+	/**
+	*	Type Name
+	*	@public
+	*	@property name
+	*	@type {String}
+	**/
+	get name() {
+		return 'Annotation';
 	}
 
 }

@@ -17,45 +17,69 @@ class Es6 extends Format {
 	*	ES6 AST Query
 	*	@public
 	*	@param {util.visitor.Visited} ctx context visited
-	*	@param {Object} o - object to query
-	*	@param {String} expr - json path query
+	*	@param {astq.Node} ast ast to query
+	*	@param {String} expr astq expression
+	*	@param {Any} [args...] additional arguments
 	*	@return {Any}
 	**/
-	es6(ctx, o, expr) {
-		return this.query(o, expr);
+	es6(ctx, ast, expr, ...args) {
+		console.log('es6 querying...');
+		return this.query(o, expr, ...args);
 	}
 
 	/**
-	*	ASTQ Import Declaration Query
-	*	@static
-	*	@property importDeclaration
-	*	@type {String}
+	*	ES6 AST Query by a given type
+	*	@param {util.visitor.Visited} ctx context visited
+	*	@param {astq.Node} ast ast to query
+	*	@param {bundle.types.Type} type type used to query
+	*	@param {Any} [args...] additional arguments
+	*	@return {Any}
 	**/
-	static importDeclaration = '// * [@type == "ImportDeclaration"]';
+	es6ByType(ctx, ast, type, ...args) {
+		logger('es6ByType querying...').out();
+		return this.queryByType(ctx, ast, type, ...args);
+	}
 
 	/**
-	*	ASTQ Import Identifier Query
+	*	ASTQ ES6 Import Declaration Query
 	*	@static
-	*	@property importIdentifier
+	*	@property QES6_ImportDeclaration
 	*	@type {String}
 	**/
-	static importIdentifier = '// * [@type == "ImportDefaultSpecifier"]';
+	static QES6_ImportDeclaration = '// * [@type == "ImportDeclaration"]';
 
 	/**
-	*	ASTQ Export Declaration Query
+	*	ASTQ ES6 Import Identifier Query
 	*	@static
-	*	@property exportDeclaration
+	*	@property QES6_ImportIdentifier
 	*	@type {String}
 	**/
-	static exportDeclaration = '// * [@type == "ExportDeclaration"]';
+	static QES6_ImportIdentifier = '// * [@type == "ImportDefaultSpecifier"]';
 
 	/**
-	*	ASTQ Export Identifier Query
+	*	ASTQ ES6 Export Declaration Query
 	*	@static
-	*	@property exportIdentifier
+	*	@property QES6_ExportDeclaration
 	*	@type {String}
 	**/
-	static exportIdentifier = '// * [@type == "ExportDefaultSpecifier"]';
+	static QES6_ExportDeclaration = '// * [@type == "ExportDeclaration"]';
+
+	/**
+	*	ASTQ ES6 Export Identifier Query
+	*	@static
+	*	@property QES6_ExportIdentifier
+	*	@type {String}
+	**/
+	static QES6_ExportIdentifier = '// * [@type == "ExportDefaultSpecifier"]';
+
+	/**
+	*	Visitor Name
+	*	@public
+	*	@type {String}
+	**/
+	get name() {
+		return 'Es6Visitor';
+	}
 
 }
 

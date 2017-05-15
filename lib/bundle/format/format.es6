@@ -3,6 +3,7 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
+import _s from 'underscore.string';
 import extend from 'extend';
 import AstQ from 'astq'; // documentation - https://www.npmjs.com/package/astq
 import Visitor from 'util/visitor/visitor';
@@ -27,50 +28,74 @@ class Format extends Visitor {
 	}
 
 	/**
-	*	Clean Up
+	*	Resolves Query Type of element to query
 	*	@public
-	*	@param {Array} comments list of all comments
-	*	@return {Array}
+	*	@param {bundle.types.Type} type - type to resolve
+	*	@return {String}
 	**/
-	_clean(comments) {
-		return _.map(comments, (comment) => _.trimSpecial(comment.value));
+	which(type) {
+		let format = _s.strLeft(this.name, 'Visitor').toUpperCase(),
+			prop = `Q${format}_${Format.types[type.name.toLowerCase()]}`;
+		if(_.defined(this.constructor[prop])) return this.constructor[prop];
+		logger(`Type ${type.name} not found.`).fatal();
 	}
 
 	/**
-	*	Default Result Handler
-	*	@private
-	*	@param {Array} out - ast query result
+	*	Method wrapper for querying Abstract Syntax Tree (AST) by a given type
+	*	@public
+	*	@param {astq.Node} [ast] astq node to query
+	*	@param {Function} [cb = () => {}] optional callback on result
+	*	@param {bundle.types.Type} type element type
+	*	@param {Any} [...args] additional arguments
 	*	@return {Any}
 	**/
-	_result(out = [], cb) {
-		return cb(Collection.new(out));
-	}
-
-	/**
-	*	Perform search of annotations over comments in the source code and retrieves
-	*	the first occurence when predicates pass the evaluation
-	*	@public
-	*	@param {util.visitor.Visited} ctx context visited
-	*	@param {Array} comments list of all comments
-	*	@param {Function} [predicate = () => false] predicate walker
-	*	@return {Object}
-	**/
-	search(ctx, comments = [], predicate = () => false) {
-		return _.find(this._clean(comments), predicate);
+	queryByType(ctx, ast, cb, type, ...args) {
+		return this.query(ctx, ast, this.which(type), cb, ...args);
 	}
 
 	/**
 	*	Method Wrapper for querying Abstract Syntax Tree (AST)
 	*	@public
 	*	@param {Object} [ast = {}] AST to query
-	*	@param {String} [expr = ''] json path query
-	*	@param {Function} [cb = () => {}]
+	*	@param {String} [expr = ''] astq expression
+	*	@param {Function} [cb = () => {}] optional callback on result
 	*	@param {Any} [...args] additional arguments
 	*	@return {Any}
 	**/
 	query(ctx, ast = {}, expr = '', cb = () => {}, ...args) {
-		return this._result(this.astq.query(ast, expr, ...args), cb);
+		return this.onQuery(this.astq.query(ast, expr, ...args), cb);
 	}
+
+	/**
+	*	Default Result Handler
+	*	@public
+	*	@param {Array} out - ast query result
+	*	@param {Function} cb - callback on result
+	*	@return {Any}
+	**/
+	onQuery(out = [], cb) {
+		return cb(Collection.new(out));
+	}
+
+	/**
+	*	Visitor Name
+	*	@public
+	*	@type {String}
+	**/
+	get name() {
+		return 'FormatVisitor';
+	}
+
+	/**
+	*	Query Types
+	*	@public
+	*	@property types
+	*	@type {Object}
+	**/
+	static types = {
+		import: 'ImportDeclaration',
+		export: 'ExportDeclaration'
+	};
 
 }
 

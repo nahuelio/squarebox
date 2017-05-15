@@ -17,7 +17,8 @@ import Collection from 'util/adt/collection';
 *	@param {util.adt.Collection} imports collection of import declarations
 *	@return {util.adt.Collection}
 **/
-export const onImport = (type, imports) => {
+export const onImport = (imports) => {
+	//console.log('onImport: ', imports.toJSON());
 	//imports.reduce(_.bind(onImportIdentifier, this, type), Collection.new());
 };
 
@@ -34,7 +35,6 @@ export const onImport = (type, imports) => {
 *	@return {util.adt.Collection}
 **/
 export const onImportIdentifier = (type, memo, declaration) => {
-	console.log(declaration);
 	//query(declaration, )
 };
 

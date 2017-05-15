@@ -42,6 +42,16 @@ class Export extends Type {
 		return super.write(resolve, reject);
 	}
 
+	/**
+	*	Type Name
+	*	@public
+	*	@property name
+	*	@type {String}
+	**/
+	get name() {
+		return 'Export';
+	}
+
 }
 
 export default Export;

@@ -49,3 +49,20 @@ file: source-a-2 -> doesn't need common-a, common-b
 ----
 result: ['source-a-1', 'source-a-2', 'common-a', 'common-b', 'common-c', (a) => 'libs']
 ----
+
+#### Common Pipelines
+
+source - compile - optimization
+
+source (es6 - import/export) -> Es5 -> sqbox
+
+- use of transformation via babel-plugin-transform-amd
+- use of transformation via babel-plugin-transform-cjs
+
+source (typescript - import/export | referenceId) -> Es5 -> sqbox
+
+- use transformation from typescript
+
+source (es5 | require | define) -> sqbox
+
+- No Transformation

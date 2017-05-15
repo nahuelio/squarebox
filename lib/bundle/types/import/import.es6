@@ -26,7 +26,7 @@ class Import extends Type {
 	*	@return {Promise}
 	**/
 	read(resolve, reject, bundles, files) {
-		this.dependencies(bundles, files);
+		this.dependencies(bundles);
 		return super.read(resolve, reject);
 	}
 
@@ -37,7 +37,7 @@ class Import extends Type {
 	*	@param {Array} files complete list of files parsed
 	*	@return {bundle.types.import.Import}
 	**/
-	dependencies(bundles, files) {
+	dependencies(bundles) {
 		bundles.reduce(this.dependency, Collection.new(), this);
 		return this;
 	}
@@ -51,8 +51,19 @@ class Import extends Type {
 	**/
 	dependency(memo, metadata) {
 		const { target } = metadata.bundle;
-		//this.query(target.ast, Helpers.importDeclaration, _.bind(Helpers.onImport, Helpers, this));
+		// FIXME:
+		this.collectByType(target.ast, this, _.bind(Helpers.onImport, Helpers), ['cjs']);
 		return memo;
+	}
+
+	/**
+	*	Type Name
+	*	@public
+	*	@property name
+	*	@type {String}
+	**/
+	get name() {
+		return 'Import';
 	}
 
 }

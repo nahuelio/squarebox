@@ -15,24 +15,30 @@ Experimental ES6/CommonJS/AMD Module Bundler
 
 ```npm install [-g] squarebox```
 
-#### Usage
+### Usage
 
-CLI Commands
+```sqbox [command] [options]```
 
-```
-global option: -c (sqbox.js|.sqboxrc|URL) | Default: ./.sqboxrc
-contextual help - sqbox [command] help
+#### Commands
 
-* sqbox help - global help (list of commands and general usage)
-* sbox bundle --options
-* sbox clean
-* sbox graph
-```
+* **help** - Global Help
+* **bundle help** - Contextual help for command ```bundle```
+* **bundle** - Bundles your project
+	* Options
+		* [-c, --config] (sqbox.js, .sqboxrc, or a remote url) | Default: [currentDirectory]/.sqboxrc
+		* TODO Overrides...
+* **clean** - Clean destination folder
+	* Options
+		* ...TODO
+* **graph** - Generates a graphical report of your current bundling strategy
+	* Options
+		* ...TODO
 
-Programmatic API
+#### Programmatic API
 
 ```
 const sqbox = require('squarebox');
+// Or ES6: import sqbox from 'squarebox';
 sqbox.clean([opts])
 	.bundle([config])
 	.graph([opts]);
@@ -41,16 +47,16 @@ sqbox.clean([opts])
 #### Official Documentation
 
 ```
-TODO
-```
-
-#### Configuration
-
-```
-TODO
+TODO: Official Website / APIDocs
 ```
 
 #### Contribute
+
+```
+TODO
+```
+
+#### License
 
 ```
 TODO
