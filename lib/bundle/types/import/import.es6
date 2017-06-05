@@ -5,7 +5,8 @@
 import _ from 'util/mixins';
 import extend from 'extend';
 import Type from 'bundle/types/type';
-import * as Helpers from 'bundle/types/import/helpers';
+import * as Reader from 'bundle/types/import/reader';
+import * as Writer from 'bundle/types/import/writer';
 import Collection from 'util/adt/collection';
 import logger from 'util/logger/logger';
 
@@ -31,10 +32,9 @@ class Import extends Type {
 	}
 
 	/**
-	*	Read Dependencies
+	*	Read Imports
 	*	@public
 	*	@param {util.adt.Collection} bundles all bundles captured by annotations
-	*	@param {Array} files complete list of files parsed
 	*	@return {bundle.types.import.Import}
 	**/
 	dependencies(bundles) {
@@ -51,8 +51,9 @@ class Import extends Type {
 	**/
 	dependency(memo, metadata) {
 		const { target } = metadata.bundle;
-		// FIXME:
-		this.collectByType(target.ast, this, _.bind(Helpers.onImport, Helpers), ['cjs']);
+		// if(target.source.indexOf('libs.es6') !== -1) {
+			this.collectByType(target.ast, ['es6'], function() {});
+		// }
 		return memo;
 	}
 

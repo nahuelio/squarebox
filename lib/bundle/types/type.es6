@@ -53,47 +53,6 @@ class Type extends Visited {
 	}
 
 	/**
-	*	Generic Strategy that filters and collects comments gathered from source code
-	*	@public
-	*	@param {Array} [comments = []] collection of comments
-	*	@param {Function} [predicate = () => false] predicate used to filter comments
-	*	@return {Object}
-	**/
-	comments(comments = [], predicate = () => false) {
-		return Comments.search(comments, predicate);
-	}
-
-	/**
-	*	Generic Strategy to execute astq queries on a given list of formats.
-	*	Will collect and flatten query results into a single list of astq result objects.
-	*	By default all the formats will be used with the following order: es6, commonjs and amd.
-	*	@public
-	*	@param {astq.Node} ast current source ast to detect
-	*	@param {Array} [formats = Type.formats] list formats
-	*	@param {Any} [...args] additional arguments
-	*	@return {Array}
-	**/
-	collect(ast, formats = Type.formats, ...args) {
-		return Collection.new(formats).map((format) => this[format](ast, ...args));
-	}
-
-	/**
-	*	Generic Strategy to execute astq queries on a given list of formats and type of ast element
-	*	Will collect and flatten query results into a single list of astq result objects.
-	*	By default all the formats will be used with the following order: es6, commonjs and amd.
-	*	@public
-	*	@param {astq.Node} ast current source ast to detect
-	*	@param {bundle.types.Type} type current element type
-	*	@param {Function} [cb] optional callback
-	*	@param {Array} [formats = Type.formats] list formats
-	*	@param {Any} [...args] additional arguments
-	*	@return {Array}
-	**/
-	collectByType(ast, type, cb, formats = Type.formats, ...args) {
-		return this.collect(ast, _.map(formats, (format) => `${format}ByType`), cb, type, ...args);
-	}
-
-	/**
 	*	Default Read strategy
 	*	@public
 	*	@param {Function} resolve asynchronous promise's resolve
@@ -142,6 +101,8 @@ class Type extends Visited {
 	*	@type {util.adt.Collection}
 	**/
 	static visitors =  Collection.new(Visited.visitors.toJSON().concat([
+		'bundle/types/common/collector',
+		'bundle/types/common/comment',
 		'bundle/format/es6/es6',
 		'bundle/format/cjs/cjs',
 		'bundle/format/amd/amd',

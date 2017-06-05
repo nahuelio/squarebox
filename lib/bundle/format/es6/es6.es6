@@ -23,7 +23,6 @@ class Es6 extends Format {
 	*	@return {Any}
 	**/
 	es6(ctx, ast, expr, ...args) {
-		console.log('es6 querying...');
 		return this.query(o, expr, ...args);
 	}
 
@@ -31,13 +30,11 @@ class Es6 extends Format {
 	*	ES6 AST Query by a given type
 	*	@param {util.visitor.Visited} ctx context visited
 	*	@param {astq.Node} ast ast to query
-	*	@param {bundle.types.Type} type type used to query
 	*	@param {Any} [args...] additional arguments
 	*	@return {Any}
 	**/
-	es6ByType(ctx, ast, type, ...args) {
-		logger('es6ByType querying...').out();
-		return this.queryByType(ctx, ast, type, ...args);
+	es6ByType(ctx, ast, ...args) {
+		return this.queryByType(ctx, ast, ...args);
 	}
 
 	/**
@@ -46,15 +43,7 @@ class Es6 extends Format {
 	*	@property QES6_ImportDeclaration
 	*	@type {String}
 	**/
-	static QES6_ImportDeclaration = '// * [@type == "ImportDeclaration"]';
-
-	/**
-	*	ASTQ ES6 Import Identifier Query
-	*	@static
-	*	@property QES6_ImportIdentifier
-	*	@type {String}
-	**/
-	static QES6_ImportIdentifier = '// * [@type == "ImportDefaultSpecifier"]';
+	static QES6_ImportDeclaration = `/ImportDeclaration`;
 
 	/**
 	*	ASTQ ES6 Export Declaration Query
@@ -62,15 +51,7 @@ class Es6 extends Format {
 	*	@property QES6_ExportDeclaration
 	*	@type {String}
 	**/
-	static QES6_ExportDeclaration = '// * [@type == "ExportDeclaration"]';
-
-	/**
-	*	ASTQ ES6 Export Identifier Query
-	*	@static
-	*	@property QES6_ExportIdentifier
-	*	@type {String}
-	**/
-	static QES6_ExportIdentifier = '// * [@type == "ExportDefaultSpecifier"]';
+	static QES6_ExportDeclaration = '/ExportDeclaration';
 
 	/**
 	*	Visitor Name

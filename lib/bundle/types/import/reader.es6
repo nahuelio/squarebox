@@ -1,4 +1,5 @@
 /**
+*	Import Reader Helpers
 *	@module bundle.types.import
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
@@ -8,10 +9,6 @@ import Collection from 'util/adt/collection';
 
 /**
 *	Import Declaration Handler
-*	Captures expressions like:
-*		- import [Identifier] from [path];
-*		- import [{ Identifier, ... }] from [path];
-*		- import * as [Identifier] from [path];
 *	@public
 *	@param {bundle.types.import.Import} type import type reference
 *	@param {util.adt.Collection} imports collection of import declarations
@@ -24,10 +21,6 @@ export const onImport = (imports) => {
 
 /**
 *	Import Identifier Declaration Handler
-*	Captures expressions within ImportDeclarations such us:
-*		- [Identifier]
-*		- [{ Identifier, ... }]
-*		- * as [Identifier]
 *	@public
 *	@param {Function} query astq query function
 *	@param {util.adt.Collection} memo memoized collection of identifiers to augment
@@ -35,13 +28,11 @@ export const onImport = (imports) => {
 *	@return {util.adt.Collection}
 **/
 export const onImportIdentifier = (type, memo, declaration) => {
-	//query(declaration, )
+	// TODO
 };
 
 /**
 *	Import Identifier Declaration Handler
-*	Captures expressions within ImportDeclarations such us:
-*		- [Identifier]
 *	@public
 *	@param {Function} query astq query function
 *	@param {util.adt.Collection} memo memoized collection of identifiers to augment
@@ -49,5 +40,5 @@ export const onImportIdentifier = (type, memo, declaration) => {
 *	@return {util.adt.Collection}
 **/
 export const onImportPath = (query, memo, declaration) => {
-
+	// TODO
 };

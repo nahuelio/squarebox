@@ -50,7 +50,7 @@ class CommonJs extends Format {
 			/VariableDeclarator /CallExpression /Identifier [@name == 'require']
 		], /ExpressionStatement [
 			/AssignmentExpression /CallExpression /Identifier [@name == 'require']
-		], /CallExpression [
+		], /ExpressionStatement /CallExpression [
 			/Identifier [@name == 'require']
 		]
 	`;
@@ -61,7 +61,16 @@ class CommonJs extends Format {
 	*	@property QCJS_ExportDeclaration
 	*	@type {String}
 	**/
-	static QCJS_ExportDeclaration = '// Todo';
+	static QCJS_ExportDeclaration = `
+		/ExpressionStatement /AssignmentExpression [
+			@operator == '=' &&
+			@left != 'undefined' &&
+			/MemberExpression [
+				@property != 'undefined' &&
+				/Identifier [@name == 'exports']
+			]
+		]
+	`;
 
 	/**
 	*	Visitor Name

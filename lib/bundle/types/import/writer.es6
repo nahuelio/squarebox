@@ -1,5 +1,6 @@
 /**
-*	@module bundle.types.export
+*	Import Writer Helpers
+*	@module bundle.types.import
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';

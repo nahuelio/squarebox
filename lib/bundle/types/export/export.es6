@@ -5,7 +5,8 @@
 import _ from 'util/mixins';
 import extend from 'extend';
 import Type from 'bundle/types/type';
-import * as Helpers from 'bundle/types/export/helpers';
+import * as Reader from 'bundle/types/export/reader';
+import * as Writer from 'bundle/types/export/writer';
 import Collection from 'util/adt/collection';
 import logger from 'util/logger/logger';
 
@@ -26,7 +27,32 @@ class Export extends Type {
 	*	@return {Promise}
 	**/
 	read(resolve, reject, bundles) {
+		this.exports(bundles);
 		return super.read(resolve, reject);
+	}
+
+	/**
+	*	Read Exports
+	*	@public
+	*	@param {util.adt.Collection} bundles all bundles captured by annotations
+	*	@return {bundle.types.import.Import}
+	**/
+	exports(bundles) {
+		bundles.reduce(this.export, Collection.new(), this);
+		return this;
+	}
+
+	/**
+	*	Read Exports on a single file
+	*	@public
+	*	@param {util.adt.Collection} memo memoized collection to augment
+	*	@param {bundle.task.metadata.Metadata} metadata instance of meta found as a bundle
+	*	@return {util.adt.Collection}
+	**/
+	export(memo, metadata) {
+		const { target } = metadata.bundle;
+		//this.collectByType(target.ast, ['es6'], _.bind(Helpers.onExport, Helpers));
+		return memo;
 	}
 
 	/**

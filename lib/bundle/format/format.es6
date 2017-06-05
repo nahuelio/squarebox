@@ -44,13 +44,11 @@ class Format extends Visitor {
 	*	Method wrapper for querying Abstract Syntax Tree (AST) by a given type
 	*	@public
 	*	@param {astq.Node} [ast] astq node to query
-	*	@param {Function} [cb = () => {}] optional callback on result
-	*	@param {bundle.types.Type} type element type
 	*	@param {Any} [...args] additional arguments
 	*	@return {Any}
 	**/
-	queryByType(ctx, ast, cb, type, ...args) {
-		return this.query(ctx, ast, this.which(type), cb, ...args);
+	queryByType(ctx, ast, ...args) {
+		return this.query(ctx, ast, this.which(ctx), ...args);
 	}
 
 	/**
@@ -74,6 +72,9 @@ class Format extends Visitor {
 	*	@return {Any}
 	**/
 	onQuery(out = [], cb) {
+		// if(out.length > 0) {
+		// 	logger(JSON.stringify(out, null, 1)).warn();
+		// }
 		return cb(Collection.new(out));
 	}
 
