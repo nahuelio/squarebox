@@ -3,6 +3,7 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
+import _s from 'underscore.string';
 import extend from 'extend';
 import Collection from 'util/adt/collection';
 import StackAsync from 'util/adt/stack-async';
@@ -68,6 +69,15 @@ class Task extends Visitor {
 	onType(eventName = Task.events.execute) {
 		this.emit(eventName, this);
 		return this;
+	}
+
+	/**
+	*	Retrieves Task Name
+	*	@public
+	*	@return {String}
+	**/
+	getName() {
+		return 'task';
 	}
 
 	/**

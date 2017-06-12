@@ -5,22 +5,21 @@
 import _ from 'util/mixins';
 import extend from 'extend';
 import Visited from 'util/visitor/visited';
-import File from 'bundle/task/metadata/file';
 
 /**
-*	Class Bundle
+*	Class Dependency
 *	@extends {util.visitor.Visited}
 **/
-class Bundle extends Visited {
+class Dependency extends Visited {
 
 	/**
 	*	Constructor
 	*	@public
 	*	@param {Any} [...args] constructor arguments
-	*	@return {bundle.task.metadata.Bundle}
+	*	@return {bundle.task.metadata.Dependency}
 	**/
 	constructor(...args) {
-		super({ name: null, target: File.new() });
+		super(_.object(Dependency.properties, [_.uuid()]));
 		return this.registerAll().parse(...args);
 	}
 
@@ -28,31 +27,28 @@ class Bundle extends Visited {
 	*	Parse Strategy
 	*	@public
 	*	@param {Object} [attrs = {}] attributes to parse
-	*	@return {bundle.task.metadata.Bundle}
+	*	@return {bundle.task.metadata.Dependency}
 	**/
 	parse(attrs = {}) {
-		this.target.parse(attrs.target);
 		return extend(true, this, _.pick(attrs, this.constructor.properties));
 	}
 
 	/**
 	*	Returns a json representation of the instance of this class
 	*	@public
+	*	@override
 	*	@return {Object}
 	**/
 	toJSON() {
-		return { name: this.name, target: this.target.toJSON() };
+		return {
+			id: this.id,
+			parent: this.parent,
+			import: this.import,
+			export: this.export,
+			input: this.input,
+			output: this.output
+		};
 	}
-
-	/**
-	*	Compound Property Definition
-	*	@static
-	*	@property compound
-	*	@type {Array}
-	**/
-	static compound = [
-		'target'
-	];
 
 	/**
 	*	Property Definition
@@ -61,9 +57,14 @@ class Bundle extends Visited {
 	*	@type {Array}
 	**/
 	static properties = [
-		'name'
+		'id',
+		'parent',
+		'import',
+		'export',
+		'input',
+		'output'
 	];
 
 }
 
-export default Bundle;
+export default Dependency;

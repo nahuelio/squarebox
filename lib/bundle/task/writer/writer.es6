@@ -22,7 +22,7 @@ class Writer extends Task {
 	*	@return {Promise}
 	**/
 	write(vi) {
-		return this.types.pop();
+		return this.types.pop({}, false, this);
 	}
 
 	/**
@@ -38,12 +38,21 @@ class Writer extends Task {
 	}
 
 	/**
+	*	Retrieves Task Name
+	*	@public
+	*	@return {String}
+	**/
+	getName() {
+		return 'write';
+	}
+
+	/**
 	*	Visitor Name
 	*	@public
 	*	@type {String}
 	**/
 	get name() {
-		return 'WriterVisitor';
+		return 'Writer';
 	}
 
 	/**

@@ -6,8 +6,7 @@ import _ from 'util/mixins';
 import extend from 'extend';
 import Collection from 'util/adt/collection';
 import Visited from 'util/visitor/visited';
-import Bundle from 'bundle/task/metadata/bundle';
-import File from 'bundle/task/metadata/file';
+import Dependency from 'bundle/task/metadata/dependency';
 
 /**
 *	Class Metadata
@@ -20,13 +19,25 @@ import File from 'bundle/task/metadata/file';
 *		Here the general structure specs:
 *
 *	@example
-*		[Metadata] => {
-*			bundle: {uniqueName},
-*			files: [{
-*				source: {path},
-*				ast: {object},
-*				comments: []
-*			}, ...]
+*		[bundle.task.metadata.Metadata] => {
+*			path: {}, - File path where the annotation was found
+*			params: {annotationCapturedParams}, - required name: {unique bundle name}
+*			input: {ast},
+*			dependents: [{ [bundle.task.metadata.Dependency] - 1-dimensional array - no nesting
+*				id: {uuid},
+*				parent: {id|bundleName}, - if top level.
+*				import: { path: {}, modules: [{ id: {string}, alias: {string} }] },
+*				export: [{ id: {object} }, ...],
+*				input: {ast},
+*				output: {ast}
+*			}, {
+*				id: {uuid},
+*				parent: {id},
+*				import: { path: {}, modules: [{ id: {string}, alias: {string} }] },
+*				export: [{ id: {object} }, ...],
+*				input: {ast},
+*				output: {ast}
+*			}]
 *		}
 **/
 class Metadata extends Visited {
@@ -38,7 +49,7 @@ class Metadata extends Visited {
 	*	@return {bundle.task.metadata.Metadata}
 	**/
 	constructor(...args) {
-		super({ bundle: Bundle.new(), files: Collection.new([], { interface: File }) });
+		super({ dependencies: Collection.new([], { interface: Dependency }) });
 		return this.registerAll().parse(...args);
 	}
 
@@ -49,20 +60,17 @@ class Metadata extends Visited {
 	*	@return {bundle.task.metadata.Metadata}
 	**/
 	parse(attrs = {}) {
-		this.bundle.parse(attrs.bundle);
-		this.files.set(attrs.files);
+		this.dependencies.set(attrs.dependencies);
 		return extend(true, this, _.pick(attrs, this.constructor.properties));
 	}
 
 	/**
-	*	Returns a json representation of the instance of this class
+	*	Retrieves bundle name
 	*	@public
-	*	@override
-	*	@param {visitors.formatter.Json} [ctx] - context reference
-	*	@return {Object}
+	*	@return {String}
 	**/
-	toJSON(ctx) {
-		return { bundle: this.bundle.toJSON(), files: this.files.toJSON() };
+	getName() {
+		return _.defined(this.params) && _.defined(this.params.name) ? this.params.name : null;
 	}
 
 	/**
@@ -71,7 +79,11 @@ class Metadata extends Visited {
 	*	@property properties
 	*	@type {Array}
 	**/
-	static properties = [];
+	static properties = [
+		'path',
+		'input',
+		'params'
+	];
 
 	/**
 	*	Compound Property Definition
@@ -80,8 +92,7 @@ class Metadata extends Visited {
 	*	@type {Array}
 	**/
 	static compound = [
-		'bundle',
-		'files'
+		'dependencies'
 	];
 
 }

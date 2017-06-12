@@ -5,9 +5,8 @@
 import _ from 'util/mixins';
 import extend from 'extend';
 import Type from 'bundle/types/type';
-import * as Reader from 'bundle/types/import/reader';
-import * as Writer from 'bundle/types/import/writer';
 import Collection from 'util/adt/collection';
+import Format from 'bundle/format/format';
 import logger from 'util/logger/logger';
 
 /**
@@ -17,44 +16,95 @@ import logger from 'util/logger/logger';
 class Import extends Type {
 
 	/**
-	*	Annotation Read strategy
+	*	Import Read strategy
 	*	@public
 	*	@override
-	*	@param {Function} resolve asynchronous promise's resolve
-	*	@param {Function} reject asynchronous promise's reject
-	*	@param {util.adt.Collection} bundles list of bundles
-	*	@param {Array} files list of files
 	*	@return {Promise}
 	**/
-	read(resolve, reject, bundles, files) {
-		this.dependencies(bundles);
-		return super.read(resolve, reject);
+	read() {
+		return this.reader.bundles.reduce(this.readDependencies, true, this) ? this.resolve(this) : this.reject(this);
 	}
 
 	/**
-	*	Read Imports
+	*	Recursive Strategy to query dependencies and attach them into the metadata.
 	*	@public
-	*	@param {util.adt.Collection} bundles all bundles captured by annotations
-	*	@return {bundle.types.import.Import}
-	**/
-	dependencies(bundles) {
-		bundles.reduce(this.dependency, Collection.new(), this);
-		return this;
-	}
-
-	/**
-	*	Read Dependencies on a single file
-	*	@public
-	*	@param {util.adt.Collection} memo memoized collection to augment
+	*	@param {Boolean} memo memoized boolean result
 	*	@param {bundle.task.metadata.Metadata} metadata instance of meta found as a bundle
+	*	@param {Number} ix current metadata index
+	*	@param {util.adt.Collection} collection original metadata collection
+	*	@return {Boolean}
+	**/
+	readDependencies(memo, metadata, ix, collection) {
+		return this.collectByType(metadata.input, _.bind(this.dependency, this, metadata))
+			.reduce(this.onDependenciesRead, memo, this);
+	}
+
+	/**
+	*	Resolves & creates dependency
+	*	@public
+	*	@param {bundle.task.metadata.Metadata} metadata current metadata
+	*	@param {util.adt.Collection} dependencies list of dependencies found
 	*	@return {util.adt.Collection}
 	**/
-	dependency(memo, metadata) {
-		const { target } = metadata.bundle;
-		// if(target.source.indexOf('libs.es6') !== -1) {
-			this.collectByType(target.ast, ['es6'], function() {});
-		// }
-		return memo;
+	dependency(metadata, dependencies, format) {
+		if(metadata.path.indexOf('libs.es6') !== -1) {
+			return dependencies.reduce((metadata, ast) => {
+				let d = metadata.dependencies.add(this.createDependency(metadata, ast, format)).toJSON();
+				// console.log('D >>', d.import.modules);
+				// console.log('-----------------------');
+				return metadata;
+			}, metadata, this);
+		}
+	}
+
+	/**
+	*	Creates Dependency
+	*	@public
+	*	@param {bundle.task.metadata.Metadata} metadata current metadata
+	*	@param {astq.Node} ast current dependency ast reference
+	*	@param {String} format current format being resolved
+	*	@return {Object}
+	**/
+	createDependency(metadata, ast, format) {
+		return this.collectByElement(ast, Format.elements.ImportSpecifier)
+			.reduce(_.bind(this.resolveDependency, this, format, metadata, ast), {});
+	}
+
+	/**
+	*	Resolve Dependency
+	*	@param {String} format current format being resolved
+	*	@param {bundle.task.metadata.Metadata} metadata current metadata
+	*	@param {astq.Node} ast current original source ast reference
+	*	@param {Object} dependency current new dependency
+	*	@param {astq.Node} node current dependency node reference
+	**/
+	resolveDependency(format, metadata, ast, dependency, node) {
+		return Import.resolversBy(format, this).reduce((dependency, resolve) => {
+			return resolve(dependency, metadata, node, ast);
+		}, dependency);
+	}
+
+	/**
+	*	Dependencies Query Result Handler
+	*	@public
+	*	@param {Boolean} memo memoized boolean result
+	*	@param {bundle.task.metadata.Metadata} metadata current metadata
+	*	@param {Array} results list of ast results
+	*	@return {bundle.type.import.Import}
+	**/
+	onDependenciesRead(memo, metadata) {
+		// TODO: Triggers Recursive operation over dependencies
+		//results.map(_.bind(this.create, this, memo, this.reader.files()), this);
+	}
+
+	/**
+	*	Import Write strategy
+	*	@public
+	*	@override
+	*	@return {Promise}
+	**/
+	write() {
+		return this.resolve(this);
 	}
 
 	/**
@@ -66,6 +116,29 @@ class Import extends Type {
 	get name() {
 		return 'Import';
 	}
+
+	/**
+	*	Resolvers by Format
+	*	@static
+	*	@param {String} format
+	*	@return {Array}
+	**/
+	static resolversBy = (format, instance) => {
+		return Collection.new(_.map(Import.resolvers, (name) => instance[`${format.toLowerCase()}${name}`]));
+	}
+
+	/**
+	*	Method Name Resolvers
+	*	@static
+	*	@property resolvers
+	*	@type {Array}
+	**/
+	static resolvers = [
+		'ResolveImportSpecifier',
+		'ResolveImportPath',
+		'ResolveParent',
+		'ResolveAst'
+	];
 
 }
 

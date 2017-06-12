@@ -17,18 +17,14 @@ import logger from 'util/logger/logger';
 class Export extends Type {
 
 	/**
-	*	Annotation Read strategy
+	*	Export Read strategy
 	*	@public
 	*	@override
-	*	@param {Function} resolve asynchronous promise's resolve
-	*	@param {Function} reject asynchronous promise's reject
-	*	@param {util.adt.Collection} bundles list of bundles
-	*	@param {Array} files list of files
 	*	@return {Promise}
 	**/
-	read(resolve, reject, bundles) {
-		this.exports(bundles);
-		return super.read(resolve, reject);
+	read() {
+		this.exports();
+		return this.resolve(this);
 	}
 
 	/**
@@ -37,8 +33,8 @@ class Export extends Type {
 	*	@param {util.adt.Collection} bundles all bundles captured by annotations
 	*	@return {bundle.types.import.Import}
 	**/
-	exports(bundles) {
-		bundles.reduce(this.export, Collection.new(), this);
+	exports() {
+		this.reader.bundles.reduce(this.export, Collection.new(), this);
 		return this;
 	}
 
@@ -50,22 +46,19 @@ class Export extends Type {
 	*	@return {util.adt.Collection}
 	**/
 	export(memo, metadata) {
-		const { target } = metadata.bundle;
+		const { path, input } = metadata;
 		//this.collectByType(target.ast, ['es6'], _.bind(Helpers.onExport, Helpers));
 		return memo;
 	}
 
 	/**
-	*	Annotation Write strategy
+	*	Export Write strategy
 	*	@public
 	*	@override
-	*	@param {Function} resolve asynchronous promise's resolve
-	*	@param {Function} reject asynchronous promise's reject
-	*	@param {bundle.task.Task} task current task
 	*	@return {Promise}
 	**/
-	write(resolve, reject) {
-		return super.write(resolve, reject);
+	write() {
+		return this.resolve(this);
 	}
 
 	/**

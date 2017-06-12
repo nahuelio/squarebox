@@ -3,6 +3,7 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
+import _s from 'underscore.string';
 import extend from 'extend';
 import * as Comments from 'bundle/types/common/comment';
 import Collection from 'util/adt/collection';
@@ -19,25 +20,33 @@ class Type extends Visited {
 	*	Constructor
 	*	@public
 	*	@override
-	*	@param {bundle.task.Task} task - current task reference
 	*	@return {bundle.types.Type}
 	**/
-	constructor(task) {
-		return super({ task }).registerAll();
+	constructor() {
+		return super().registerAll();
 	}
 
 	/**
-	*	Resolves Task Execution
+	*	Resolves Task Action
 	*	@public
+	*	@param {String} task current task name
+	*	@param {Any} [...args] list of arguments
+	*	@return {Promise}
+	**/
+	action(task, ...args) {
+		return _.defined(this[task]) ? this[task](...args) : this.resolve(this);
+	}
+
+	/**
+	*	Injects a given task into this type
+	*	@public
+	*	@param {Function} resolve asynchronous promise's resolve
 	*	@param {Function} reject asynchronous promise's reject
+	*	@param {bundle.task.Task} task current task reference
 	*	@return {bundle.types.Type}
 	**/
-	resolve(reject) {
-		switch(this.task.name) {
-			case 'ReaderVisitor': return _.bind(this.read, this);
-			case 'WriterVisitor': return _.bind(this.write, this);
-			default: return reject;
-		}
+	inject(resolve, reject, task) {
+		return extend(false, this, { resolve, reject, [task.name.toLowerCase()]: task });
 	}
 
 	/**
@@ -45,35 +54,21 @@ class Type extends Visited {
 	*	@public
 	*	@param {Function} resolve asynchronous promise's resolve
 	*	@param {Function} reject asynchronous promise's reject
-	*	@param {Any} [...args] list of arguments
+	*	@param {bundle.task.Task} task current task reference
+	*	@param {Any} [...args] optional additional arguments
 	*	@return {Promise}
 	**/
-	next(resolve, reject, ...args) {
-		return this.resolve(reject)(resolve, reject, ...args);
+	next(resolve, reject, task, ...args) {
+		return this.inject(resolve, reject, task).action(task.getName(), ...args);
 	}
 
 	/**
-	*	Default Read strategy
+	*	Retrieves element type name
 	*	@public
-	*	@param {Function} resolve asynchronous promise's resolve
-	*	@param {Function} reject asynchronous promise's reject
-	*	@param {Any} [...args] list of arguments
-	*	@return {Promise}
+	*	@return {String}
 	**/
-	read(resolve, reject, ...args) {
-		return resolve(this);
-	}
-
-	/**
-	*	Default  Write strategy
-	*	@public
-	*	@param {Function} resolve asynchronous promise's resolve
-	*	@param {Function} reject asynchronous promise's reject
-	*	@param {Any} [...args] list of arguments
-	*	@return {Promise}
-	**/
-	write(resolve, reject, ...args) {
-		return resolve(this);
+	getName() {
+		return _s.strLeft(this.name, 'Visitor').toLowerCase();
 	}
 
 	/**

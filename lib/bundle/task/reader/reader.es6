@@ -29,28 +29,30 @@ class Reader extends Task {
 	*	@return {Promise}
 	**/
 	read(vi) {
-		return this.types.pop({}, false, this.bundles, this.getFiles());
+		return this.types.pop({}, false, this);
 	}
 
 	/**
 	*	Retrieves files metadata
 	*	@public
-	*	@return {Array}
+	*	@return {util.adt.Collection}
 	**/
-	getFiles() {
-		return this.files().reduce(this.get, [], this);
+	files() {
+		if(_.defined(this.parsedFiles)) return this.parsedFiles;
+		extend(false, this, { parsedFiles: this.readFiles().reduce(this.get, Collection.new(), this) });
+		return this.parsedFiles;
 	}
 
 	/**
 	*	File Parsing Strategy
 	*	@public
-	*	@param {Array} memo memoized array that will hold metadata found
-	*	@param {String} source file path to parse
+	*	@param {util.adt.Collection} memo memoized collection that will hold metadata found
+	*	@param {String} path file path to parse
 	*	@return {bundle.task.reader.Reader}
 	**/
-	get(memo, source) {
-		let comments = [], ast = this.parse(source, extend(false, { onComment: comments }, Reader.acornOptions));
-		memo.push({ source, ast, comments });
+	get(memo, path) {
+		let comments = [], input = this.parse(path, extend(false, { onComment: comments }, Reader.acornOptions));
+		memo.add({ path, input, comments });
 		return memo;
 	}
 
@@ -65,11 +67,11 @@ class Reader extends Task {
 	}
 
 	/**
-	*	Retrieves Files
+	*	Read Project files
 	*	@public
 	*	@return {util.adt.Collection}
 	**/
-	files() {
+	readFiles() {
 		return Collection.new(glob.sync(this.sources(), _.defaults({
 			cwd: this.cwd,
 			ignore: this.excludes()
@@ -89,12 +91,21 @@ class Reader extends Task {
 	}
 
 	/**
+	*	Retrieves Task Name
+	*	@public
+	*	@return {String}
+	**/
+	getName() {
+		return 'read';
+	}
+
+	/**
 	*	Visitor Name
 	*	@public
 	*	@type {String}
 	**/
 	get name() {
-		return 'ReaderVisitor';
+		return 'Reader';
 	}
 
 	/**

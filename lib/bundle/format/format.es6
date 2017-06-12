@@ -30,14 +30,28 @@ class Format extends Visitor {
 	/**
 	*	Resolves Query Type of element to query
 	*	@public
-	*	@param {bundle.types.Type} type - type to resolve
+	*	@param {String} format the format
+	*	@param {String} type element type
 	*	@return {String}
 	**/
-	which(type) {
-		let format = _s.strLeft(this.name, 'Visitor').toUpperCase(),
-			prop = `Q${format}_${Format.types[type.name.toLowerCase()]}`;
+	which(format, type) {
+		const prop = `Q${format}_${type}`;
 		if(_.defined(this.constructor[prop])) return this.constructor[prop];
-		logger(`Type ${type.name} not found.`).fatal();
+		logger(`Format ${format} -> Type ${type} not found.`).fatal();
+	}
+
+	/**
+	*	Method Wrapper for querying Abstract Syntax Tree (AST)
+	*	@public
+	*	@param {Object} [ast = {}] AST to query
+	*	@param {String} [expr = ''] astq expression
+	*	@param {Function} [cb] optional callback on result
+	*	@param {Any} [...args] additional arguments
+	*	@return {Any}
+	**/
+	query(ctx, ast = {}, expr = '', cb, ...args) {
+		if(!_.defined(cb)) cb = () => {};
+		return this.onQuery(this.astq.query(ast, expr, ...args), cb);
 	}
 
 	/**
@@ -48,34 +62,118 @@ class Format extends Visitor {
 	*	@return {Any}
 	**/
 	queryByType(ctx, ast, ...args) {
-		return this.query(ctx, ast, this.which(ctx), ...args);
+		return this.query(ctx, ast, this.which(this.getName(), Format.types[ctx.getName()]), ...args);
 	}
 
 	/**
-	*	Method Wrapper for querying Abstract Syntax Tree (AST)
+	*	Method wrapper for querying Abstract Syntax Tree (AST) by a given element
 	*	@public
-	*	@param {Object} [ast = {}] AST to query
-	*	@param {String} [expr = ''] astq expression
-	*	@param {Function} [cb = () => {}] optional callback on result
+	*	@param {astq.Node} [ast] astq node to query
+	*	@param {String} element element name to query
 	*	@param {Any} [...args] additional arguments
 	*	@return {Any}
 	**/
-	query(ctx, ast = {}, expr = '', cb = () => {}, ...args) {
-		return this.onQuery(this.astq.query(ast, expr, ...args), cb);
+	queryByElement(ctx, ast, element, ...args) {
+		return this.query(ctx, ast, this.which(this.getName(), Format.elements[element]), ...args);
 	}
 
 	/**
-	*	Default Result Handler
+	*	Default Query Result Handler
 	*	@public
 	*	@param {Array} out - ast query result
 	*	@param {Function} cb - callback on result
 	*	@return {Any}
 	**/
 	onQuery(out = [], cb) {
-		// if(out.length > 0) {
-		// 	logger(JSON.stringify(out, null, 1)).warn();
-		// }
-		return cb(Collection.new(out));
+		return this.onResult(out, cb);
+	}
+
+	/**
+	*	Default Result Handler
+	*	@public
+	*	@param {Array} results ast query result list
+	*	@param {Function} callback callback
+	*	@return {Any}
+	**/
+	onResult(results, callback) {
+		callback(Collection.new(results), this.getName());
+		return results;
+	}
+
+	/**
+	*	Retrieves Module for a given dependency modules list. Returns null if module was not found
+	*	@public
+	*	@param {util.adt.Collection} modules current list of dependency modules to add into
+	*	@param {String} id module id
+	*	@return {Object}
+	**/
+	getModule(modules, id) {
+		if(!_.defined(id)) return true;
+		return modules.findWhere({ id: id });
+	}
+
+	/**
+	*	Add Module to a given dependency if it doesn't exists based on module id
+	*	@public
+	*	@param {util.adt.Collection} modules current list of dependency modules to add into
+	*	@param {astq.Node} node module literal value path
+	*	@param {String} id module id
+	*	@param {String} [alias] module alias
+	*	@return {util.adt.Collection}
+	**/
+	addModule(modules, node, local, imported) {
+		let _module = {};
+		// Continue here...
+		if(local && !imported) {
+			_module = { id: local.name };
+		} else if(local && imported) {
+			_module = { id: local.name, alias: imported.name };
+		}
+		return !this.getModule(modules, _module.id) ? modules.add(_module) : modules;
+	}
+
+	/**
+	*	Removes Module from a given depependency if it exists, based on module id
+	*	@public
+	*	@param {util.adt.Collection} modules current list of dependency modules to remove from
+	*	@param {String} id module id
+	*	@param {String} [alias] module alias
+	*	@return {util.adt.Collection}
+	**/
+	removeModule(dependency, id, alias) {
+		return modules;
+	}
+
+	/**
+	*	Generic AST Injection for a given dependency and returns it
+	*	@public
+	*	@param {Object} dependency dependency to inject ast
+	*	@param {astq.Node} ast ast root node for current dependency
+	*	@return {Object}
+	**/
+	resolveAst(dependency, ast) {
+		return extend(false, dependency, { input: ast });
+	}
+
+	/**
+	*	Generic Parent Resolution for a given dependency and returns it
+	*	@public
+	*	@param {Object} dependency dependency to resolve parent
+	*	@param {bundle.task.metadata.Metadata} metadata current metadata
+	*	@return {Object}
+	**/
+	resolveParent(dependency, metadata) {
+		let name = metadata.getName();
+		return extend(false, dependency, { parent: _.defined(name) ? name : _.uuid() });
+	}
+
+	/**
+	*	Retrieve Format Name
+	*	@public
+	*	@return {String}
+	**/
+	getName() {
+		return _s.strLeftBack(this.name, 'Visitor').toUpperCase();
 	}
 
 	/**
@@ -88,7 +186,7 @@ class Format extends Visitor {
 	}
 
 	/**
-	*	Query Types
+	*	Query types
 	*	@public
 	*	@property types
 	*	@type {Object}
@@ -96,6 +194,19 @@ class Format extends Visitor {
 	static types = {
 		import: 'ImportDeclaration',
 		export: 'ExportDeclaration'
+	};
+
+	/**
+	*	Query elements
+	*	@public
+	*	@property elements
+	*	@type {Object}
+	**/
+	static elements = {
+		ImportSpecifier: 'ImportSpecifier',
+		ImportId: 'ImportId',
+		ImportPath: 'ImportPath',
+		ExportSpecifier: 'ExportSpecifier',
 	};
 
 }

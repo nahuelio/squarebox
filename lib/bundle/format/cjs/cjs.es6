@@ -17,25 +17,89 @@ class CommonJs extends Format {
 	*	CommonJs AST Query
 	*	@public
 	*	@param {util.visitor.Visited} ctx context visited
-	*	@param {Object} o - object to query
-	*	@param {String} expr - json path query
 	*	@param {Any} [args...] additional arguments
 	*	@return {Any}
 	**/
-	cjs(ctx, o, expr, ...args) {
-		return this.query(o, expr, ...args);
+	cjs(ctx, ...args) {
+		return this.query(ctx, ...args);
 	}
 
 	/**
 	*	CommonJs AST Query by a given type
 	*	@param {util.visitor.Visited} ctx context visited
 	*	@param {astq.Node} ast ast to query
-	*	@param {bundle.types.Type} type type used to query
 	*	@param {Any} [args...] additional arguments
 	*	@return {Any}
 	**/
-	cjsByType(ctx, ast, type, ...args) {
-		return this.queryByType(ctx, ast, type, ...args);
+	cjsByType(ctx, ast, ...args) {
+		return this.queryByType(ctx, ast, ...args);
+	}
+
+	/**
+	*	CommonJs AST QUery by a given element
+	*	@param {util.visitor.Visited} ctx context visited
+	*	@param {astq.Node} ast ast to query
+	*	@param {Any} [args...] additional arguments
+	*	@return {Any}
+	**/
+	cjsByElement(ctx, ast, ...args) {
+		return this.queryByElement(ctx, ast, ...args);
+	}
+
+	/**
+	*	CommonJs Resolves Import Specifier for a given dependency and returns it
+	*	@public
+	*	@param {util.visitor.Visited} ctx context visited
+	*	@param {Object} dependency new dependency to add
+	*	@param {bundle.task.metadata.Metadata} metadata current metadata
+	*	@param {astq.Node} node current node ast
+	*	@return {Object}
+	**/
+	cjsResolveImportSpecifier(ctx, dependency) {
+		if(!_.defined(dependency.import)) dependency.import = {};
+		// TODO
+		return extend(false, dependency.import, { id: '' });
+	}
+
+	/**
+	*	CommonJs Resolves Import Path for a given dependency and returns it
+	*	@public
+	*	@param {util.visitor.Visited} ctx context visited
+	*	@param {Object} dependency new dependency to add
+	*	@param {bundle.task.metadata.Metadata} metadata current metadata
+	*	@param {astq.Node} node current node ast
+	*	@return {Object}
+	**/
+	cjsResolveImportPath(ctx, dependency) {
+		if(!_.defined(dependency.import)) dependency.import = {};
+		// TODO
+		return extend(false, dependency.import, { path: '' });
+	}
+
+	/**
+	*	CommonJs Resolves Parent for a given dependency and returns it
+	*	@public
+	*	@param {util.visitor.Visited} ctx context visited
+	*	@param {Object} dependency dependency to resolve parent
+	*	@param {bundle.task.metadata.Metadata} metadata current metadata
+	*	@param {astq.Node} node current node ast
+	*	@return {Object}
+	**/
+	cjsResolveParent(ctx, dependency, metadata) {
+		return super.resolveParent(dependency, metadata);
+	}
+
+	/**
+	*	CommonJs Resolves AST Injection for a given dependency and returns it
+	*	@public
+	*	@param {util.visitor.Visited} ctx context visited
+	*	@param {Object} dependency dependency to resolve parent
+	*	@param {bundle.task.metadata.Metadata} metadata current metadata
+	*	@param {astq.Node} ast ast root node for current dependency
+	*	@return {Object}
+	**/
+	cjsResolveAst(ctx, dependency, metadata, ast) {
+		return super.resolveAst(dependency, ast);
 	}
 
 	/**
@@ -56,6 +120,16 @@ class CommonJs extends Format {
 	`;
 
 	/**
+	*	ASTQ CJS Import Specifier Query
+	*	@static
+	*	@property QCJS_ImportSpecifier
+	*	@type {String}
+	**/
+	static QCJS_ImportSpecifier = `
+		/TODO
+	`;
+
+	/**
 	*	ASTQ CJS Import Declaration Query
 	*	@static
 	*	@property QCJS_ExportDeclaration
@@ -70,6 +144,16 @@ class CommonJs extends Format {
 				/Identifier [@name == 'exports']
 			]
 		]
+	`;
+
+	/**
+	*	ASTQ CJS Export Specifier Query
+	*	@static
+	*	@property QCJS_ExportSpecifierDeclaration
+	*	@type {String}
+	**/
+	static QCJS_ExportSpecifier = `
+		/TODO
 	`;
 
 	/**

@@ -16,14 +16,36 @@ const annotation = '@sqbox';
 
 /**
 *	Metadata Contain Matcher
-*	Will return true if the bundle with a given name already exists inside the collection, false otherwise
+*	Will return true if the metadata with a given name already exists inside the collection.
 *	@public
 *	@param {util.adt.Collection} collection list of bundles to perform look up
-*	@param {String} name bundle name to look for
+*	@param {Object} meta bundle metadata to evaluate
 *	@return {Boolean}
 **/
-export const containsBy = (collection, name) => {
-	return _.defined(collection.find((meta) => (meta.bundle.name.toLowerCase() === name.toLowerCase())));
+export const containsBy = (collection, meta) => {
+	return _.defined(collection.find((current) => (matchPath(current, meta) && matchParams(current, meta))));
+};
+
+/**
+*	Metadata Path Matcher
+*	Will return true if a metadata object exists with the same path and the given path.
+*	@public
+*	@param {Object} current current metadata
+*	@param {String} path given metadata path to compare
+*	@return {Boolean}
+**/
+export const matchPath = (current, path) => { return (current.path === path); };
+
+/**
+*	Metadata Params Matcher
+*	Will return true if a metadata object exists with the same params and the given params.
+*	@public
+*	@param {Object} current current metadata
+*	@param {Object} params given metadata params to compare
+*	@return {Boolean}
+**/
+export const matchParams = (current, params = {}) => {
+	return _.defined(params.name) && (params.name === current.params.name);
 };
 
 /**
