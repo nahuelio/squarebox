@@ -123,7 +123,6 @@ class Format extends Visitor {
 	**/
 	addModule(modules, node, local, imported) {
 		let _module = {};
-		// Continue here...
 		if(local && !imported) {
 			_module = { id: local.name };
 		} else if(local && imported) {

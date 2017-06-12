@@ -5,7 +5,7 @@
 import _ from 'util/mixins';
 import Collection from 'util/adt/collection';
 import Visitor from 'util/visitor/visitor';
-import Type from 'bundle/types/Type';
+import Type from 'bundle/types/type';
 import Format from 'bundle/format/format';
 
 /**
