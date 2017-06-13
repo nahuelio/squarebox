@@ -39,7 +39,7 @@ class Reader extends Task {
 	**/
 	files() {
 		if(_.defined(this.parsedFiles)) return this.parsedFiles;
-		extend(false, this, { parsedFiles: this.readFiles().reduce(this.get, Collection.new(), this) });
+		extend(false, this, { parsedFiles: this.readFiles().reduce(this.add, Collection.new(), this) });
 		return this.parsedFiles;
 	}
 
@@ -50,10 +50,22 @@ class Reader extends Task {
 	*	@param {String} path file path to parse
 	*	@return {bundle.task.reader.Reader}
 	**/
-	get(memo, path) {
+	add(memo, path) {
 		let comments = [], input = this.parse(path, extend(false, { onComment: comments }, Reader.acornOptions));
 		memo.add({ path, input, comments });
 		return memo;
+	}
+
+	/**
+	*	Retrieve parsed file (if it was already parsed), returns null otherwise
+	*	@public
+	*	@param {String} input input file path
+	*	@return {Object}
+	**/
+	get(input) {
+		let file = this.parsedFiles.findWhere({ path: this.file(input, true) });
+		//console.log(this.parsedFiles);
+		return file; // (`Found: ${input} -> ` + _.defined(file));
 	}
 
 	/**
@@ -67,7 +79,7 @@ class Reader extends Task {
 	}
 
 	/**
-	*	Read Project files
+	*	Read Files
 	*	@public
 	*	@return {util.adt.Collection}
 	**/

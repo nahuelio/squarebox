@@ -8,12 +8,6 @@ import _ from 'util/mixins';
 import extend from 'extend';
 
 /**
-*	ES6 Import Cases:
-*	@see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
-*	----------------------
-*
-*	- import d{}
-*
 *	ES6 Export Cases:
 *	@see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
 *	----------------------

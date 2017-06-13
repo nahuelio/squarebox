@@ -8,19 +8,11 @@ import _ from 'util/mixins';
 import extend from 'extend';
 
 /**
-*	CommonJs Import Cases
-*	---------------------
-*
-*	1) [let, var, const] n1 = require(path1);
-*	2) n2 = require(path2);
-*	3) require(path2);
-*
 *	CommonJs Export Cases
 *	---------------------
 *
 *	1) module.exports = {o1};
-*	2) var m = module;
-*	   m.exports = {o2};
+*	2) var m = module; m.exports = {o2};
 **/
 
 /**

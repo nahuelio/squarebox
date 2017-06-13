@@ -22,7 +22,8 @@ class Import extends Type {
 	*	@return {Promise}
 	**/
 	read() {
-		return this.reader.bundles.reduce(this.readDependencies, true, this) ? this.resolve(this) : this.reject(this);
+		return this.reader.bundles.reduce(this.readDependencies, true, this) ?
+			this.resolve(this) : this.reject(this);
 	}
 
 	/**
@@ -34,9 +35,9 @@ class Import extends Type {
 	*	@param {util.adt.Collection} collection original metadata collection
 	*	@return {Boolean}
 	**/
-	readDependencies(memo, metadata, ix, collection) {
-		return this.collectByType(metadata.input, _.bind(this.dependency, this, metadata))
-			.reduce(this.onDependenciesRead, memo, this);
+	readDependencies(memo, metadata) {
+		this.collectByType(metadata.input, _.bind(this.dependency, this, metadata));
+		return metadata.dependencies.reduce(this.onDependenciesRead, memo, this);
 	}
 
 	/**
@@ -44,17 +45,14 @@ class Import extends Type {
 	*	@public
 	*	@param {bundle.task.metadata.Metadata} metadata current metadata
 	*	@param {util.adt.Collection} dependencies list of dependencies found
+	*	@param {String} format current format
 	*	@return {util.adt.Collection}
 	**/
 	dependency(metadata, dependencies, format) {
-		if(metadata.path.indexOf('libs.es6') !== -1) {
-			return dependencies.reduce((metadata, ast) => {
-				let d = metadata.dependencies.add(this.createDependency(metadata, ast, format)).toJSON();
-				// console.log('D >>', d.import.modules);
-				// console.log('-----------------------');
-				return metadata;
-			}, metadata, this);
-		}
+		return dependencies.reduce((metadata, ast) => {
+			metadata.dependencies.add(this.createDependency(metadata, ast, format));
+			return metadata;
+		}, metadata, this);
 	}
 
 	/**
@@ -92,9 +90,10 @@ class Import extends Type {
 	*	@param {Array} results list of ast results
 	*	@return {bundle.type.import.Import}
 	**/
-	onDependenciesRead(memo, metadata) {
-		// TODO: Triggers Recursive operation over dependencies
+	onDependenciesRead(memo, dependency) {
+		console.log(this.reader.get(dependency.import.path));
 		//results.map(_.bind(this.create, this, memo, this.reader.files()), this);
+		return memo;
 	}
 
 	/**

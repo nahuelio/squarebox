@@ -29,6 +29,7 @@
 		"override": { "default": false },
 		"config": { "default": ".sqboxrc" },
 		"url": { "alias": "u" },
+		"basePath": { "alias": "b", "default": "./" },
 		"scan": { "alias": "s", "default": "." },
 		"exclude": { "alias": "x" },
 		"extensions": { "alias": "e", "default": ".js,.jsx,.es6,.es" },

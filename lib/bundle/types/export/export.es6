@@ -5,8 +5,6 @@
 import _ from 'util/mixins';
 import extend from 'extend';
 import Type from 'bundle/types/type';
-import * as Reader from 'bundle/types/export/reader';
-import * as Writer from 'bundle/types/export/writer';
 import Collection from 'util/adt/collection';
 import logger from 'util/logger/logger';
 

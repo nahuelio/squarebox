@@ -8,10 +8,11 @@ describe('bundle.Bundle', function() {
 
 	before(() => {
 		this.params = {
-			scan: './test/specs/es6',
-			extensions: ['.js', '.es6'],
+			basePath: './test/specs/es6',
+			scan: '**/*',
+			extensions: ['js', 'es6', 'es'],
 			exclude: [],
-			alias: { common: 'common' },
+			alias: { dependencies: "libs/dependencies" },
 			external: ['jquery'],
 			target: {
 				iife: { destination: './test/specs/dist/iife', format: 'iife' },

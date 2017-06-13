@@ -5,6 +5,7 @@
 import _ from 'util/mixins';
 import extend from 'extend';
 import Format from 'bundle/format/format';
+import * as Helpers from 'bundle/format/es6/helpers';
 import Collection from 'util/adt/collection';
 import logger from 'util/logger/logger';
 
@@ -59,7 +60,7 @@ class Es6 extends Format {
 	**/
 	es6ResolveImportSpecifier(ctx, dependency, metadata, node) {
 		if(!_.defined(dependency.import)) dependency.import = { modules: Collection.new() };
-		this.addModule(dependency.import.modules, node, node.local, node.imported);
+		Helpers.add(dependency.import.modules, node);
 		return dependency;
 	}
 
@@ -73,7 +74,7 @@ class Es6 extends Format {
 	*	@return {Object}
 	**/
 	es6ResolveImportPath(ctx, dependency, metadata, node, ast) {
-		dependency.import.path = ast.source.value;
+		dependency.import.path = ctx.reader.aliases(ast.source.value);
 		return dependency;
 	}
 
@@ -119,15 +120,11 @@ class Es6 extends Format {
 	*	@type {String}
 	**/
 	static QES6_ImportSpecifier = `
-		/Literal,
 		/ImportDefaultSpecifier,
 		/ImportSpecifier,
-		/ImportNamespaceSpecifier
+		/ImportNamespaceSpecifier,
+		/Literal
 	`;
-
-	// /ImportDefaultSpecifier /Identifier,
-	// /ImportSpecifier [/:imported Identifier || /:local Identifier],
-	// /ImportNamespaceSpecifier /Identifier
 
 	/**
 	*	ASTQ ES6 Import Path Query

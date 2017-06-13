@@ -101,49 +101,6 @@ class Format extends Visitor {
 	}
 
 	/**
-	*	Retrieves Module for a given dependency modules list. Returns null if module was not found
-	*	@public
-	*	@param {util.adt.Collection} modules current list of dependency modules to add into
-	*	@param {String} id module id
-	*	@return {Object}
-	**/
-	getModule(modules, id) {
-		if(!_.defined(id)) return true;
-		return modules.findWhere({ id: id });
-	}
-
-	/**
-	*	Add Module to a given dependency if it doesn't exists based on module id
-	*	@public
-	*	@param {util.adt.Collection} modules current list of dependency modules to add into
-	*	@param {astq.Node} node module literal value path
-	*	@param {String} id module id
-	*	@param {String} [alias] module alias
-	*	@return {util.adt.Collection}
-	**/
-	addModule(modules, node, local, imported) {
-		let _module = {};
-		if(local && !imported) {
-			_module = { id: local.name };
-		} else if(local && imported) {
-			_module = { id: local.name, alias: imported.name };
-		}
-		return !this.getModule(modules, _module.id) ? modules.add(_module) : modules;
-	}
-
-	/**
-	*	Removes Module from a given depependency if it exists, based on module id
-	*	@public
-	*	@param {util.adt.Collection} modules current list of dependency modules to remove from
-	*	@param {String} id module id
-	*	@param {String} [alias] module alias
-	*	@return {util.adt.Collection}
-	**/
-	removeModule(dependency, id, alias) {
-		return modules;
-	}
-
-	/**
 	*	Generic AST Injection for a given dependency and returns it
 	*	@public
 	*	@param {Object} dependency dependency to inject ast

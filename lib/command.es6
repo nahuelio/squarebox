@@ -190,6 +190,7 @@ class Command extends Visited {
 		'env',
 		'dirname',
 		'cwd',
+		'basePath',
 		'scan',
 		'exclude',
 		'extensions',

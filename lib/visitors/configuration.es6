@@ -198,6 +198,7 @@ class Configuration extends Visitor {
 	*	@type {Array}
 	**/
 	static cliOptions = [
+		'basePath',
 		'scan',
 		'exclude',
 		'extensions',

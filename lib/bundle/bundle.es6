@@ -95,7 +95,9 @@ class Bundle extends Command {
 	**/
 	static options = Command.options.concat([
 		'bundles',
+		'file',
 		'sources',
+		'aliases',
 		'excludes',
 		'targets'
 	]);
