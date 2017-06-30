@@ -25,7 +25,7 @@ class Collector extends Visitor {
 	*	@return {Array}
 	**/
 	iterate(ast, methods, ...args) {
-		return Collection.new(_.chain(methods).map((method) => method(ast, ...args)).flatten().value());
+		return Collection.new(_.chain(methods).map((method) => method(ast, ...args)).flatten().uniq().value());
 	}
 
 	/**

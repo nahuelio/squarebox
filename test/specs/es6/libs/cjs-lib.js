@@ -1,7 +1,8 @@
 /**
-*	Simulation of a CommonJS Library
+*	Simulation of a CommonJs Library
 **/
-var $ = require('jquery');
-var LibB = require('dependencies/lib-b');
+let $ = require('jquery');
+LibB = require('dependencies/lib-b');
+require('hello');
 
 module.exports = { type: 'CommonJs', jquery: $ };

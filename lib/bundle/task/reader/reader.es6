@@ -3,13 +3,8 @@
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
 **/
 import _ from 'util/mixins';
-import fs from 'fs-extra';
-import path from 'path';
-import extend from 'extend';
-import glob from 'glob';
-import * as acorn from 'acorn';
+import * as Helpers from 'bundle/task/reader/helpers';
 import Collection from 'util/adt/collection';
-import StackAsync from 'util/adt/stack-async';
 import Task from 'bundle/task/task';
 
 /**
@@ -29,65 +24,45 @@ class Reader extends Task {
 	*	@return {Promise}
 	**/
 	read(vi) {
-		return this.types.pop({}, false, this);
+		return this.all(this.scan).types.pop({}, false, this);
 	}
 
 	/**
-	*	Retrieves files metadata
+	*	Read and parse all files by an optional resolver function.
+	*	If no custom resolver is provided, the default resolver will be used.
 	*	@public
-	*	@return {util.adt.Collection}
-	**/
-	files() {
-		if(_.defined(this.parsedFiles)) return this.parsedFiles;
-		extend(false, this, { parsedFiles: this.readFiles().reduce(this.add, Collection.new(), this) });
-		return this.parsedFiles;
-	}
-
-	/**
-	*	File Parsing Strategy
-	*	@public
-	*	@param {util.adt.Collection} memo memoized collection that will hold metadata found
-	*	@param {String} path file path to parse
+	*	@param {String} pattern source pattern to read file/s from
+	*	@param {Function} [resolver = this.helper.resolve] resolver function that manipulates parsed files
 	*	@return {bundle.task.reader.Reader}
 	**/
-	add(memo, path) {
-		let comments = [], input = this.parse(path, extend(false, { onComment: comments }, Reader.acornOptions));
-		memo.add({ path, input, comments });
-		return memo;
+	all(pattern, resolver = this.helper.resolve) {
+		let readFiles = this.helper.read(this.cwd, this.file(pattern, true), this.excludes())
+		readFiles.reduce(resolver, this.externals(path));
+		return this;
 	}
 
 	/**
-	*	Retrieve parsed file (if it was already parsed), returns null otherwise
+	*	Filter parsed files by path
 	*	@public
-	*	@param {String} input input file path
-	*	@return {Object}
+	*	@param {String} path file path
+	*	@return {Array}
 	**/
-	get(input) {
-		let file = this.parsedFiles.findWhere({ path: this.file(input, true) });
-		//console.log(this.parsedFiles);
-		return file; // (`Found: ${input} -> ` + _.defined(file));
+	allByPath(path) {
+		return Collection.new(this.files.filter((file) => file.path.indexOf(path) !== -1));
 	}
 
 	/**
-	*	Acorn Parsing Strategy
+	*	Resolve pattern with external configuration.
+	*	If a pattern matches an external dependency,
+	*	it will be added to the collection with the flag external set to true.
 	*	@public
-	*	@param {String} source file path to parse
-	*	@return {Object}
+	*	@param {util.adt.Collection} files list of files read
+	*	@param {String} path source pattern/path to resolve
+	*	@return {String}
 	**/
-	parse(source, ...args) {
-		return acorn.parse(fs.readFileSync(source, { encoding: 'utf8' }), ...args);
-	}
-
-	/**
-	*	Read Files
-	*	@public
-	*	@return {util.adt.Collection}
-	**/
-	readFiles() {
-		return Collection.new(glob.sync(this.sources(), _.defaults({
-			cwd: this.cwd,
-			ignore: this.excludes()
-		}, Reader.globOptions)));
+	externals(path) {
+		if(_.contains(this.external, path)) this.helper.add(this.files, { path, external: true }, true);
+		return this.files;
 	}
 
 	/**
@@ -112,6 +87,15 @@ class Reader extends Task {
 	}
 
 	/**
+	*	Reader's Helper
+	*	@public
+	*	@type {bundle.task.reader.helpers}
+	**/
+	get helper() {
+		return Helpers;
+	}
+
+	/**
 	*	Visitor Name
 	*	@public
 	*	@type {String}
@@ -119,29 +103,6 @@ class Reader extends Task {
 	get name() {
 		return 'Reader';
 	}
-
-	/**
-	*	Default Glob Options
-	*	@public
-	*	@property globOptions
-	*	@type {Object}
-	**/
-	static globOptions = {
-		strict: true,
-		nosort: true,
-		nodir: true
-	};
-
-	/**
-	*	Default Acorn Options
-	*	@static
-	*	@property acornOptions
-	*	@type {Object}
-	**/
-	static acornOptions = {
-		ecmaVersion: 8,
-		sourceType: 'module'
-	};
 
 	/**
 	*	Events

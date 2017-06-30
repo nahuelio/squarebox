@@ -24,7 +24,10 @@ class Bundle extends Command {
 	*	@return {bundle.Bundle}
 	**/
 	constructor(args = {}) {
-		return super(extend(true, args, { bundles: Collection.new([], { interface: Metadata }) }));
+		return super(extend(true, args, {
+			files: Collection.new(),
+			bundles: Collection.new([], { interface: Metadata })
+		}));
 	}
 
 	/**
@@ -96,7 +99,8 @@ class Bundle extends Command {
 	static options = Command.options.concat([
 		'bundles',
 		'file',
-		'sources',
+		'files',
+		'extension',
 		'aliases',
 		'excludes',
 		'targets'

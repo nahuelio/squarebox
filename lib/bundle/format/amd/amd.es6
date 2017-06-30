@@ -5,6 +5,8 @@
 import _ from 'util/mixins';
 import extend from 'extend';
 import Format from 'bundle/format/format';
+import * as Helpers from 'bundle/format/amd/helpers';
+import Collection from 'util/adt/collection';
 import logger from 'util/logger/logger';
 
 /**
@@ -53,12 +55,13 @@ class Amd extends Format {
 	*	@param {Object} dependency new dependency to add
 	*	@param {bundle.task.metadata.Metadata} metadata current metadata
 	*	@param {astq.Node} node current node ast
+	*	@param {astq.Node} ast current original source ast reference
 	*	@return {Object}
 	**/
-	amdResolveImportSpecifier(ctx, dependency) {
-		if(!_.defined(dependency.import)) dependency.import = {};
-		// TODO
-		return extend(false, dependency.import, { id: '' });
+	amdResolveImportSpecifier(ctx, dependency, metadata, node, ast) {
+		if(!_.defined(dependency.import)) dependency.import = { modules: Collection.new() };
+		Helpers.add(dependency.import.modules, node);
+		return dependency;
 	}
 
 	/**
@@ -68,12 +71,12 @@ class Amd extends Format {
 	*	@param {Object} dependency new dependency to add
 	*	@param {bundle.task.metadata.Metadata} metadata current metadata
 	*	@param {astq.Node} node current node ast
+	*	@param {astq.Node} ast current original source ast reference
 	*	@return {Object}
 	**/
-	amdResolveImportPath(ctx, dependency) {
-		if(!_.defined(dependency.import)) dependency.import = {};
-		// TODO
-		return extend(false, dependency.import, { path: '' });
+	amdResolveImportPath(ctx, dependency, metadata, node, ast) {
+		dependency.import.path = ctx.reader.file(Helpers.resolvePath(ctx, ast, node), false);
+		return dependency;
 	}
 
 	/**
@@ -82,6 +85,8 @@ class Amd extends Format {
 	*	@param {util.visitor.Visited} ctx context visited
 	*	@param {Object} dependency dependency to resolve parent
 	*	@param {bundle.task.metadata.Metadata} metadata current metadata
+	*	@param {astq.Node} node current node ast
+	*	@param {astq.Node} ast current original source ast reference
 	*	@return {Object}
 	**/
 	amdResolveParent(ctx, dependency, metadata) {
@@ -94,11 +99,12 @@ class Amd extends Format {
 	*	@param {util.visitor.Visited} ctx context visited
 	*	@param {Object} dependency dependency to resolve parent
 	*	@param {bundle.task.metadata.Metadata} metadata current metadata
-	*	@param {astq.Node} ast ast root node for current dependency
+	*	@param {astq.Node} node current node ast
+	*	@param {astq.Node} ast current original source ast reference
 	*	@return {Object}
 	**/
-	amdResolveAst(ctx, dependency, metadata, ast) {
-		return super.resolveAst(dependency, ast);
+	amdResolveAst(ctx, dependency, metadata) {
+		return super.resolveAst(dependency, '');
 	}
 
 	/**
@@ -107,7 +113,9 @@ class Amd extends Format {
 	*	@property QAMD_ImportDeclaration
 	*	@type {String}
 	**/
-	static QAMD_ImportDeclaration = '/TODO';
+	static QAMD_ImportDeclaration = `
+		/ExpressionStatement /CallExpression [/Identifier [@name == 'define']]
+	`;
 
 	/**
 	*	ASTQ AMD Import Specifier Query
@@ -115,7 +123,17 @@ class Amd extends Format {
 	*	@property QAMD_ImportSpecifier
 	*	@type {String}
 	**/
-	static QAMD_ImportSpecifier = `/TODO`;
+	static QAMD_ImportSpecifier = `
+	 	/ArrayExpression /:elements Literal
+	`;
+
+	/**
+	*	ASTQ ES6 Import Path Query
+	*	@static
+	*	@property QES6_ImportPath
+	*	@type {String}
+	**/
+	static QAMD_ImportPath = `/FunctionExpression`;
 
 	/**
 	*	ASTQ AMD Export Declaration Query

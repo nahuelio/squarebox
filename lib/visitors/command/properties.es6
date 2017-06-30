@@ -23,17 +23,19 @@ class Properties extends Visitor {
 	**/
 	file(ctx, input, ext = false) {
 		let expr = ext ? `${input}.+(${this.extensions.join('|')})` : input;
-		return path.resolve(this.basePath, input);
+		return path.resolve(this.basePath, this.aliases(ctx, expr));
 	}
 
 	/**
-	*	Resolve scan sources
+	*	Resolve extension based on input and applies it to the path
 	*	@public
 	*	@param {bundle.Command} ctx current command
+	*	@param {String} input resolved path including the extension
+	*	@param {String} path path to attach the extension into from the input
 	*	@return {String}
 	**/
-	sources(ctx) {
-		return this.file(ctx, this.scan, true);
+	extension(ctx, input, path) {
+		return (input && input.indexOf(path) !== -1) ? `${path}${_s.strRightBack(input, path)}` : path;
 	}
 
 	/**
@@ -59,7 +61,7 @@ class Properties extends Visitor {
 	**/
 	excludes(ctx) {
 		return _.reduce(this.exclude, (memo, pattern) => {
-			memo.push(path.resolve(this.basePath, this.scan, pattern));
+			memo.push(this.file(ctx, pattern, false));
 			return memo;
 		}, []);
 	}

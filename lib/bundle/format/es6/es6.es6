@@ -71,10 +71,11 @@ class Es6 extends Format {
 	*	@param {Object} dependency new dependency to add
 	*	@param {bundle.task.metadata.Metadata} metadata current metadata
 	*	@param {astq.Node} node current node ast
+	*	@param {astq.Node} ast current original source ast reference
 	*	@return {Object}
 	**/
 	es6ResolveImportPath(ctx, dependency, metadata, node, ast) {
-		dependency.import.path = ctx.reader.aliases(ast.source.value);
+		dependency.import.path = ctx.reader.file(ast.source.value, false);
 		return dependency;
 	}
 
@@ -85,6 +86,7 @@ class Es6 extends Format {
 	*	@param {Object} dependency dependency to resolve parent
 	*	@param {bundle.task.metadata.Metadata} metadata current metadata
 	*	@param {astq.Node} node current node ast
+	*	@param {astq.Node} ast current original source ast reference
 	*	@return {Object}
 	**/
 	es6ResolveParent(ctx, dependency, metadata) {
@@ -125,14 +127,6 @@ class Es6 extends Format {
 		/ImportNamespaceSpecifier,
 		/Literal
 	`;
-
-	/**
-	*	ASTQ ES6 Import Path Query
-	*	@static
-	*	@property QES6_ImportPath
-	*	@type {String}
-	**/
-	static QES6_ImportPath = `/Literal`;
 
 	/**
 	*	ASTQ ES6 Export Declaration Query

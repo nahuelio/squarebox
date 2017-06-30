@@ -22,12 +22,12 @@ class Import extends Type {
 	*	@return {Promise}
 	**/
 	read() {
-		return this.reader.bundles.reduce(this.readDependencies, true, this) ?
-			this.resolve(this) : this.reject(this);
+		let result = this.reader.bundles.reduce(this.readBundle, true, this);
+		return result ? this.resolve(this) : this.reject(this);
 	}
 
 	/**
-	*	Recursive Strategy to query dependencies and attach them into the metadata.
+	*	Read all bundles
 	*	@public
 	*	@param {Boolean} memo memoized boolean result
 	*	@param {bundle.task.metadata.Metadata} metadata instance of meta found as a bundle
@@ -35,9 +35,22 @@ class Import extends Type {
 	*	@param {util.adt.Collection} collection original metadata collection
 	*	@return {Boolean}
 	**/
-	readDependencies(memo, metadata) {
-		this.collectByType(metadata.input, _.bind(this.dependency, this, metadata));
-		return metadata.dependencies.reduce(this.onDependenciesRead, memo, this);
+	readBundle(memo, metadata) {
+		return this.readDependencies(memo, metadata, metadata.input);
+	}
+
+	/**
+	*	Recursive Strategy to query dependencies and attach them into the metadata.
+	*	@public
+	*	@param {Boolean} memo memoized boolean result
+	*	@param {bundle.task.metadata.Metadata} metadata current bundle reference
+	*	@param {astq.Node} input current ast node used to collect
+	*	@param {Object} [file] current parsed file
+	*	@return {Boolean}
+	**/
+	readDependencies(memo, metadata, input, file) {
+		this.collectByType(input, _.bind(this.dependency, this, metadata));
+		return metadata.dependencies.reduce(_.bind(this.onDependenciesRead, this, metadata), memo);
 	}
 
 	/**
@@ -64,6 +77,7 @@ class Import extends Type {
 	*	@return {Object}
 	**/
 	createDependency(metadata, ast, format) {
+		//if(format === 'AMD') console.log('AMD AST: ', ast);
 		return this.collectByElement(ast, Format.elements.ImportSpecifier)
 			.reduce(_.bind(this.resolveDependency, this, format, metadata, ast), {});
 	}
@@ -77,7 +91,7 @@ class Import extends Type {
 	*	@param {astq.Node} node current dependency node reference
 	**/
 	resolveDependency(format, metadata, ast, dependency, node) {
-		return Import.resolversBy(format, this).reduce((dependency, resolve) => {
+		return Import.by(format, this).reduce((dependency, resolve) => {
 			return resolve(dependency, metadata, node, ast);
 		}, dependency);
 	}
@@ -85,14 +99,27 @@ class Import extends Type {
 	/**
 	*	Dependencies Query Result Handler
 	*	@public
-	*	@param {Boolean} memo memoized boolean result
 	*	@param {bundle.task.metadata.Metadata} metadata current metadata
-	*	@param {Array} results list of ast results
-	*	@return {bundle.type.import.Import}
+	*	@param {Boolean} memo memoized boolean result
+	*	@param {bundle.task.metadata.Dependency} dependency current dependency
+	*	@return {Boolean}
 	**/
-	onDependenciesRead(memo, dependency) {
-		console.log(this.reader.get(dependency.import.path));
-		//results.map(_.bind(this.create, this, memo, this.reader.files()), this);
+	onDependenciesRead(metadata, memo, dependency) {
+		//console.log('------------------------');
+		let out = this.reader.all(dependency.import)
+			.allByPath(dependency.import.path);
+			// .reduce((memo, file) => {
+			// 	console.log(file.path);
+			// 	let out = this.readDependencies(memo, metadata, file.input, file)
+			// 	console.log('------');
+			// 	return out;
+			// }, memo);
+		if(dependency.import.path.indexOf('amd-lib') !== -1) {
+			//console.log('I: ', out.get(0).input.body[0].expression.arguments);
+			//console.log('******************');
+			this.collectByType(out.get(0).input, _.bind(this.dependency, this, metadata), ['amd']);
+			//console.log(metadata.path, metadata.dependencies._collection);
+		}
 		return memo;
 	}
 
@@ -122,17 +149,17 @@ class Import extends Type {
 	*	@param {String} format
 	*	@return {Array}
 	**/
-	static resolversBy = (format, instance) => {
-		return Collection.new(_.map(Import.resolvers, (name) => instance[`${format.toLowerCase()}${name}`]));
+	static by = (format, instance) => {
+		return Collection.new(_.map(Import.elements, (name) => instance[`${format.toLowerCase()}${name}`]));
 	}
 
 	/**
-	*	Method Name Resolvers
+	*	Import Element Resolvers
 	*	@static
-	*	@property resolvers
+	*	@property elements
 	*	@type {Array}
 	**/
-	static resolvers = [
+	static elements = [
 		'ResolveImportSpecifier',
 		'ResolveImportPath',
 		'ResolveParent',

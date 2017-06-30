@@ -31,7 +31,7 @@ class Annotation extends Type {
 	*	@return {util.adt.Collection}
 	**/
 	annotations() {
-		return this.reader.files().reduce(this.annotation, Collection.new(), this);
+		return this.reader.files.reduce(this.annotation, Collection.new(), this);
 	}
 
 	/**
