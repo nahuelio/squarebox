@@ -11,12 +11,15 @@ describe('Command', function() {
 	});
 
 	beforeEach(() => {
-		this.mockCommand = this.sandbox.mock(Command);
+		this.mockInstance = this.sandbox.mock(Command);
 	});
 
 	afterEach(() => {
+		this.mockInstance.verify();
+
 		this.sandbox.restore();
-		delete this.mockCommand;
+
+		delete this.mockInstance;
 	});
 
 	after(() => {

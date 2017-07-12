@@ -107,7 +107,7 @@ describe('visitors.Configuration', function() {
 	describe('_format()', () => {
 
 		it('Should apply formatter to the current configuration option', () => {
-			const options = { scan: './src/**', extensions: '.js,.es6' };
+			const options = { basePath: './src', scan: '**/*', extensions: '.js,.es6' };
 			const expTransform = ['.js', '.es6'];
 			const formatterPath = 'visitors/configuration/formatter/extensions';
 			const expFormatterPath = this.mockProto.expects('formatterPath')
@@ -135,7 +135,7 @@ describe('visitors.Configuration', function() {
 		});
 
 		it('Should NOT apply formatter to the current configuration option', () => {
-			const options = { scan: './src/**' };
+			const options = { basePath: './src', scan: '**/*' };
 			const formatterPath = 'visitors/configuration/formatter/scan';
 			const expFormatterPath = this.mockProto.expects('formatterPath')
 				.once()
@@ -161,7 +161,7 @@ describe('visitors.Configuration', function() {
 	describe('_source()', () => {
 
 		it('Should apply source configuration options to the current command', () => {
-			const options = { scan: './src/**', extensions: ['.js', '.es6'], unrecognized: true };
+			const options = { basePath: './src', scan: '**/*', extensions: ['.js', '.es6'], unrecognized: true };
 			assert.instanceOf(this.configuration._source(options), Configuration);
 
 			assert.property(this.command, 'scan');
@@ -187,22 +187,13 @@ describe('visitors.Configuration', function() {
 
 	});
 
-	describe('_logger()', () => {
-
-		it('Should apply logger configuration option to the singleton logger', () => {
-			assert.instanceOf(this.configuration._logger('silent'), Configuration);
-			logger.level(Logger.level.output);
-		});
-
-	});
-
 	describe('_override()', () => {
 
 		it('Should override configuration options with cli options', () => {
-			const options = { scan: './src/**', extensions: ['.js', '.es6'], unrecognized: true };
+			const options = { basePath: './src', scan: '**/*', extensions: ['.js', '.es6'], unrecognized: true };
 			const filtered = _.omit(options, 'unrecognized');
 			const expFormat = this.mockProto.expects('_format')
-				.exactly(2)
+				.exactly(3)
 				.withArgs(filtered, sinon.match.any, sinon.match.string)
 				.returns(filtered);
 
@@ -262,7 +253,7 @@ describe('visitors.Configuration', function() {
 
 		it('Should perform options transformations', () => {
 			const expResult = {
-				source: { scan: './src/**' },
+				source: { basePath: './src', scan: '**/*' },
 				target: { cjs: { destination: './dist', format: 'cjs' } },
 				logLevel: 'silent'
 			};
@@ -273,10 +264,6 @@ describe('visitors.Configuration', function() {
 			const expTarget = this.mockProto.expects('_target')
 				.once()
 				.withArgs(expResult.target)
-				.returns(this.configuration);
-			const expLogger = this.mockProto.expects('_logger')
-				.once()
-				.withArgs(expResult.logLevel)
 				.returns(this.configuration);
 			const expOverride = this.mockProto.expects('_override')
 				.once()
@@ -295,7 +282,6 @@ describe('visitors.Configuration', function() {
 				.returns(this.configuration);
 			const expSource = this.mockProto.expects('_source').never();
 			const expTarget = this.mockProto.expects('_target').never();
-			const expLogger = this.mockProto.expects('_logger').never();
 			const expOverride = this.mockProto.expects('_override').never();
 
 			assert.instanceOf(this.configuration.onOptions(expResult), Configuration);
@@ -306,7 +292,7 @@ describe('visitors.Configuration', function() {
 	describe('parse()', () => {
 
 		it('Should create methods and resolve configuration option source', () => {
-			const expResult = { source: { scan: './src/**' } };
+			const expResult = { source: { basePath: './src', scan: '**/*' } };
 			const queueStubPromise = this.sandbox.stub().returnsPromise();
 			const expCreate = this.mockProto.expects('_create')
 				.exactly(2)

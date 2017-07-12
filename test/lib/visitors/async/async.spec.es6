@@ -43,7 +43,7 @@ describe('visitors.async.Asynchronous', function() {
 		it('Should call promise\'s resolve as a default strategy', () => {
 			const resolveSpy = this.sandbox.spy();
 			const exp = Asynchronous.new({});
-			assert.instanceOf(exp.next({}, resolveSpy), Asynchronous);
+			assert.instanceOf(exp.next(resolveSpy), Asynchronous);
 			assert.isTrue(resolveSpy.calledOnce);
 		});
 

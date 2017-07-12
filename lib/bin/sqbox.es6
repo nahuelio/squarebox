@@ -1,10 +1,12 @@
 /**
 *	@module bin
 *	@author Patricio Ferreira <3dimentionar@gmail.com>
+*	@Notes Think about the API require('sqbox').clean({}).bundle({}).graph({});
 **/
 import 'util/mixins';
 import extend from 'extend';
 import Collection from 'util/adt/collection';
+import StackAsync from 'util/adt/stack-async';
 import Factory from 'util/factory/factory';
 import Command from 'command';
 import CommandsList from './commands.json';
@@ -23,21 +25,22 @@ class SquareBox extends Command {
 	/**
 	*	Constructor
 	*	@public
-	*	@param {Object} [args = {}] - Constructor arguments
+	*	@param {Symbol} _enforcer - private enforcer symbol
+	*	@param {Object} [...args] - Constructor arguments
 	*	@return {bin.SquareBox}
 	**/
-	constructor(...args) {
+	constructor(_enforcer, ...args) {
 		super(...args);
-		return SquareBox.isPrivate(this.attachEvents());
+		return SquareBox.isPrivate(_enforcer, this.attachEvents());
 	}
 
 	/**
-	*	Attaches Events
+	*	Attach Events
 	*	@public
 	*	@return {bin.SquareBox}
 	**/
 	attachEvents() {
-		this.once(SquareBox.events.done, this.after);
+		this.stack.on(StackAsync.events.push, _.bind(this.onCommand, this));
 		return this;
 	}
 
@@ -48,7 +51,6 @@ class SquareBox extends Command {
 	*	@return {bin.SquareBox}
 	**/
 	before() {
-		super.before();
 		this.commander.read();
 		return this;
 	}
@@ -61,21 +63,46 @@ class SquareBox extends Command {
 	**/
 	run() {
 		this.before();
-		this.configuration.parse().then(_.bind(this.onConfiguration, this));
+		this.configuration.parse()
+			.then(_.bind(this.push, this, this, this.options.path))
+			.catch(_.bind(this.after, this));
 		return this;
 	}
 
 	/**
-	*	Configuration Loaded and Parsed Handler
+	*	Subcommand push Handler
 	*	@public
-	*	@param {visitors.Configuration} configuration - configuration visitor reference
+	*	@param {util.adt.StackAsync} stack - stack reference
+	*	@param {Command} command - command offered
 	*	@return {bin.SquareBox}
 	**/
-	onConfiguration() {
-		const { path } = this.options;
-		//console.log(_.pick(this, Command.options));
-		// TODO: Factory.get(path, this.params()).run();
+	onCommand(stack, command) {
+		let dependents = command.getDependsOn();
+		return (dependents.length > 0) ? _.reduce(dependents, this.push, this, this) : this.after();
+	}
+
+	/**
+	*	After Run
+	*	@public
+	*	@override
+	*	@param {Error} [err] - error reference
+	*	@return {bin.SquareBox}
+	**/
+	after(err, results) {
+		if(_.defined(err)) logger(err.message).fatal();
+		if(this.stack.isEmpty()) return this.complete(results);
+		this.stack.pop().then(_.bind(this.after, this, null)).catch(_.bind(this.after, this));
 		return this;
+	}
+
+	/**
+	*	SquareBox Complete Handler
+	*	@public
+	*	@param {Array} results - all Results
+	*	@return {bin.SquareBox}
+	**/
+	complete(results) {
+		return super.after();
 	}
 
 	/**
@@ -91,18 +118,6 @@ class SquareBox extends Command {
 	}
 
 	/**
-	*	Register Command Factories
-	*	@public
-	*	@override
-	*	@return {bin.SquareBox}
-	**/
-	register() {
-		super.register();
-		Factory.registerAll(this.constructor.commands);
-		return this;
-	}
-
-	/**
 	*	Available Commands
 	*	@static
 	*	@type {util.adt.Collection}
@@ -110,24 +125,25 @@ class SquareBox extends Command {
 	static commands = Collection.new(CommandsList);
 
 	/**
-	*	SquareBox visitors
+	*	Command Visitors
 	*	@static
 	*	@override
-	*	@type {Array}
+	*	@type {util.adt.Collection}
 	**/
-	static visitors = [
+	static visitors = Collection.new(Command.visitors.toJSON().concat([
 		'visitors/commander',
 		'visitors/configuration'
-	].concat(Command.visitors);
+	]));
 
 	/**
 	*	Static enforcer validation
 	*	@static
+	*	@param {Symbol} _enforcer - private enforcer symbol
 	*	@param {bin.SquareBox} instance - squarebox instance reference
 	*	@return {bin.SquareBox}
 	**/
-	static isPrivate(instance) {
-		return instance.isPrivate(enforcer);
+	static isPrivate(_enforcer, instance) {
+		return instance.isPrivate(_enforcer);
 	}
 
 	/**
@@ -144,7 +160,7 @@ class SquareBox extends Command {
 	*	@return {bin.SquareBox}
 	**/
 	static run(cwd = process.cwd()) {
-		return this.new({ cwd }).run();
+		return this.new(enforcer, { cwd }).run();
 	}
 
 }

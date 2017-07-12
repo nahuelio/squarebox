@@ -47,6 +47,18 @@ _.mixin({
 	},
 
 	/**
+	*	Generates and return a UUID (Universally Unique Identifier)
+	*	@public
+	*	@return {String}
+	**/
+	uuid: function() {
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+			var r = Math.random() * 16 | 0, v = (c === 'x') ? r : (r & 0x3 | 0x8);
+			return v.toString(16);
+		});
+	},
+
+	/**
 	*	Return true if a given object is a real object (Not an array or a Date for example), false otherwise.
 	*	@public
 	*	@param [o] {Object} object to be evaluated
@@ -67,6 +79,18 @@ _.mixin({
 	isAdt: function(o) {
 		if(!_.defined(o)) return false;
 		return (_.isRealObject(o) || _.isArray(o));
+	},
+
+	/**
+	*	Returns true if a given object's constructor is a native type, false otherwise.
+	*	@public
+	*	@param [o] {Object}
+	*	@return {Boolean}
+	**/
+	isNative: function(o) {
+		if(!_.defined(o) || !_.defined(o.constructor)) return true;
+		let _c = _s.strRightBack(_s.strLeft(o.constructor.toString(), '('), 'function ');
+		return _.contains(['String', 'Number', 'Boolean', 'Object', 'Array'], _c);
 	},
 
 	/**
@@ -101,6 +125,17 @@ _.mixin({
 	**/
 	defined: function(o) {
 		return (!_.isUndefined(o) && !_.isNull(o));
+	},
+
+	/**
+	*	Trims Globally any special characters from a given expression as string
+	*	Special characters include: '*,\\,\n,\t,\r'
+	*	@public
+	*	@param {String} [expr = ''] expression to trim
+	*	@return {String}
+	**/
+	trimSpecial: function(expr = '') {
+		return _s.replaceAll(_s.clean(expr), /(\*|\n|\\|\t|\r)*/g, '');
 	}
 
 });

@@ -2,7 +2,7 @@
   "name": "project-c",
   "version": "1.0.0",
   "private": true,
-  "description": "SquareBox & Legacy ES5",
+  "description": "SquareBox & Legacy ES5 - Integration Test Project",
   "keywords": [
     "squarebox",
     "legacy"

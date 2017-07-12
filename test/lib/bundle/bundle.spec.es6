@@ -1,0 +1,71 @@
+/**
+*	@module bundle
+*	@author Patricio Ferreira <3dimentionar@gmail.com>
+**/
+import Bundle from 'bundle/bundle';
+
+describe('bundle.Bundle', function() {
+
+	before(() => {
+		this.params = {
+			basePath: './test/specs/es6',
+			scan: '**/*',
+			extensions: ['js', 'es6', 'es'],
+			exclude: [],
+			alias: { dependencies: "libs/dependencies" },
+			external: ['jquery'],
+			target: {
+				iife: { destination: './test/specs/dist/iife', format: 'iife' },
+			 	umd: { destination: './test/specs/dist/umd', format: 'umd' },
+				cjs: { destination: './test/specs/dist/cjs', format: 'cjs' },
+				amd: { destination: './test/specs/dist/amd', format: 'amd' }
+			}
+		};
+		this.sandbox = sinon.sandbox.create();
+	});
+
+	beforeEach(() => {
+		this.mockInstance = this.sandbox.mock(Bundle);
+	});
+
+	afterEach(() => {
+		this.mockInstance.verify();
+
+		this.sandbox.restore();
+
+		delete this.mockInstance;
+	});
+
+	after(() => {
+		delete this.sandbox;
+	});
+
+	describe('constructor()', () => {
+
+		it('Should get a new instance', () => {
+			this.bundle = Bundle.new(this.params);
+			assert.instanceOf(this.bundle, Bundle);
+		});
+
+	});
+
+	describe('run()', () => {
+
+		it('Should execute command run over specs/es6', () => {
+			this.bundle.run();
+		});
+
+	});
+
+	describe('toJSON()', () => {
+
+		it('Should return a json representation', () => {
+			const exp = this.bundle.toJSON();
+			assert.property(exp, 'cwd');
+			assert.property(exp, 'scan');
+			assert.property(exp, 'target');
+		});
+
+	});
+
+});

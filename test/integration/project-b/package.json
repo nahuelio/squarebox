@@ -2,7 +2,7 @@
   "name": "project-b",
   "version": "1.0.0",
   "private": true,
-  "description": "SquareBox & Typescript",
+  "description": "SquareBox & Typescript - Integration Test Project",
   "keywords": [
     "squarebox",
     "typescript"

@@ -66,12 +66,13 @@ class QueueAsync extends Queue {
 	*	@override
 	*	@param {Object} [opts = {}] - additional options
 	*	@param {Boolean} [next = false] - async queue already started
+	*	@param {Any} [...args] additonal arguments
 	*	@return {Promise}
 	**/
-	async poll(opts = {}, next = false) {
+	async poll(opts = {}, next = false, ...args) {
 		if(!next) this._resetLast();
-		const res = await this.next(opts);
-		return this.onNext(res, opts);
+		const res = await this.next(opts, ...args);
+		return this.onNext(res, opts, ...args);
 	}
 
 	/**
@@ -79,12 +80,13 @@ class QueueAsync extends Queue {
 	*	@public
 	*	@emits {QueueAsync.events.next} - when opts.silent is false or undefined
 	*	@param {Object} [opts] - additional options
+	*	@param {Any} [...args] additonal arguments
 	*	@return {Promise}
 	**/
-	next(opts) {
+	next(opts, ...args) {
 		let element = super.poll(opts);
 		if(!opts.silent) this.emit(QueueAsync.events.next, element);
-		return element.execute(this);
+		return element.execute(this, ...args);
 	}
 
 	/**
@@ -92,11 +94,12 @@ class QueueAsync extends Queue {
 	*	@public
 	*	@param {Promise} res - current promise (resolved or rejected)
 	*	@param {Object} [opts] - additional options
+	*	@param {Any} [...args] additonal arguments
 	*	@return {Any}
 	**/
-	onNext(res, opts) {
+	onNext(res, opts, ...args) {
 		this._last.push(res);
-		return this.isEmpty() ? this.end(opts) : this.poll(opts, true);
+		return this.isEmpty() ? this.end(opts) : this.poll(opts, true, ...args);
 	}
 
 	/**

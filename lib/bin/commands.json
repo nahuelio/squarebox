@@ -17,7 +17,8 @@
 		"override": { "default": false },
 		"config": { "default": ".sqboxrc" },
 		"url": {},
-		"target": { "default": "./dist" }
+		"target": { "default": "./dist" },
+		"logLevel": { "alias": "lv", "default": "output" }
 	}
 }, {
 	"name": "bundle",
@@ -28,10 +29,12 @@
 		"override": { "default": false },
 		"config": { "default": ".sqboxrc" },
 		"url": { "alias": "u" },
+		"basePath": { "alias": "b", "default": "./" },
 		"scan": { "alias": "s", "default": "." },
 		"exclude": { "alias": "x" },
 		"extensions": { "alias": "e", "default": ".js,.jsx,.es6,.es" },
 		"alias": { "alias": "a", "default": {} },
+		"external": { "alias": "l", "default": "" },
  		"target": { "alias": "t", "default": "dist>umd:./dist" },
 		"logLevel": { "alias": "lv", "default": "output" }
 	}
@@ -44,6 +47,7 @@
 		"override": { "default": false },
 		"config": { "default": ".sqboxrc" },
 		"url": {},
-		"target": { "default": "./dist" }
+		"target": { "default": "./dist" },
+		"logLevel": { "alias": "lv", "default": "output" }
 	}
 }]

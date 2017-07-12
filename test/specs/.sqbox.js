@@ -4,18 +4,19 @@
 **/
 module.exports = {
 	source: {
-		scan: './src/**',
-		exclude: ['./src/dependencies/**'],
-		extensions: ['.js', '.es6', '.es'],
+		basePath: './es6',
+		scan: '**/*',
+		exclude: ['dependencies/**'],
+		extensions: ['js', 'es6', 'es'],
 		alias: {
-			common: 'shared/common',
-			libraries: 'libs'
-		}
+			dependencies: 'libs/dependencies'
+		},
+		external: ['jquery']
 	},
 	target: {
 		global: {
 			destination: './dist/global',
-			format: 'ifie'
+			format: 'iife'
 		},
 		umd: {
 			destination: './dist/umd',
@@ -29,6 +30,5 @@ module.exports = {
 			destination: './dist/amd',
 			format: 'amd'
 		}
-	},
-	logLevel: 'debug'
+	}
 };

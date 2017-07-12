@@ -16,13 +16,21 @@ class Clean extends Command {
 	*	Run
 	*	@public
 	*	@override
+	*	@param {Function} resolve asynchronous promise's resolve
+	*	@param {Function} reject asynchronous promise's reject
 	*	@return {clean.Clean}
 	**/
-	run() {
-		// TODO
-		console.log('Clean.run()...');
-		return super.run();
+	run(resolve, reject) {
+		return super.run(resolve, reject);
 	}
+
+	/**
+	*	List of commands that depends on
+	*	@static
+	*	@property dependsOn
+	*	@type {Array}
+	**/
+	static dependsOn = Command.dependsOn.concat([]);
 
 }
 

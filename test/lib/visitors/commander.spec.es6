@@ -7,6 +7,7 @@ import Factory from 'util/factory/factory';
 import yargs from 'yargs';
 import Command from 'command';
 import chalk from 'chalk';
+import logger, { Logger } from 'util/logger/logger';
 
 describe('visitors.Commander', function() {
 
@@ -177,6 +178,15 @@ describe('visitors.Commander', function() {
 			const exp = this.commander.visit(input);
 			assert.instanceOf(exp, Command);
 			assert.notProperty(exp, 'commander');
+		});
+
+	});
+
+	describe('_logger()', () => {
+
+		it('Should apply logger configuration option to the singleton logger', () => {
+			assert.instanceOf(this.commander._logger('debug'), Commander);
+			logger.level(Logger.level.silent);
 		});
 
 	});

@@ -36,12 +36,14 @@ describe('util.logger.Logger', function() {
 		});
 
 		it('Should adds to the buffer by using constructor function', () => {
+			logger.level(Logger.level.debug);
 			const expOut = this.mockProto.expects('_stdout')
 				.once()
 				.withArgs(sinon.match.string)
 				.returns(logger);
 
 			logger('hello')('world').out(logger.magenta);
+			logger.level(Logger.level.silent);
 		});
 
 	});

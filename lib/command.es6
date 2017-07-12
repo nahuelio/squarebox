@@ -5,8 +5,11 @@
 import { EventEmitter } from 'events';
 import _ from 'util/mixins';
 import extend from 'extend';
+import Collection from 'util/adt/collection';
 import Factory from 'util/factory/factory';
+import StackAsync from 'util/adt/stack-async';
 import Visited from 'util/visitor/visited';
+import logger from 'util/logger/logger';
 
 /**
 *	Class Command
@@ -20,12 +23,13 @@ class Command extends Visited {
 	/**
 	*	Constructor
 	*	@public
+	*	@override
 	*	@param {Object} [args = {}] - constructor arguments
 	*	@return {Command}
 	**/
 	constructor(args = {}) {
 		super();
-		return this.settings(args).register().acceptAll();
+		return extend(true, this.settings(args).registerAll(this.dirname), { stack: StackAsync.new([]) });
 	}
 
 	/**
@@ -36,41 +40,34 @@ class Command extends Visited {
 	*	@return {Command}
 	**/
 	settings(options) {
-		return extend(true, this, this.constructor.defaults, _.pick(options, this.constructor.options));
+		return extend(true, this, _.defaults(_.pick(options, this.constructor.options), this.constructor.defaults));
 	}
 
 	/**
-	*	Registers Visitors
+	*	Push a dependent subcommand onto this command
 	*	@public
+	*	@param {Command} memo - memoized version of this command
+	*	@param {String} path - dependent command factory path
 	*	@return {Command}
 	**/
-	register() {
-		Factory.basePath(this.dirname).registerAll(this.constructor.visitors);
-		return this;
-	}
-
-	/**
-	*	Accepts All Visitors
-	*	@public
-	*	@return {command.Command}
-	**/
-	acceptAll() {
-		return _.reduce(this.constructor.visitors, (memo, v) => memo.accept(Factory.get(v, this)), this);
+	push(memo, path) {
+		let opts = extend(true, { parent: memo }, _.pick(memo.toJSON(), this.constructor.options));
+		memo.stack.push(Factory.register(path).get(path, opts));
+		return memo;
 	}
 
 	/**
 	*	Proxified asynchronous next strategy
-	*	FIXME: Implement when the command gets rejected.
 	*	@public
 	*	@override
-	*	@param adt {util.proxy.Asynchronous} adt used for asynchronous operations
-	*	@param resolve {Function} asynchronous promise's resolve
-	*	@param reject {Function} asynchronous promise's reject
+	*	@param {Function} resolve asynchronous promise's resolve
+	*	@param {Function} reject asynchronous promise's reject
 	*	@return {Promise}
 	**/
-	next(adt, resolve, reject) {
-		this.once(Command.events.done, resolve);
-		return this.run();
+	next(resolve, reject) {
+		this.once(Command.events.done, resolve)
+			.once(Command.events.error, reject);
+		return this.run(resolve, reject);
 	}
 
 	/**
@@ -79,15 +76,18 @@ class Command extends Visited {
 	*	@return {Command}
 	**/
 	before() {
+		if(_.defined(this.getParent())) this.getParent().emit(Command.events.pending, this);
 		return this.pending();
 	}
 
 	/**
 	*	Default Run
 	*	@public
+	*	@param resolve {Function} asynchronous promise's resolve
+	*	@param reject {Function} asynchronous promise's reject
 	*	@return {Command}
 	**/
-	run() {
+	run(resolve, reject) {
 		return this.before().after();
 	}
 
@@ -97,15 +97,18 @@ class Command extends Visited {
 	*	@return {Command}
 	**/
 	after() {
-		return this.done();
+		this.done();
+		if(_.defined(this.getParent())) this.getParent().emit(Command.events.done, this);
+		return this;
 	}
 
 	/**
 	*	Command Pending exeuction state
 	*	@public
-	*	@return {command.Command}
+	*	@return {Command}
 	**/
 	pending() {
+		logger(`[${this.constructor.name}] Started`).out();
 		this.emit(Command.events.pending, this);
 		return this;
 	}
@@ -113,75 +116,21 @@ class Command extends Visited {
 	/**
 	*	Command Done exeuction state
 	*	@public
-	*	@return {command.Command}
+	*	@return {Command}
 	**/
 	done() {
+		logger(`[${this.constructor.name}] Finished`).out();
 		this.emit(Command.events.done, this);
 		return this;
 	}
 
 	/**
-	*	Retrieves source
-	*	@public
-	*	@return {Object}
-	**/
-	source() {
-		return this.source;
-	}
-
-	/**
-	*	Retrieves and resolves scan directory (glob)
-	*	@public
-	*	@return {String}
-	**/
-	scan() {
-		return this.source().scan;
-	}
-
-	/**
-	*	Retrieves and resolves excluded folders
+	*	Retrieves command depedents
 	*	@public
 	*	@return {Array}
 	**/
-	exclude() {
-		return this.source().exclude;
-	}
-
-	/**
-	*	Retrieves list of extensions to scan
-	*	@public
-	*	@return {Array}
-	**/
-	extensions() {
-		return this.source().extensions;
-	}
-
-	/**
-	*	Retrieves aliases for modules
-	*	@public
-	*	@return {Object}
-	**/
-	alias() {
-		return this.source().alias;
-	}
-
-	/**
-	*	Retrieves target
-	*	@public
-	*	@return {Object}
-	**/
-	target() {
-		return this.target;
-	}
-
-	/**
-	*	Retrieve targets by using a given predicate passed by parameter
-	*	@public
-	*	@param {Function} predicate - predicate to walk over the targets
-	*	@return {Array}
-	**/
-	targets(predicate) {
-		return _.defined(predicate) && _.isFunction(predicate) ? _.map(this.target, predicate, this) : [];
+	getDependsOn() {
+		return this.constructor.dependsOn;
 	}
 
 	/**
@@ -194,14 +143,32 @@ class Command extends Visited {
 	}
 
 	/**
+	*	Retrieves parent command
+	*	@public
+	*	@return {Command}
+	**/
+	getParent() {
+		return this.parent;
+	}
+
+	/**
 	*	Command Visitors
 	*	@static
+	*	@override
+	*	@type {util.adt.Collection}
+	**/
+	static visitors = Collection.new(Visited.visitors.toJSON().concat([
+		'visitors/async/async',
+		'visitors/command/properties'
+	]));
+
+	/**
+	*	List of commands that depends on
+	*	@static
+	*	@property dependsOn
 	*	@type {Array}
 	**/
-	static visitors = [
-		'visitors/formatter/json',
-		'visitors/async/async'
-	];
+	static dependsOn = [];
 
 	/**
 	*	Command Defaults
@@ -223,11 +190,15 @@ class Command extends Visited {
 		'env',
 		'dirname',
 		'cwd',
+		'basePath',
 		'scan',
 		'exclude',
 		'extensions',
 		'alias',
-		'target'
+		'external',
+		'target',
+		'logLevel',
+		'parent'
 	];
 
 	/**
@@ -236,8 +207,9 @@ class Command extends Visited {
 	*	@type {Object}
 	**/
 	static events = {
-		pending: 'commands:command:pending',
-		done: 'commands:command:done'
+		pending: 'command:pending',
+		error: 'command:error',
+		done: 'command:done'
 	};
 
 }

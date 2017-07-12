@@ -4,6 +4,10 @@
 **/
 import SquareBox from 'bin/sqbox';
 import Commander from 'visitors/commander';
+import Command from 'command';
+import Graph from 'visualize/graph';
+import Bundle from 'bundle/bundle';
+import Clean from 'clean/clean';
 
 describe('bin.SquareBox', function() {
 
@@ -13,13 +17,13 @@ describe('bin.SquareBox', function() {
 	});
 
 	beforeEach(() => {
-		if(this.sqbox) this.mockProto = this.sandbox.mock(this.sqbox);
+		this.mockProto = this.sandbox.mock(SquareBox.prototype);
 		this.mockCommander = this.sandbox.mock(Commander.prototype);
 		this.input = [process.argv[0], this.cwd];
 	});
 
 	afterEach(() => {
-		if(this.mockProto) this.mockProto.verify();
+		this.mockProto.verify();
 		this.mockCommander.verify();
 
 		this.sandbox.restore();
@@ -36,9 +40,20 @@ describe('bin.SquareBox', function() {
 
 	describe('constructor()', () => {
 
-		it('Should get an instance', () => {
-			this.sqbox = require('bin/sqbox').default.new();
-			assert.instanceOf(this.sqbox, SquareBox);
+		it('Should throw Error: Violation Error', () => {
+			assert.throws(() => new SquareBox, 'Private Violation');
+		});
+
+	});
+
+	describe('static->run()', () => {
+
+		it('Should get a new instance and run it (with custom cwd)', () => {
+			const expRun = this.mockProto.expects('run')
+				.once()
+				.returns(sinon.match.instanceOf(SquareBox));
+
+			SquareBox.run(__dirname);
 		});
 
 	});
@@ -48,20 +63,39 @@ describe('bin.SquareBox', function() {
 		it('Should run the command', () => {
 			this.input = this.input.concat([
 				'sqbox',
-				'bundle',
+				'graph',
 				'--config', 'test/specs/.sqboxrc',
-				'--s', './source/**',
-				'--x', './source/dependencies/**,./source/package/**',
+				'--b', './source',
+				'--s', '**/*',
+				'--x', 'dependencies/**,package/**',
 				'--e', '.js,.es6',
 				'--a', 'common:./path/common',
-				'--t', 'add>umd:./dist/umd,other>cjs:./dist/cjs'
+				'--l', 'jquery,react',
+				'--t', 'add>umd:./dist/umd,other>cjs:./dist/cjs',
+				'--lv', 'silent'
 			]);
 
-			this.mockCommander.expects('_args')
+			const stubCommandAfter = this.sandbox.stub(Command.prototype, 'getParent', () => this.sqbox);
+
+			const stubRun = (construct) => {
+				return (resolve, reject) => {
+					resolve({});
+					return construct.prototype;
+				};
+			};
+
+			const stubCleanRun = this.sandbox.stub(Clean.prototype, 'run', stubRun(Clean));
+			const stubBundleRun = this.sandbox.stub(Bundle.prototype, 'run', stubRun(Bundle));
+			const stubGraphRun = this.sandbox.stub(Graph.prototype, 'run', stubRun(Graph));
+
+			const expArgs = this.mockCommander.expects('_args')
 				.once()
 				.returns(this.input);
 
-			assert.instanceOf(this.sqbox.run(), SquareBox);
+			this.sqbox = SquareBox.run();
+			assert.instanceOf(this.sqbox, SquareBox);
+
+			Command.prototype.getParent.restore();
 		});
 
 	});
