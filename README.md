@@ -3,6 +3,7 @@
 
 [![Build Status](https://travis-ci.org/nahuelio/squarebox.svg?branch=master)](https://travis-ci.org/nahuelio/squarebox)
 [![Coverage Status](https://coveralls.io/repos/github/nahuelio/squarebox/badge.svg)](https://coveralls.io/github/nahuelio/squarebox)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sqbox/General?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg?style=flat)]()
 [![Version](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](http://www.opensource.org/licenses/mit-license.php)
 [![GitHub stars](https://img.shields.io/github/stars/nahuelio/squarebox.svg?style=social&label=Stars)]()
