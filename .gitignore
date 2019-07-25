@@ -7,3 +7,9 @@ node_modules
 # Logs & System
 *.log
 *.pid
+
+# Mpn
+package-lock.json
+
+# IDEs
+.idea
