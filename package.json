@@ -53,7 +53,7 @@
     "fs-extra": "2.0.0",
     "glob": "7.1.1",
     "jsonpath": "1.0.2",
-    "minimatch": "3.0.3",
+    "minimatch": "3.1.4",
     "node-watch": "0.4.1",
     "request": "2.88.0",
     "underscore": "1.8.3",
